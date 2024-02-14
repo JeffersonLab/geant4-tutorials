@@ -9,9 +9,6 @@ window.onload = function () {
 	for (var i = 0; i < g4versions.length; i++) {
 		g4versions[i].innerHTML = g4version;
 	}
-
-
-
 };
 
 // When the user scrolls the page, execute myFunction

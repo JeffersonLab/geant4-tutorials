@@ -1,0 +1,59 @@
+
+
+<h2><a id=example>Compiling the first example</a></h2>
+
+
+Every time you want to compile or run an application using Geant4,
+<b>remember</b> to set up run-time environment variables.
+Use the appropriate script extension depending on your
+shell type, .sh for bash family while .csh for tcsh family.<br/>
+Also <b>remember</b> <code>&lt;tutorial&gt;</code> is the working directory.
+You must replace this string with the appropriate directory path in your disk space.
+
+
+<TABLE border=1>
+	<TBODY>
+	<TR>
+		<TD><code>
+			&nbsp; $ source <code>&lt;geant4&gt;</code>/install/bin/geant4.[c]sh
+			<br/>&nbsp; $ printenv | grep GEANT4
+		</code></TD>
+	</TR>
+	</TBODY>
+</TABLE>
+
+
+<h3><a class="content" id="ex1a">Exercise 1</a></h3>
+
+Compile Example basic B1 provided with Geant4.
+Example code can be found at:
+<code>&lt;geant4&gt;</code>/examples/basic/B1. This is an
+application that needs Geant4 libraries and headers to be compiled
+correctly, thus you will need to instruct cmake to
+use Geant4 from the location where it is installed.
+
+
+<h4>Solution</h4>
+<TABLE border=1>
+	<TBODY>
+	<TR>
+		<TD><code>
+			&nbsp; $ cd &lt;tutorial&gt;
+			<br/>&nbsp; $ mkdir HandsOn1
+			<br/>&nbsp; $ cd HandsOn1
+			<br/>&nbsp; $ cp -r <code>&lt;geant4&gt;</code>/examples/basic/B1 .
+			<br/>&nbsp; $ cd B1
+			<br/>&nbsp; $ cmake .
+			<br/>&nbsp; $ make -j <i>2</i> -f Makefile
+			<br/>&nbsp; $ ls
+			<br/>&nbsp; ... some lines of output ...
+		</code></TD>
+	</TR>
+	</TBODY>
+</TABLE>
+<br/>
+<b>Note </b>: If you get the line: <code>[100%] Built target
+	exampleB1</code> everything worked as expected.
+
+
+<hr/>
