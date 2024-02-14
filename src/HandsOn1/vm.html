@@ -1,17 +1,18 @@
-
-<h3><a class="content" id=g4VM>Installation through virtual machine</a></h3>
+<h3><a class="content" id=g4VM>Installing the CERN Virtual Machine</a></h3>
 
 <b>Note for virtual machine users:</b> if you are using a VM,
 even if you have a multi-core laptop it is possible that the
-VM sees only one CPU core. It is usually just a matter of VM
-configuration to allow more than one CPU in the guest OS.
+VM sees only one CPU core. <br/>
+It is usually just a matter of VM
+configuration to allow more than one CPU in the guest OS.<br/><br/>
 
 The Geant4 Virtual Machine provides a recent version of the Geant4 source code,
 examples and libraries; it includes a compiler and extra software such as
-a large set of visualisation libraries and analysis tools.
-It provides a fully working Geant4 system.
-It avoids the effort to find and install the key pieces needed to create an installation on your own system, which varies depending on the OS, its version and many other factors.
+a large set of visualisation libraries and analysis tools.<br/>
 
+It provides a fully working Geant4 system.<br/>
+It avoids the effort to find and install the key pieces needed to create an installation on your own system,
+which varies depending on the OS, its version and many other factors.<br/><br/>
 
 The following information is a summary of the key steps. Further guidance can be found at
 <a target="_new" href="https://geant4.cenbg.in2p3.fr/">the CENBG home</a> of the Geant4 Virtual Machine.
@@ -23,8 +24,8 @@ Make sure that your computer meets the minimum requirements:
 	<li>Windows or Linux users : desktop or laptop PC running Windows (preferably 10)</li>
 	<li>Linux: desktop or laptop PC with a recent Linux release (able to run
 		<a target="_new" href="https://www.vmware.com/uk/products/workstation-player/workstation-player-evaluation.html">VMware workstation for Linux</a>)
-	<li>
-	<li>Mac users : Mac with a recent version of macOS (capable of running the virtualization software below)</li>
+	<li>Mac users : Mac with a recent version of macOS (capable of running the virtualization software below)
+	</li>
 	<li>at least 30 GB of free disk space available</li>
 	<li>at least 4 GB of RAM available for the virtual machine on the PC or Mac - so likely a total of at least 6 or 8 GB installed.</li>
 </ul>
@@ -34,21 +35,25 @@ There is a choice of Virtual machine host software. The following is what we rec
 <ul>
 	<li>On Windows you can choose between <a target="_new" href="https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html">VMware
 		Player</a> (free for non-commercial, personal and home use) or
-		<a target="_new" href="https://www.vmware.com/products/workstation-pro/faqs.html#installation">VMWare Workstation Pro</a>.
+		<a target="_new" href="https://www.vmware.com/products/workstation-pro/faqs.html#installation">VMWare Workstation Pro</a>
+	</li>
 	<li>On Linux the <a target="_new" href="https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html">VM
 		Workstation Player</a> can be obtained for use and evaluation.
+	</li>
 	<li>On macOS <a target="_new" href="https://www.vmware.com/products/fusion.html">VMware Fusion</a> has a download for evaluation,
 		but is a commercial product (after the evaluation period of 30 days, a license must be purchased to keep using it).
 		Note that the versions we found to work are:
 		<ul>
 			<li><a target="_new" href="https://docs.vmware.com/en/VMware-Fusion/13.0.1/rn/vmware-fusion-1301-release-notes/index.html">Fusion 13.5.0</a>,
 				the latest, supports macOS versions 12 Monterey and later (i.e. 14 Sonoma);
-			<li>
+			</li>
 			<li><a target="_new" href="https://docs.vmware.com/en/VMware-Fusion/12.2.5/rn/vmware-fusion-1225release-notes/index.html">Fusion 12.2.5</a>,
 				supports macOS versions 11 Big Sur and later (i.e. 12 Monterey and 13 Ventura).
-			<li>
+			</li>
 		</ul>
+	</li>
 </ul>
+
 If you identify issues with the recommended software or versions, please inform us.
 
 <h4>Step 3: Obtain the Geant4 virtual machine</h4>
@@ -57,7 +62,7 @@ Obtain the Virtual machine file which corresponds to your player, and uncompress
 <ul>
 	<li>Download the Geant4 Virtual Machine. Note that the VM file is quite large (&gt;18 GBytes),
 		and may take a long time to download (will depend greatly on your network bandwidth).
-	<li>
+	</li>
 	<li>The file to download is located at:
 		<ul>
 			<li><a target="_new" href="https://heberge.lp2ib.in2p3.fr/G4VM/Vmware/Stable/geant4.11.2.0">VMware VM - Geant4 11.2.0</a> (VMware on Intel chips)</li>
@@ -65,7 +70,7 @@ Obtain the Virtual machine file which corresponds to your player, and uncompress
 		</ul>
 	<li>We recommend to start to download it few days before the course, to ensure that you can obtain it, and to familiarize yourself with it.
 		For more information about the Geant4 VM see <a target="_new" href="https://geant4.cenbg.in2p3.fr">CENBG home page</a>.
-	<li>
+	</li>
 </ul>
 
 <h4>Step 4: Uncompressing and starting the Virtual Machine</h4>
@@ -78,7 +83,9 @@ file for launching the VM.
 
 Note that you may encounter issues on opening the VM file:
 <ul>
-	<li>on PC, including Windows and some Linux systems, you will likely need to enable features needed for virtualisation in the BIOS. This is needed if you encounter a message such as "Intel Vtx is disabled...";</li>
+	<li>on PC, including Windows and some Linux systems, you will likely need to enable features needed for virtualisation in the BIOS.
+		This is needed if you encounter a message such as "Intel Vtx is disabled...";
+	</li>
 	<li>on macOS you may need to grant access to some resources to Fusion -- this may require a reboot.</li>
 </ul>
 
@@ -90,7 +97,7 @@ Note that you may encounter issues on opening the VM file:
 			<li>Its menus can be found in the top left corner (icon and 'Activities').</li>
 			<li>It's keyboard is configured as French 'AZERTY'. You can change this to US 'QWERTY' layout by
 				changing the keyboard settings using "Settings" from the menu on the top right corner.
-			<li>
+			</li>
 		</ul>
 	</li>
 	<li>Open a Terminal window using the icon "Activities":
@@ -99,24 +106,18 @@ Note that you may encounter issues on opening the VM file:
 			<li>You should see a new window, ready to accept your commands</li>
 			<li>It is running the command shell 'tcsh'</li>
 		</ul>
-	<li>
+	</li>
 	<li>Locate Geant4.
 		The Geant4 installation is located under this path:
 		<br/><br/>
-		<TABLE border=1>
-			<TBODY>
-			<TR>
-				<TD><code>
-					&nbsp;$ echo $G4INSTALL
-					<br/>&nbsp;/usr/local/geant4.11.2.0
-					<br/>&nbsp;$ echo $G4EXAMPLES
-					<br/>&nbsp;/usr/local/geant4.11.2.0/share/Geant4/examples
-					<br/>&nbsp;$ ls $G4EXAMPLES
-					<br/>&nbsp;advanced/ basic/ CMakeLists.txt extended/ .....
-				</code></TD>
-			</TR>
-			</TBODY>
-		</TABLE>
+		<codeblock>
+			$ echo $G4INSTALL<br/>
+			/usr/local/geant4.###G4VERSION<br/>
+			$ echo $G4EXAMPLES<br/>
+			/usr/local/geant4.###G4VERSION/share/Geant4/examples<br/>
+			$ ls $G4EXAMPLES<br/>
+			advanced/ basic/ CMakeLists.txt extended/ .....<br/>
+		</codeblock>
 		<br/>
 
 	</li>
@@ -124,4 +125,4 @@ Note that you may encounter issues on opening the VM file:
 We thank CENBG and CNRS for providing the Geant4 Virtual Machine, which is described in the article
 <a target="_new" href="https://www.worldscientific.com/doi/abs/10.1142/S1793962310000122">Int. J.
 	Model. Simul. Sci. Comput. 1 (2010) 157-178</a>, for updating it regularly and promptly with each
-production release and patch, and for their helpful collaboration.
+production release and patch, and for their helpful collaboration.<br/>

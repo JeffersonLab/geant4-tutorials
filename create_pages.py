@@ -13,14 +13,31 @@ import os
 geant4_version = "11.2.0"
 qt_version = "5.6"
 min_cmake_version = "3.16"
+sonoma_tarball="https://cern.ch/geant4-data/releases/lib4.11.2/Darwin-clang15.0.0-Sonoma.tar.gz"
+sonoma_clang_version="MacOS Sonoma, clang-15.0.0"
+almalinux9_tarball="https://cern.ch/geant4-data/releases/lib4.11.2/Linux-g++11.3.1-Alma9.tar.gz"
+almalinux9_gcc_version="Linux Alma9, g++-11.3.1"
+windows_exe="https://cern.ch/geant4-data/releases/lib4.11.2/WIN32-VC17.7.6-10.exe"
+windows_zip="https://cern.ch/geant4-data/releases/lib4.11.2/WIN32-VC17.7.6-10.zip"
+windos_msvc_version="Windows 10, Visual Studio Code-17.7.6"
+g4_start_log="""
+**************************************************************
+ Geant4 version Name: geant4-11-02 [MT]   (8-December-2023)
+  << in Multi-threaded mode >> 
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+"""
+
 
 # Get the current directory
 current_dir = os.getcwd()
 print(" > Current directory: ", current_dir)
 
 
-# Get the list of subdirectories starting with HandsOn
-subdirs = [d for d in os.listdir(current_dir) if os.path.isdir(d) and d.startswith("HandsOn1")]
 
 # Get the content of header.html and footer.html
 header_file = os.path.join(current_dir, "header.html")
@@ -30,6 +47,11 @@ with open(header_file, "r") as file:
 with open(footer_file, "r") as file:
 	footer = file.read()
 
+
+# Get the list of subdirectories in the subdirectory 'src'
+src = os.path.join(current_dir, "src")
+subdirs = [d for d in os.listdir(src) if os.path.isdir(d) and d.startswith("HandsOn1")]
+
 # Add the header and footer to the content of index.html in each subdirectory
 for subdir in subdirs:
 	print("\n > Subdir: ", subdir)
@@ -37,12 +59,12 @@ for subdir in subdirs:
 	with open(index_file, "w") as file:
 		file.write(header)
 
-		navigation_file = os.path.join(current_dir, subdir, "navigation.html")
+		navigation_file = os.path.join(src, subdir, "navigation.html")
 		with open(navigation_file, "r") as nav_file:
 			navigation = nav_file.read()
 			file.write(navigation)
 
-		content_file = os.path.join( current_dir, subdir, "content.dat" )
+		content_file = os.path.join( src, subdir, "content.dat" )
 		with open( content_file, "r" ) as subdir_file:
 			content = subdir_file.read()
 
@@ -52,7 +74,7 @@ for subdir in subdirs:
 		# write the content of each file listed in content.dat to index.html
 		for file_name in content_list:
 			if file_name != "":
-				file_path = os.path.join( current_dir, subdir, file_name )
+				file_path = os.path.join( src, subdir, file_name )
 				print("   > Adding: ", file_path )
 				with open( file_path, "r" ) as subdir_file:
 					file_content = subdir_file.read()
@@ -70,6 +92,17 @@ for subdir in subdirs:
 		filedata = filedata.replace("###G4VERSION", geant4_version)
 		filedata = filedata.replace( "###QTVERSION", qt_version )
 		filedata = filedata.replace( "###MINCMAKEVERSION", min_cmake_version )
+		filedata = filedata.replace( "###SONOMATARBALL", sonoma_tarball )
+		filedata = filedata.replace( "###SONOMACLANGVERSION", sonoma_clang_version )
+		filedata = filedata.replace( "###ALMALINUX9TARBALL", almalinux9_tarball )
+		filedata = filedata.replace( "###ALMALINUX9GCCVERSION", almalinux9_gcc_version )
+		filedata = filedata.replace( "###WINDOWSEXE", windows_exe )
+		filedata = filedata.replace( "###WINDOWSZIP", windows_zip )
+		filedata = filedata.replace( "###WINDOWSMSVCVERSION", windos_msvc_version )
+		filedata = filedata.replace( "###HANDSONVERSION", subdir )
+		filedata = filedata.replace( "###G4STARTLOG", g4_start_log )
+
+
 	with open(index_file, "w") as file:
 		file.write(filedata)
 

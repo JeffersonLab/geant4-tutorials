@@ -1,0 +1,107 @@
+<h2><a class="content" id=play>Familiarizing with a Geant4 application</a></h2>
+
+<h3><a id=ex2a>Exercise 2</a></h3>
+
+Start the application built in the previous exercise. For this very
+first test, we disable Qt interface.<br/>
+
+<h4>Solution</h4>
+
+<codeblock>
+	$ ./exampleB1
+</codeblock>
+
+<br/>
+
+
+Geant4 will initialize and will greet you with some output, the
+first lines should read:<br/>
+
+<pre>
+###G4STARTLOG
+</pre>
+
+<br/>
+<b>Note</b>: G4 can be quite verbose, especially if you have enabled MT
+support.
+<br/>
+
+If you receive error messages like <code>ERROR: G4VisCommandsViewerSet::SetNewValue: no current viewer</code> you can
+safely ignore them.<br/><br/>
+
+
+
+<h4>If you use Qt</h4>
+
+A GUI window should pop up.
+<br/><br/>
+
+<img src="gui.png" width="900"/><br/><br/>
+You can type your command in the <code>Session:</code> field at the right-bottom of the window.
+You may also pick a command from the left side menu. <br/>
+
+Try 10 events and see trajectories.
+
+<codeblock>
+	/run/beamOn 10
+</codeblock>
+
+<br/>
+
+<hr/>
+
+<h4>If you do not use Qt but use OpenGL visualization</h4>
+
+
+A visualization window will appear with the geometry displayed.<br/><br/>
+
+<img src="vis.png" width="900"/><br/><br/>
+You will see Geant4 prompt on your terminal screen, where you can issue Geant4 commands. <br/>
+<br/>Try 10 events and see trajectories.
+
+
+<codeblock>
+	Idle&gt; /run/beamOn 10
+</codeblock>
+
+
+
+
+<br/><br/><hr/>
+
+Refer to the presentations at this tutorial for UI interactivity.<br/>
+
+Take your time to familiarize with the Geant4 prompt (for example note
+that the prompt has auto-complete, the <i>tab</i> key; history, with
+up-down arrow keys).<br/>
+
+Try navigating the GUI help panel.<br/>
+Familiarize with the help menu and its sub-menu levels. Can you
+find where the <code>/run/beamOn</code> command is located? What is
+the UI command to change the primary particle type?<br/>
+
+
+<h3><a class="content" id=ex3a>Exercise 3</a></h3>
+
+Compile a second exercise.
+Browse the <code>&lt;geant4&gt;</code>/examples/ directory and try
+a few examples.<br/>
+
+Compile/run them following the instructions of the previous exercises.<br/><br/>
+
+<b>Note</b>: Move to an appropriate directory before copying the second example.<br/>
+
+<b>Important:</b> some examples may require additional libraries (e.g. GDML), thus may not
+compile in this setup.<br/>
+
+
+
+
+
+
+
+
+
+
+
+

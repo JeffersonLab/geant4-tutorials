@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" xmlns>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="../main.css">
+	<title>Geant4 Tutorial HandsOn1</title>
+</head>
+
+<body>
+
+
+
+<div id="topnav" class="topnav">
+	<a href="#intro">Introduction</a>
+	<a href="#conv">Conventions</a>
+	<a href="#g4inst">Geant4 Installation</a>
+	<a href="#example">Compiling the First Example</a>
+	<a href="#play">Familiarizing with a Geant4 Application</a>
+</div>
+
+
+<h2><a class="content" id=intro>Introduction</a></h2>
+
+During the next days we will develop a Geant4 application that will use Geant4 libraries, version 11.2.0. <br/><br/>
+Geant4 is a <i>toolkit</i>, thus a Geant4 installation consists of a set of library
+and header files (plus resource files: the data-base data and
+examples source code). <br/>
+You create an application compiled and linked against a Geant4 installation.<br/>
+
+<br/>
+<hr/>
+
+<h1>Hands On 1: Setting Up the Environment</h1>
+
+In this first hands on you will learn:
+<ul>
+	<li>How to install Geant4 and some of the most common configuration options (OPTIONAL)</li>
+	<li>How to compile an application against an installed version of Geant4</li>
+	<li>How to run an application and interact with Geant4</li>
+</ul>
+
+There is no exercise tar-ball for this first hands on since we use Geant4 code base.<br/>
+<br/><hr/><h2><a class="content" id=conv>Conventions</a></h2>
+
+We are going to use Geant4 Version 11.2.0 (Geant4 version numbers
+are expressed with the doublet or triplet of numbers: <i>Major.Minor</i>
+or <i>Major.Minor.PatchLevel</i>).<br/><br/>
+
+<b>All the Hands On instructions of this week, we will use the following conventions:</b>
+<ul>
+	<li>
+		<code>This font</code> represents shell input/output,
+		C++ code or file names.
+	</li>
+	<li> The lines that start with the character <code>$</code> represents
+		Linux shell commands that you have to type in while you are on the OS shell.
+	</li>
+	<li>
+		<code>&lt;tutorial&gt;</code> is the working directory.
+		You must replace this string with the appropriate directory path in your disk space.
+	</li>
+	<li>
+		Strings in parenthesis (<code>[</code> and <code>]</code>)
+		are optional.
+	</li>
+</ul>
+<br/><hr/><h2><a class="content" id=g4inst>Geant4 Installation</a></h2>
+
+Depending on your machine or your preference, follow one of the four installation procedures.
+
+<ul>
+	<li><a href="#g4SbyS">Step by step compilation</a></li>
+	<li><a href="#g4D">Running Docker</a></li>
+	<li><a href="#g4DLI">Download pre-compiled libraries</a></li>
+	<li><a href="#g4VM">Installing the CERN virtual machine</a></li>
+</ul>
+<br/><hr/><h3><a id=g4SbyS>Step-by-step Compilation</a></h3>
+
+<h4>Dependencies</h4>
+
+With its basic installation options Geant4 Version 11.2.0 does not
+have external dependencies, but to configure the compilation and installation
+process <a href="http://www.cmake.org">cmake</a> is needed.<br/>
+
+The role of cmake is to automatically create
+<i>Makfiles</i> (or project files for IDEs) based on
+options that can be specified based on your own environments.<br/><br/>
+
+We will show how to use cmake via command line options, but a
+menu-based version of cmake exists (type <i>ccmake</i> instad of
+<i>cmake</i>) and for some platforms also a GUI is available
+(<i>cmake-gui</i>). Geant4 Version 11.2.0 requires cmake version at least 3.16.<br/>
+
+Geant4 version 11.2.0 contains <a href="https://en.wikipedia.org/wiki/C%2B%2B11">C++11</a>
+code, this mean that the compiler needs to support this standard.
+With recent versions of Linux this is the default,
+but you may need to manually install and setup a compiler in some cases.<br/>
+Refer to the <a href="http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/InstallationGuide/html/index.html">Geant4 installation guide</a>
+for additional information, including the list of supported compilers.
+
+
+<h4>Visualization and GUI</h4>
+
+We will also describe how to
+setup and use the interactive graphical user interface (GUI) based on
+<a href="https://qt.io">Qt</a>.<br/>
+
+We use Qt version 5.6.<br/>
+
+Many Linux distributions already have a pre-installed version of Qt. It is relatively easy to
+manually install Qt on a Linux or Mac system, but we will not cover
+this step in this tutorial. <br/>
+
+This component is optional, if you do not want to use Qt simply skip the Qt options during
+configuration. <b>None of exercises require GUI interfaces to be completed.</b><br/><br/>
+
+If you do not have Qt or do not want to use it, the examples in
+this tutorial will fall back to simple OpenGL graphics. In such a case
+to enable OpenGL graphics, use
+<code>-DGEANT_USE_OPENGL_X11=ON</code> when configuring G4 with
+<i>cmake</i>. <br/> While for Linux this should not be a problem, it could
+have issues on Mac systems. If this fail, contact us.
+
+
+<h4>Multi-threading</h4>
+Starting with Geant4 Version 11 series, we introduced event level parallelism via
+tasking mechanism. This means that we will develop a parallel application
+that will simulate events using all available cores of your machine.<br/>
+
+This is an optional component: we will show here how to turn it
+on, but if you do not want to enable MT you can still follow the exercises
+as they are, since the code is also compatible with the sequential
+version of Geant4.<br/>
+
+
+<h4>Step 0: Obtain the Geant4 code</h4>
+After downloading and un-packing Geant4 tarball
+(<code>geant4-v11.2.0.tar.gz</code>) in an empty working
+directory, you also need to
+create <i>build</i> and <i>install</i> directories where the compilation of Geant4 is
+performed, and resulted Geant4 libraries and related scripts are installed, respectively: cmake uses <a href="https://gitlab.kitware.com/cmake/community/-/wikis/FAQ">out of source builds</a>.
+
+
+<h4>Step 1: Configuration</h4>
+In the following we assume you are using a Linux machine. For Mac users there
+are little differences, except that you will rely on the system compiler (clang) and cannot set an
+alternative compiler (in an easy way).<br/><br/>
+
+Let's configure Geant4:<br/><br/>
+
+<codeblock>
+	$ cd &lt;tutorial&gt<br/>
+	$ wget http://cern.ch/geant4-data/releases/geant4-v11.2.0.tar.gz<br/>
+	$ tar zxpf geant4-v11.2.0.tar.gz<br/>
+	$ mkdir build install<br/>
+	$ ls<br/>
+	build geant4-vgeant4-v11.2.0 geant4-v11.2.0.tar.gz install<br/>
+	$ cd build<br/>
+	$ cmake -DCMAKE_INSTALL_PREFIX=../install
+	-DGEANT4_BUILD_MULTITHREADED=ON -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_QT=ON
+	-DGEANT4_USE_OPENGL_X11=ON ../geant4-v11.2.0<br/>
+</codeblock>
+<br/>
+Note:
+<ul>
+	<li>If you do not have <i>wget</i> you may download the Geant4 tar ball from <a href="https://geant4.web.cern.ch/support/download">Geant4 download page</a>.
+		You may also download the source code from <a target="_new" href="https://gitlab.cern.ch/geant4/geant4/-/releases/v11.2.0">
+			CERN GitLab</a> or <a target="_new" href="https://github.com/Geant4/geant4/releases">GitHub</a>.
+	</li>
+	<li>Instead of <i>cmake</i>, you may use <i>ccmake</i> to configure build options one by one.
+	</li>
+	<li>If you have an old version of Linux with a default compiler with a version &lt;4.8.2,
+		type <code>gcc --version</code> to get the compiler version, you need to have installed
+		an alternative more recent compiler. For example if you have a CentOS 6 or Scientific Linux 6
+		distributions you need to manually install a recent compiler. After doing that you need
+		to prepend to the <code>cmake</code> line: <code>CC=gcc CXX=g++</code> and make sure that
+		gcc and g++ binaries are the correct one.<br/>
+		Replace <code>gcc</code> and <code>g++</code> with your alternative compiler if you have one
+		and you want to use it
+		(e.g. <code>icc</code> and <code>icpc</code> for Intel C compiler).<br/>
+	</li>
+</ul>
+
+
+If everything goes as expected <Code>cmake</code> will work
+few seconds on the configuration. The last lines should read:<br/><br/>
+<codeblock>
+	-- Configuring done<br/>
+	-- Generating done<br/>
+	-- Build files have been written to: &lt;tutorial&gt/build<br/>
+</codeblock><br/>
+
+
+Additional notes:
+<ul>
+	<li> If you do not want to use Qt, remove the <code>-DGEANT4_USE_QT=ON</code> option. If you do not want
+		multi-threaded support remove also the corresponding option.
+	</li>
+	<li> If you disable Qt it is recommended to leave OpenGL with:
+		<code>-DGEANT4_USE_OPENGL_X11=ON</code>.
+	</li>
+	<li>
+		With Mac OS X you need XQuartz to be properly installed to use OPENGL_X11 option.
+	</li>
+	<li>
+		If you have installed Qt manually, and you are using Qt 5.6, you may need to
+		add: <code>-DCMAKE_PREFIX_PATH=&lt;where-qt-is-installed&gt;/5.6/gcc_64</code>
+		to cmake options if Qt is not found (you may need to adjust the path).
+	</li>
+	<li>Refer to the <a href="http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/InstallationGuide/html/index.html">
+		installation manual</a> for a complete list of installation options. There are many more options available.
+	</li>
+	<li>If you already have installed Geant4 databases somewhere in your
+		system, you can avoid downloading automatically the library by adding
+		<code>-DGEANT4_INSTALL_DATADIR=<i>where-the-dbs-are</i></code>.
+	</li>
+	<li>If you receive an error about
+		EXPAT libraries, you can disable them with <code>-DGEANT4_USE_SYSTEM_EXPAT=OFF</code>.
+	</li>
+	<li>If you want to use an already installed version of CLHEP,
+		instead of using the Geant4 internal one, you can specify that via the option:
+		<code>-DGEANT4_USE_SYSTEM_CLHEP=OFF</code>. You may need to specify
+		where to find CLHEP (see installation manuals).
+	</li>
+	<li>If you want to use an IDE you can specify the
+		option <code>-G&lt;ide-type-goes-here&gt;</code> (run cmake without options to see a list of
+		supported IDEs on your system. For example
+		<ul>
+			<li>
+				on Mac OS X with Xcode: <code>cmake -GXcode [...]</code></li>
+			<li>forKDevelop3 support: <code>-GKDevelop3</code></li>
+			<li>for Eclipse: <code>cmake -G"Eclipse CDT4 - Unix Makefiles" [...]</code></li>
+		</ul>
+		In such a case instead
+		of makefiles cmake will create project files for that IDE.
+	</li>
+</ul>
+
+
+<h4>Step 2: Compilation</h4>
+Compile Geant4, on a multi-core system with <i>N</i> cores you can
+substantially speedup compilation.<br/><br/>
+
+<codeblock>
+	$ cd &lt;tutorial&gt;<br/>
+	$ make -j <i>N</i> #or gmake -j <i>2</i><br/>
+	$ make install<br/>
+</codeblock>
+
+<br/>
+<b>Note</b>: If not sure how many cores you have use  N=2.<br/>
+<b>Note</b>: you can have a verbose compilation (for example to see the exact
+compilation options) using <code>make VERBOSE=1 -j <i>2</i></code>.<br/><br/>
+
+
+After Geant4 has been compiled and installed the content of the
+&lt;tutorial&gt;/install directory should contain the directories:
+<codeblock>bin share include lib[64]</codeblock><br/>
+
+
+The <code>include</code> directory contains a sub-directory
+(<code>Geant4</code>) where all the <code>.hh</code> files are
+located. The directory <code>lib[64]</code> contains all Geant4
+libraries and a sub-directory: <code>Geant4-11.2.0</code>, this
+contains cmake files specific to Geant4 (they are used to compile an
+application via cmake that <i>uses</i> Geant4).<br/><br/>
+
+<br/><hr/>
+<h3><a class="content" id=g4DLI>Download pre-compiled libraries</a></h3>
+You may download binary images of pre-compiled Geant4 libraries for selected combinations of OS and compiler.
+<ul>
+	<li><a target="_new" href="https://cern.ch/geant4-data/releases/lib4.11.2/Darwin-clang15.0.0-Sonoma.tar.gz">MacOS Sonoma, clang-15.0.0</a></li>
+	<li><a target="_new" href="https://cern.ch/geant4-data/releases/lib4.11.2/Linux-g++11.3.1-Alma9.tar.gz">Linux Alma9, g++-11.3.1</a></li>
+	<li> Windows 10, Visual Studio Code-17.7.6- <a target="_new" href="https://cern.ch/geant4-data/releases/lib4.11.2/WIN32-VC17.7.6-10.exe">.exe</a>
+		or <a target="_new" href="https://cern.ch/geant4-data/releases/lib4.11.2/WIN32-VC17.7.6-10.zip">.zip</a></li>
+</ul>
+You also need to download necessary data files from <a target="_new" href="https://www.geant4.org/download/11.2.0.html">Geant4 download page</a>.
+<br/>
+
+
+
+<br/><hr/>
+<h3><a class="content" id=g4D>Using Docker</a></h3>
+
+If you have a JLab computing account, you may download the Docker image.
+<font color="#ff0000"><b>Mauri, please fill this section with JLab Docker Hub</b></font>
+
+<br/><br/><br/><hr/><h3><a class="content" id=g4VM>Installing the CERN Virtual Machine</a></h3>
+
+<b>Note for virtual machine users:</b> if you are using a VM,
+even if you have a multi-core laptop it is possible that the
+VM sees only one CPU core. <br/>
+It is usually just a matter of VM
+configuration to allow more than one CPU in the guest OS.<br/><br/>
+
+The Geant4 Virtual Machine provides a recent version of the Geant4 source code,
+examples and libraries; it includes a compiler and extra software such as
+a large set of visualisation libraries and analysis tools.<br/>
+
+It provides a fully working Geant4 system.<br/>
+It avoids the effort to find and install the key pieces needed to create an installation on your own system,
+which varies depending on the OS, its version and many other factors.<br/><br/>
+
+The following information is a summary of the key steps. Further guidance can be found at
+<a target="_new" href="https://geant4.cenbg.in2p3.fr/">the CENBG home</a> of the Geant4 Virtual Machine.
+
+
+<h4>Step 1: Ensure that your machine can run the Geant4 Virtual Machine</h4>
+Make sure that your computer meets the minimum requirements:
+<ul>
+	<li>Windows or Linux users : desktop or laptop PC running Windows (preferably 10)</li>
+	<li>Linux: desktop or laptop PC with a recent Linux release (able to run
+		<a target="_new" href="https://www.vmware.com/uk/products/workstation-player/workstation-player-evaluation.html">VMware workstation for Linux</a>)
+	<li>Mac users : Mac with a recent version of macOS (capable of running the virtualization software below)
+	</li>
+	<li>at least 30 GB of free disk space available</li>
+	<li>at least 4 GB of RAM available for the virtual machine on the PC or Mac - so likely a total of at least 6 or 8 GB installed.</li>
+</ul>
+
+<h4>Step 2: Obtain a Virtual Machine 'player'</h4>
+There is a choice of Virtual machine host software. The following is what we recommend:
+<ul>
+	<li>On Windows you can choose between <a target="_new" href="https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html">VMware
+		Player</a> (free for non-commercial, personal and home use) or
+		<a target="_new" href="https://www.vmware.com/products/workstation-pro/faqs.html#installation">VMWare Workstation Pro</a>
+	</li>
+	<li>On Linux the <a target="_new" href="https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html">VM
+		Workstation Player</a> can be obtained for use and evaluation.
+	</li>
+	<li>On macOS <a target="_new" href="https://www.vmware.com/products/fusion.html">VMware Fusion</a> has a download for evaluation,
+		but is a commercial product (after the evaluation period of 30 days, a license must be purchased to keep using it).
+		Note that the versions we found to work are:
+		<ul>
+			<li><a target="_new" href="https://docs.vmware.com/en/VMware-Fusion/13.0.1/rn/vmware-fusion-1301-release-notes/index.html">Fusion 13.5.0</a>,
+				the latest, supports macOS versions 12 Monterey and later (i.e. 14 Sonoma);
+			</li>
+			<li><a target="_new" href="https://docs.vmware.com/en/VMware-Fusion/12.2.5/rn/vmware-fusion-1225release-notes/index.html">Fusion 12.2.5</a>,
+				supports macOS versions 11 Big Sur and later (i.e. 12 Monterey and 13 Ventura).
+			</li>
+		</ul>
+	</li>
+</ul>
+
+If you identify issues with the recommended software or versions, please inform us.
+
+<h4>Step 3: Obtain the Geant4 virtual machine</h4>
+Obtain the Virtual machine file which corresponds to your player, and uncompress it:
+
+<ul>
+	<li>Download the Geant4 Virtual Machine. Note that the VM file is quite large (&gt;18 GBytes),
+		and may take a long time to download (will depend greatly on your network bandwidth).
+	</li>
+	<li>The file to download is located at:
+		<ul>
+			<li><a target="_new" href="https://heberge.lp2ib.in2p3.fr/G4VM/Vmware/Stable/geant4.11.2.0">VMware VM - Geant4 11.2.0</a> (VMware on Intel chips)</li>
+			<li><a target="_new" href="https://heberge.lp2ib.in2p3.fr/G4VM/Vmware/Stable/geant4.11.2.0/Mac">VMware VM - Geant4 11.2.0</a> (VMware on macOS Apple Silicon chips)</li>
+		</ul>
+	<li>We recommend to start to download it few days before the course, to ensure that you can obtain it, and to familiarize yourself with it.
+		For more information about the Geant4 VM see <a target="_new" href="https://geant4.cenbg.in2p3.fr">CENBG home page</a>.
+	</li>
+</ul>
+
+<h4>Step 4: Uncompressing and starting the Virtual Machine</h4>
+You need software which can un-compress '7z' files. There are many other choices, such as the popular (de-)compressor
+<a target="_new" href="https://www.winzip.com">WinZip</a>.
+On macOS you may use the built-in Archive Utility.
+
+Follow the instructions in the <a target="_new" href="https://heberge.lp2ib.in2p3.fr/G4VM/Vmware/Stable/geant4.11.2.0/readme-g4.11.2.0">readme</a>
+file for launching the VM.
+
+Note that you may encounter issues on opening the VM file:
+<ul>
+	<li>on PC, including Windows and some Linux systems, you will likely need to enable features needed for virtualisation in the BIOS.
+		This is needed if you encounter a message such as "Intel Vtx is disabled...";
+	</li>
+	<li>on macOS you may need to grant access to some resources to Fusion -- this may require a reboot.</li>
+</ul>
+
+<h4>Step 5: Locate the Geant4 installation and check it</h4>
+<ul>
+	<li>The virtual machine will boot.</li>
+	<li>You should now obtain a (Linux) desktop, which is mostly empty.
+		<ul>
+			<li>Its menus can be found in the top left corner (icon and 'Activities').</li>
+			<li>It's keyboard is configured as French 'AZERTY'. You can change this to US 'QWERTY' layout by
+				changing the keyboard settings using "Settings" from the menu on the top right corner.
+			</li>
+		</ul>
+	</li>
+	<li>Open a Terminal window using the icon "Activities":
+		<ul>
+			<li>Look for the rectangle with a silver border around a prompt (in this menu) and you use it to obtain a Terminal.</li>
+			<li>You should see a new window, ready to accept your commands</li>
+			<li>It is running the command shell 'tcsh'</li>
+		</ul>
+	</li>
+	<li>Locate Geant4.
+		The Geant4 installation is located under this path:
+		<br/><br/>
+		<codeblock>
+			$ echo $G4INSTALL<br/>
+			/usr/local/geant4.11.2.0<br/>
+			$ echo $G4EXAMPLES<br/>
+			/usr/local/geant4.11.2.0/share/Geant4/examples<br/>
+			$ ls $G4EXAMPLES<br/>
+			advanced/ basic/ CMakeLists.txt extended/ .....<br/>
+		</codeblock>
+		<br/>
+
+	</li>
+</ul>
+We thank CENBG and CNRS for providing the Geant4 Virtual Machine, which is described in the article
+<a target="_new" href="https://www.worldscientific.com/doi/abs/10.1142/S1793962310000122">Int. J.
+	Model. Simul. Sci. Comput. 1 (2010) 157-178</a>, for updating it regularly and promptly with each
+production release and patch, and for their helpful collaboration.<br/>
+<br/><hr/><h2><a class="content" id=example>Compiling the first example</a></h2>
+
+
+Every time you want to compile or run an application using Geant4,
+<b>remember</b> to set up run-time environment variables.
+Use the appropriate script extension depending on your
+shell type, .sh for bash family while .csh for tcsh family.<br/>
+
+Also <b>remember</b> <code>&lt;tutorial&gt;</code> is the working directory.
+You must replace this string with the appropriate directory path in your disk space.<br/><br/>
+
+
+<codeblock>
+	$ source <code>&lt;geant4&gt;</code>/install/bin/geant4.[c]sh<br/>
+	$ printenv | grep GEANT4
+</codeblock>
+
+
+<h3><a class="content" id="ex1a">Exercise 1</a></h3>
+
+Compile Example basic B1 provided with Geant4.
+Example code can be found at:
+
+<code>&lt;geant4&gt;</code>/examples/basic/B1. <br/><br/>
+
+This is an application that needs Geant4 libraries and headers to be compiled
+correctly, thus you will need to instruct cmake to
+use Geant4 from the location where it is installed.<br/><br/>
+
+<codeblock>
+
+	$ cd &lt;tutorial&gt;
+	$ mkdir HandsOn1<br/>
+	$ cd HandsOn1<br/>
+	$ cp -r <code>&lt;geant4&gt;</code>/examples/basic/B1 .<br/>
+	$ cd B1<br/>
+	$ cmake .<br/>
+	$ make -j <i>2</i> -f Makefile<br/>
+	$ ls<br/>
+	... some lines of output ...<br/>
+</codeblock>
+<br/>
+<b>Note </b>: If you get the line: <code>[100%] Built target
+	exampleB1</code> everything worked as expected.
+
+
+
+<br/><hr/><h2><a class="content" id=play>Familiarizing with a Geant4 application</a></h2>
+
+<h3><a id=ex2a>Exercise 2</a></h3>
+
+Start the application built in the previous exercise. For this very
+first test, we disable Qt interface.<br/>
+
+<h4>Solution</h4>
+
+<codeblock>
+	$ ./exampleB1
+</codeblock>
+
+<br/>
+
+
+Geant4 will initialize and will greet you with some output, the
+first lines should read:<br/>
+
+<pre>
+
+**************************************************************
+ Geant4 version Name: geant4-11-02 [MT]   (8-December-2023)
+  << in Multi-threaded mode >> 
+                       Copyright : Geant4 Collaboration
+                      References : NIM A 506 (2003), 250-303
+                                 : IEEE-TNS 53 (2006), 270-278
+                                 : NIM A 835 (2016), 186-225
+                             WWW : http://geant4.org/
+**************************************************************
+
+</pre>
+
+<br/>
+<b>Note</b>: G4 can be quite verbose, especially if you have enabled MT
+support.
+<br/>
+
+If you receive error messages like <code>ERROR: G4VisCommandsViewerSet::SetNewValue: no current viewer</code> you can
+safely ignore them.<br/><br/>
+
+
+
+<h4>If you use Qt</h4>
+
+A GUI window should pop up.
+<br/><br/>
+
+<img src="gui.png" width="900"/><br/><br/>
+You can type your command in the <code>Session:</code> field at the right-bottom of the window.
+You may also pick a command from the left side menu. <br/>
+
+Try 10 events and see trajectories.
+
+<codeblock>
+	/run/beamOn 10
+</codeblock>
+
+<br/>
+
+<hr/>
+
+<h4>If you do not use Qt but use OpenGL visualization</h4>
+
+
+A visualization window will appear with the geometry displayed.<br/><br/>
+
+<img src="vis.png" width="900"/><br/><br/>
+You will see Geant4 prompt on your terminal screen, where you can issue Geant4 commands. <br/>
+<br/>Try 10 events and see trajectories.
+
+
+<codeblock>
+	Idle&gt; /run/beamOn 10
+</codeblock>
+
+
+
+
+<br/><br/><hr/>
+
+Refer to the presentations at this tutorial for UI interactivity.<br/>
+
+Take your time to familiarize with the Geant4 prompt (for example note
+that the prompt has auto-complete, the <i>tab</i> key; history, with
+up-down arrow keys).<br/>
+
+Try navigating the GUI help panel.<br/>
+Familiarize with the help menu and its sub-menu levels. Can you
+find where the <code>/run/beamOn</code> command is located? What is
+the UI command to change the primary particle type?<br/>
+
+
+<h3><a class="content" id=ex3a>Exercise 3</a></h3>
+
+Compile a second exercise.
+Browse the <code>&lt;geant4&gt;</code>/examples/ directory and try
+a few examples.<br/>
+
+Compile/run them following the instructions of the previous exercises.<br/><br/>
+
+<b>Note</b>: Move to an appropriate directory before copying the second example.<br/>
+
+<b>Important:</b> some examples may require additional libraries (e.g. GDML), thus may not
+compile in this setup.<br/>
+
+
+
+
+
+
+
+
+
+
+
+
+<br/><hr/><br/>
+Created by:
+Andrea Dotti (adotti AT slac DOT stanford DOT edu)
+May 2018
+<br/>Updated by:
+Makoto Asai (asai AT jlab DOT org) and
+Maurizio Ungaro (ungaro AT jlab DOT org)
+February 2024<br/>
+<br/>
+<hr/>
+<br/>
+
+<script src="../main.js"></script>        <!-- Don't move this line to the top! It causes an error at Safari -->
+
+
+</body>
+</html>
