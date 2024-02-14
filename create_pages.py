@@ -10,7 +10,9 @@
 import os
 
 
-g4varsion = "11.2.0"
+geant4_version = "11.2.0"
+qt_version = "5.6"
+min_cmake_version = "3.16"
 
 # Get the current directory
 current_dir = os.getcwd()
@@ -59,5 +61,18 @@ for subdir in subdirs:
 					file.write( "<br/><hr/>" )
 
 		file.write(footer)
+
+	# now replace every instance of "G4VERSION" with the string geant4_version
+	# and write the result back to index.html
+	print("   > Replacing ###G4VERSION with ", geant4_version)
+	with open(index_file, "r") as file:
+		filedata = file.read()
+		filedata = filedata.replace("###G4VERSION", geant4_version)
+		filedata = filedata.replace( "###QTVERSION", qt_version )
+		filedata = filedata.replace( "###MINCMAKEVERSION", min_cmake_version )
+	with open(index_file, "w") as file:
+		file.write(filedata)
+
+
 
 print("\n > Done!\n")
