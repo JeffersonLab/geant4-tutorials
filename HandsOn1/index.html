@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" xmlns>
+<head>
+	<meta charset="UTF-8">
+	<title>Geant4 Tutorial Hands On 1</title>
+	<link rel="stylesheet" href="../main.css">
+</head>
+
+<body>
+
+<div id="topnav" class="topnav">
+	<a href="#intro">Introduction</a>
+	<a href="#conv">Conventions</a>
+	<a href="geant4_installation.html#g4inst">Geant4 Installation</a>
+	<a href="#example">Compiling the First Example</a>
+	<a href="#play">Familiarizing with a Geant4 Application</a>
+</div>
+
+<br/><br/>
+
+<H1>Hands On 1: Setting Up the Environment</H1>
+
+During the next days we will develop a Geant4 application that will use Geant4 libraries. <br/><br/>
+Geant4 is a <i>toolkit</i>, thus a Geant4 installation consists of a set of library
+and header files (plus resource files: the data-base data and
+examples source code). <br/>
+You create an application compiled and linked against a Geant4 installation.<br/>
+
+
+<br/>
+<hr/>
+
+
+
+
+<H2><a class="content" id=intro>Introduction</a></H2>
+In this first hands on you will learn:
+<ul>
+	<li>How to install Geant4 and some of the most common configuration options (OPTIONAL)</li>
+	<li>How to compile an application against an installed version of Geant4</li>
+	<li>How to run an application and interact with Geant4.</li>
+</ul>
+
+There is no exercise tar-ball for this first hands on since we use Geant4 code base.<br/>
+
+<br/>
+<hr/>
+
+
+<H2><a class="content" id=conv>Conventions</a></H2>
+
+We are going to use Geant4 Version <label name="g4version"></label> (Geant4 version numbers
+are expressed with the doublet or triplet of numbers: <i>Major.Minor</i>
+or <i>Major.Minor.PatchLevel</i>).<br/><br/>
+
+<b>All the Hands On instructions of this week, we will use the following conventions:</b>
+<ul>
+	<li>
+		<code>This font</code> represents shell input/output,
+		C++ code or file names.
+	</li>
+	<li> The lines that start with the character <code>$</code> represents
+		Linux shell commands that you have to type in while you are on the OS shell.
+	</li>
+	<li>
+		<code>&lt;tutorial&gt;</code> is the working directory.
+		You must replace this string with the appropriate directory path in your disk space.
+	</li>
+	<li>
+		Strings in parenthesis (<code>[</code> and <code>]</code>)
+		are optional.
+	</li>
+</ul>
+
+<br/>
+<hr/>
+
+
+<iframe src="geant4_installation.html" height="2000"></iframe>
+
+
+<h2><a id=example>Compiling the first example</a></h2>
+
+
+Every time you want to compile or run an application using Geant4,
+<b>remember</b> to set up run-time environment variables.
+Use the appropriate script extension depending on your
+shell type, .sh for bash family while .csh for tcsh family.<br/>
+Also <b>remember</b> <code>&lt;tutorial&gt;</code> is the working directory.
+You must replace this string with the appropriate directory path in your disk space.
+
+
+<TABLE border=1>
+	<TBODY>
+	<TR>
+		<TD><code>
+			&nbsp; $ source <code>&lt;geant4&gt;</code>/install/bin/geant4.[c]sh
+			<br/>&nbsp; $ printenv | grep GEANT4
+		</code></TD>
+	</TR>
+	</TBODY>
+</TABLE>
+
+
+<h3><a class="content" id="ex1a">Exercise 1</a></h3>
+
+Compile Example basic B1 provided with Geant4.
+Example code can be found at:
+<code>&lt;geant4&gt;</code>/examples/basic/B1. This is an
+application that needs Geant4 libraries and headers to be compiled
+correctly, thus you will need to instruct cmake to
+use Geant4 from the location where it is installed.
+
+
+<h4>Solution</h4>
+<TABLE border=1>
+	<TBODY>
+	<TR>
+		<TD><code>
+			&nbsp; $ cd &lt;tutorial&gt;
+			<br/>&nbsp; $ mkdir HandsOn1
+			<br/>&nbsp; $ cd HandsOn1
+			<br/>&nbsp; $ cp -r <code>&lt;geant4&gt;</code>/examples/basic/B1 .
+			<br/>&nbsp; $ cd B1
+			<br/>&nbsp; $ cmake .
+			<br/>&nbsp; $ make -j <i>2</i> -f Makefile
+			<br/>&nbsp; $ ls
+			<br/>&nbsp; ... some lines of output ...
+		</code></TD>
+	</TR>
+	</TBODY>
+</TABLE>
+<br/>
+<b>Note </b>: If you get the line: <code>[100%] Built target
+	exampleB1</code> everything worked as expected.
+
+
+<hr/>
+
+
+<H2><a id=play>Familiarizing with a Geant4 application</a></h2>
+
+<h3><a class="content" id=ex2a>Exercise 2</a></h3>
+
+Start the application built in the previous exercise. For this very
+first test, we disable Qt interface.<br/>
+
+
+<h4>Solution</h4>
+<TABLE border=1>
+	<TBODY>
+	<TR>
+		<TD><code>
+			&nbsp; $ ./exampleB1
+		</code></TD>
+	</TR>
+	</TBODY>
+</TABLE>
+<br/>
+
+
+Geant4 will initialize and will greet you with some output, the
+first lines should read:<br/><br/>
+<TABLE border=1>
+	<TBODY>
+	<TR>
+		<TD><code>
+			&nbsp;*************************************************************
+			<br/>&nbsp; Geant4 version Name: geant4-11-02 [MT] (8-December-2023)
+			<br/>&nbsp; &lt;&lt; in Multi-threaded mode &gt;&gt;
+			<br/>&nbsp; Copyright : Geant4 Collaboration
+			<br/>&nbsp; Reference : NIM A 506 (2003), 250-303
+			<br/>&nbsp; WWW : http://cern.ch/geant4
+			<br/>&nbsp;*************************************************************
+		</code></TD>
+	</TR>
+	</TBODY>
+</TABLE>
+<br/>
+<b>Note</b>: G4 can be quite verbose, especially if you have enabled MT
+support.
+<br/>If you receive error messages like <code>ERROR:
+	G4VisCommandsViewerSet::SetNewValue: no current viewer</code> you can
+safely ignore them.<br/>
+
+
+If you use Qt, a GUI window should pop up.
+<br/><br/>
+<img src="gui.png" width="600"/><br/><br/>
+You can type your command in the <code>Session:</code> field at the right-bottom of the window.
+You may also pick a command from the left side menu.
+<br/>Try 10 events and see trajectories.
+<TABLE border=1>
+	<TBODY>
+	<TR>
+		<TD><code>
+			&nbsp; /run/beamOn 10
+		</code></TD>
+	</TR>
+	</TBODY>
+</TABLE>
+<br/>
+
+If you do not use Qt but use OpenGL visualization, a visualization window will appear with the geometry
+displayed.<br/><br/>
+<img src="vis.png" width="600"/><br/><br/>
+You will see Geant4 prompt on your terminal screen, where you can issue Geant4 commands. <br/>
+<br/>Try 10 events and see trajectories.
+<TABLE border=1>
+	<TBODY>
+	<TR>
+		<TD><code>
+			&nbsp; Idle&gt; /run/beamOn 10
+		</code></TD>
+	</TR>
+	</TBODY>
+</TABLE>
+<br/>
+
+
+Refer to the presentations at this tutorial for UI interactivity.<br/>
+Take your time to familiarize with the Geant4 prompt (for example note
+that the prompt has auto-complete, the <i>tab</i> key; history, with
+up-down arrow keys).<br/>
+Try navigating the GUI help panel.<br/>
+Familiarize with the help menu and its sub-menu levels. Can you
+find where the <code>/run/beamOn</code> command is located? What is
+the UI command to change the primary particle type?<br/>
+
+
+<h3><a class="content" id=ex3a>Exercise 3</a></h3>
+
+Compile a second exercise.
+Browse the <code>&lt;geant4&gt;</code>/examples/ directory and try
+a few examples.<br/>
+Compile/run them following the instructions of the previous exercises.<br/>
+<b>Note</b>: Move to an appropriate directory before copying the second example.<br/>
+<b>Imprtant:</b> some examples may
+require additional libraries (e.g. GDML), thus may not
+compile in this setup.<br/>
+
+<br/>
+<br/>
+<hr/>
+<br/>
+Created by:
+Andrea Dotti (adotti AT slac DOT stanford DOT edu)
+May 2018
+<br/>Updated by:
+Makoto Asai (asai AT jlab DOT org) and
+Maurizio Ungaro (ungaro AT jlab DOT org)
+February 2024<br/>
+<br/>
+<hr/>
+<br/>
+
+<script src="../main.js"></script>        <!-- Don't move this line to the top! It causes an error at Safari -->
+
+</body>
+</html>
