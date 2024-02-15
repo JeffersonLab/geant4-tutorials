@@ -106,6 +106,12 @@ To push changes to the repository:
 git push
 ```
 
+> [!Note]
+> As of 2024, GitHub requires two-factor authentication 
+> for pushing changes to the repository. 
+> [Check their instructions](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication)
+> on how to set it up.
+
 ---
 
 ### Style and Navigation
