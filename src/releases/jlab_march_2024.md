@@ -1,7 +1,7 @@
 # March 2024 Geant4 Tutorial
 
 [25–29 Mar 2024 Jefferson Lab](https://indico.jlab.org/event/828/)
-
+_Newport News, VA, USA_
 
 A four day tutorial course based on Geant4 version 11.2. 
 
