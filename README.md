@@ -7,6 +7,8 @@ The Hands-On material for the Geant4 tutorial can be downloaded
 as a zipped tarball from the 
 [Github Releases page](https://github.com/JeffersonLab/geant4-tutorials/releases)
 
+
+
 The material is organized in the following directories:
 
 - HandsO1: Introduction to Geant4
@@ -17,7 +19,7 @@ The material is organized in the following directories:
 <br/>
 
 > [!NOTE]
-> To view the tutorials, open the `index.html` file in the `HandsOnX` 
+> After downloading and un-compressing the tarball, open the `index.html` file in the `HandsOnX` 
 directory in your web browser. 
 
 ---
