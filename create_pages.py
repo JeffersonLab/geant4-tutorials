@@ -9,35 +9,32 @@
 
 import os
 
+# Generate the main.css file from the main.scss file
+os.system("sass main.scss main.css")
 
-geant4_version = "11.2.0"
-qt_version = "5.6"
-min_cmake_version = "3.16"
-sonoma_tarball="https://cern.ch/geant4-data/releases/lib4.11.2/Darwin-clang15.0.0-Sonoma.tar.gz"
-sonoma_clang_version="MacOS Sonoma, clang-15.0.0"
-almalinux9_tarball="https://cern.ch/geant4-data/releases/lib4.11.2/Linux-g++11.3.1-Alma9.tar.gz"
-almalinux9_gcc_version="Linux Alma9, g++-11.3.1"
-windows_exe="https://cern.ch/geant4-data/releases/lib4.11.2/WIN32-VC17.7.6-10.exe"
-windows_zip="https://cern.ch/geant4-data/releases/lib4.11.2/WIN32-VC17.7.6-10.zip"
-windos_msvc_version="Windows 10, Visual Studio Code-17.7.6"
-g4_start_log="""
-**************************************************************
- Geant4 version Name: geant4-11-02 [MT]   (8-December-2023)
-  << in Multi-threaded mode >> 
-                       Copyright : Geant4 Collaboration
-                      References : NIM A 506 (2003), 250-303
-                                 : IEEE-TNS 53 (2006), 270-278
-                                 : NIM A 835 (2016), 186-225
-                             WWW : http://geant4.org/
-**************************************************************
-"""
+# reads the content of versions.dat
+# and assign the values to a map
+print("\n > Reading versions.dat\n")
+versions_file = os.path.join(os.getcwd(), "versions.dat")
+versions_map = {}
+with open(versions_file, "r") as file:
+	for line in file:
+		line = line.strip()
+		if line != "":
+			# split the line at the first colon
+			key, value = line.split(":", 1)
+			# remove the leading and trailing whitespaces
+			key = key.strip()
+			value = value.strip()
+			# remove the double quotes
+			value = value.replace('"', '')
+			versions_map[key] = value
+			print(" > ", key, ":", value)
 
 
 # Get the current directory
 current_dir = os.getcwd()
-print(" > Current directory: ", current_dir)
-
-
+print("\n > Current directory: ", current_dir)
 
 # Get the content of header.html and footer.html
 header_file = os.path.join(current_dir, "header.html")
@@ -47,13 +44,12 @@ with open(header_file, "r") as file:
 with open(footer_file, "r") as file:
 	footer = file.read()
 
-
 # Get the list of subdirectories in the subdirectory 'src'
 src = os.path.join(current_dir, "src")
-subdirs = [d for d in os.listdir(src) if os.path.isdir(d) and d.startswith("HandsOn1")]
+sub_dirs = [d for d in os.listdir(src) if os.path.isdir(d) and d.startswith("HandsOn1")]
 
 # Add the header and footer to the content of index.html in each subdirectory
-for subdir in subdirs:
+for subdir in sub_dirs:
 	print("\n > Subdir: ", subdir)
 	index_file = os.path.join(current_dir, subdir, "index.html")
 	with open(index_file, "w") as file:
@@ -64,48 +60,36 @@ for subdir in subdirs:
 			navigation = nav_file.read()
 			file.write(navigation)
 
-		content_file = os.path.join( src, subdir, "content.dat" )
-		with open( content_file, "r" ) as subdir_file:
+		content_file = os.path.join(src, subdir, "content.dat")
+		with open(content_file, "r") as subdir_file:
 			content = subdir_file.read()
 
 		# loop over each line of content.dat
-		content_list = content.split( "\n" )
+		content_list = content.split("\n")
 
 		# write the content of each file listed in content.dat to index.html
 		for file_name in content_list:
 			if file_name != "":
-				file_path = os.path.join( src, subdir, file_name )
-				print("   > Adding: ", file_path )
-				with open( file_path, "r" ) as subdir_file:
+				file_path = os.path.join(src, subdir, file_name)
+				print("   > Adding: ", file_path)
+				with open(file_path, "r") as subdir_file:
 					file_content = subdir_file.read()
-					file.write( file_content )
+					file.write(file_content)
 					# add a line break after each file
-					file.write( "<br/><hr/>" )
+					file.write("<br/><hr/>")
 
 		file.write(footer)
 
-	# now replace every instance of "G4VERSION" with the string geant4_version
-	# and write the result back to index.html
-	print("   > Replacing ###G4VERSION with ", geant4_version)
+	# now replacing string versions
 	with open(index_file, "r") as file:
 		filedata = file.read()
-		filedata = filedata.replace("###G4VERSION", geant4_version)
-		filedata = filedata.replace( "###QTVERSION", qt_version )
-		filedata = filedata.replace( "###MINCMAKEVERSION", min_cmake_version )
-		filedata = filedata.replace( "###SONOMATARBALL", sonoma_tarball )
-		filedata = filedata.replace( "###SONOMACLANGVERSION", sonoma_clang_version )
-		filedata = filedata.replace( "###ALMALINUX9TARBALL", almalinux9_tarball )
-		filedata = filedata.replace( "###ALMALINUX9GCCVERSION", almalinux9_gcc_version )
-		filedata = filedata.replace( "###WINDOWSEXE", windows_exe )
-		filedata = filedata.replace( "###WINDOWSZIP", windows_zip )
-		filedata = filedata.replace( "###WINDOWSMSVCVERSION", windos_msvc_version )
-		filedata = filedata.replace( "###HANDSONVERSION", subdir )
-		filedata = filedata.replace( "###G4STARTLOG", g4_start_log )
 
+		filedata = filedata.replace("###HANDSONVERSION", subdir)
+		# replace each key in the map with its value
+		for key in versions_map:
+			filedata = filedata.replace(key, versions_map[key])
 
 	with open(index_file, "w") as file:
 		file.write(filedata)
-
-
 
 print("\n > Done!\n")

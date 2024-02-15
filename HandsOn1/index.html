@@ -7,7 +7,9 @@
 </head>
 
 <body>
-
+<br/>
+<br/>
+<br/>
 
 
 <div id="topnav" class="topnav">
@@ -70,7 +72,7 @@ Depending on your machine or your preference, follow one of the four installatio
 
 <ul>
 	<li><a href="#g4SbyS">Step by step compilation</a></li>
-	<li><a href="#g4D">Running Docker</a></li>
+	<li><a href="#g4D">Using Docker</a></li>
 	<li><a href="#g4DLI">Download pre-compiled libraries</a></li>
 	<li><a href="#g4VM">Installing the CERN virtual machine</a></li>
 </ul>
@@ -282,8 +284,40 @@ You also need to download necessary data files from <a target="_new" href="https
 <br/><hr/>
 <h3><a class="content" id=g4D>Using Docker</a></h3>
 
-If you have a JLab computing account, you may download the Docker image.
-<font color="#ff0000"><b>Mauri, please fill this section with JLab Docker Hub</b></font>
+<a href="https://docs.docker.com"> Docker </a> is a tool designed to make it easier to run applications by using containers.
+Containers allow a developer to package up an application with all of the parts it needs,
+such as libraries and other dependencies, and ship it all out as one package.
+
+
+Docker is available for Linux, Windows and MacOS. You can find the installation instructions
+for your OS <a href="https://docs.docker.com/install/">here</a>.<br/><br/>
+
+We have a Docker image with Geant4 and all the necessary libraries installed.
+You can pull the image from the Docker Hub by running the following command:<br/><br/>
+
+<codeblock>
+	$ docker pull &lt;imagename&gt;
+</codeblock>
+<br/>
+where <code>&lt;imagename&gt;</code> is the name of the image you want to pull:
+
+<ul>
+	<li>jeffersonlab/sim:11.2.0-fedora36</li>
+	<li>jeffersonlab/sim:11.2.0-ubuntu22</li>
+</ul>
+
+Once the image is pulled, you can run it in batch mode or interactively.<br/><br/>
+
+<h4> Batch Mode:</h4>
+<codeblock>
+	$ docker run -it &lt;imagename&gt;
+</codeblock>
+
+<h4> Interactively:</h4>
+
+
+
+
 
 <br/><br/><br/><hr/><h3><a class="content" id=g4VM>Installing the CERN Virtual Machine</a></h3>
 
@@ -418,10 +452,11 @@ production release and patch, and for their helpful collaboration.<br/>
 
 Every time you want to compile or run an application using Geant4,
 <b>remember</b> to set up run-time environment variables.
+<br/>
 Use the appropriate script extension depending on your
-shell type, .sh for bash family while .csh for tcsh family.<br/>
+shell type, .sh for bash family while .csh for tcsh family.<br/><br/>
 
-Also <b>remember</b> <code>&lt;tutorial&gt;</code> is the working directory.
+Also <b>remember</b> <code>&lt;tutorial&gt;</code> is the working directory and <code>&lt;geant4&gt;</code> is the directory where Geant4 is installed.<br/>
 You must replace this string with the appropriate directory path in your disk space.<br/><br/>
 
 
@@ -429,7 +464,7 @@ You must replace this string with the appropriate directory path in your disk sp
 	$ source <code>&lt;geant4&gt;</code>/install/bin/geant4.[c]sh<br/>
 	$ printenv | grep GEANT4
 </codeblock>
-
+<br/><hr/>
 
 <h3><a class="content" id="ex1a">Exercise 1</a></h3>
 
@@ -457,7 +492,7 @@ use Geant4 from the location where it is installed.<br/><br/>
 <br/>
 <b>Note </b>: If you get the line: <code>[100%] Built target
 	exampleB1</code> everything worked as expected.
-
+<br/><br/>
 
 
 <br/><hr/><h2><a class="content" id=play>Familiarizing with a Geant4 application</a></h2>
@@ -480,17 +515,15 @@ Geant4 will initialize and will greet you with some output, the
 first lines should read:<br/>
 
 <pre>
-
 **************************************************************
  Geant4 version Name: geant4-11-02 [MT]   (8-December-2023)
-  << in Multi-threaded mode >> 
+  << in Multi-threaded mode >>
                        Copyright : Geant4 Collaboration
                       References : NIM A 506 (2003), 250-303
                                  : IEEE-TNS 53 (2006), 270-278
                                  : NIM A 835 (2016), 186-225
                              WWW : http://geant4.org/
 **************************************************************
-
 </pre>
 
 <br/>
@@ -502,8 +535,7 @@ If you receive error messages like <code>ERROR: G4VisCommandsViewerSet::SetNewVa
 safely ignore them.<br/><br/>
 
 
-
-<h4>If you use Qt</h4>
+<h4>If you use Qt:</h4>
 
 A GUI window should pop up.
 <br/><br/>
@@ -522,7 +554,7 @@ Try 10 events and see trajectories.
 
 <hr/>
 
-<h4>If you do not use Qt but use OpenGL visualization</h4>
+<h4>If you do not use Qt but use OpenGL visualization:</h4>
 
 
 A visualization window will appear with the geometry displayed.<br/><br/>
@@ -537,20 +569,23 @@ You will see Geant4 prompt on your terminal screen, where you can issue Geant4 c
 </codeblock>
 
 
+<br/><br/>
+<hr/>
+<br/>
 
-
-<br/><br/><hr/>
-
-Refer to the presentations at this tutorial for UI interactivity.<br/>
-
-Take your time to familiarize with the Geant4 prompt (for example note
-that the prompt has auto-complete, the <i>tab</i> key; history, with
-up-down arrow keys).<br/>
-
-Try navigating the GUI help panel.<br/>
-Familiarize with the help menu and its sub-menu levels. Can you
-find where the <code>/run/beamOn</code> command is located? What is
-the UI command to change the primary particle type?<br/>
+<ul>
+	<li>Refer to the presentations at this tutorial for UI interactivity.
+	</li>
+	<li>Take your time to familiarize with the Geant4 prompt (for example note
+		that the prompt has auto-complete, the <i>tab</i> key; history, with
+		up-down arrow keys).
+	</li>
+	<li>Try navigating the GUI help panel.</li>
+	<li>Familiarize with the help menu and its sub-menu levels. Can you
+		find where the <code>/run/beamOn</code> command is located? What is
+		the UI command to change the primary particle type?
+	</li>
+</ul>
 
 
 <h3><a class="content" id=ex3a>Exercise 3</a></h3>
