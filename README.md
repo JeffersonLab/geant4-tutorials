@@ -5,8 +5,7 @@
 
 The Hands-On material for the Geant4 tutorial can be downloaded 
 as a zipped tarball from the 
-[Github Release page](https://github.com/jeffersonlab/geant4-tutorials).
-
+[Github Releases page](https://github.com/JeffersonLab/geant4-tutorials/releases)
 
 The material is organized in the following directories:
 
