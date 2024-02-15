@@ -51,13 +51,13 @@ to produce the `index.html` files in the HandsOnX directories:
 
 `create_pages.py` uses the `versions.dat` file to define 
 strings to be replaced in the HTML files.
-For example if the `versions.dat` file contains:
+For example one entry in `versions.dat` is:
 
 `
 ###G4VERSION: "11.2.0"
 `
 
-all instances of `###G4VERSION` in the HTML files will be replaced by `11.2.0`.
+so all instances of `###G4VERSION` in the HTML files will be replaced by `11.2.0`.
 
 > [!Important]
 > **The HTML files should only contain the strings listed in `versions.dat` and no 
