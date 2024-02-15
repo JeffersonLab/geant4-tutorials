@@ -3,12 +3,13 @@
 > [!Caution]
 > **This documentation is for Geant4 developers only.** 
 
-This README documents how to develop the Hands-On material 
-and produce the `index.html` file that the users will consume.
+This README documents how to edit the Hands-On material 
+and produce the `index.html` files that the users will consume.
 
 To download, edit and update the repository, see the 
 [Working with the repository](#working-with-the-repository) section below.
 
+---
 
 ### Structure
 
@@ -44,7 +45,7 @@ to produce the `index.html` files in the HandsOnX directories:
 python create_pages.py
 ```
 
-
+---
 
 ### Versions numbers and filenames
 
@@ -65,19 +66,7 @@ hardcoded version numbers or filenames**
 To add a new version string, add a new line to the `versions.dat` file and 
 re-run `create_pages.py`.
 
-
-
-### Style and Navigation
-
-The following files are used to define the style and navigation of the pages. 
-
-- `main.scss`: the main style file.
-- `main.js`: the main javascript file.
-- `header.html`: the header of the page.
-- `footer.html`: the footer of the page.
-
-These files should not be edited.
-
+---
 
 ### Working with the repository
 
@@ -116,4 +105,19 @@ To push changes to the repository:
 ```
 git push
 ```
+
+---
+
+### Style and Navigation
+
+The following files are used to define the style and navigation of the pages. 
+
+- `main.scss`: the main style file.
+- `main.js`: the main javascript file.
+- `header.html`: the header of the page.
+- `footer.html`: the footer of the page.
+
+These files should not be edited.
+
+---
 
