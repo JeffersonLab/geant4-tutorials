@@ -46,11 +46,22 @@ with open(footer_file, "r") as file:
 
 # Get the list of subdirectories in the subdirectory 'src'
 src = os.path.join(current_dir, "src")
-sub_dirs = [d for d in os.listdir(src) if os.path.isdir(d) and d.startswith("HandsOn1")]
+sub_dirs = [d for d in os.listdir(src) if os.path.isdir(d) and d.startswith("HandsOn") ]
 
 # Add the header and footer to the content of index.html in each subdirectory
 for subdir in sub_dirs:
+	# create subdir if it does not exist
+	if not os.path.exists(subdir):
+		os.makedirs(subdir)
+
 	print("\n > Subdir: ", subdir)
+	# copy all .png files from src/subdir to subdir
+	src_dir = os.path.join(src, subdir)
+	dest_dir = os.path.join(current_dir, subdir)
+	os.system("cp " + src_dir + "/*.png " + dest_dir)
+	
+
+
 	index_file = os.path.join(current_dir, subdir, "index.html")
 	with open(index_file, "w") as file:
 		file.write(header)
