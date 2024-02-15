@@ -34,7 +34,6 @@ with open(versions_file, "r") as file:
 
 # Get the current directory
 current_dir = os.getcwd()
-print("\n > Current directory: ", current_dir)
 
 # Get the content of header.html and footer.html
 header_file = os.path.join(current_dir, "header.html")
@@ -46,7 +45,8 @@ with open(footer_file, "r") as file:
 
 # Get the list of subdirectories in the subdirectory 'src'
 src = os.path.join(current_dir, "src")
-sub_dirs = [d for d in os.listdir(src) if os.path.isdir(d) and d.startswith("HandsOn") ]
+sub_dirs = [d for d in os.listdir(src) if d.startswith("HandsOn") ]
+print("\n > Subdirectories to be published: ", sub_dirs)
 
 # Add the header and footer to the content of index.html in each subdirectory
 for subdir in sub_dirs:
@@ -59,8 +59,6 @@ for subdir in sub_dirs:
 	src_dir = os.path.join(src, subdir)
 	dest_dir = os.path.join(current_dir, subdir)
 	os.system("cp " + src_dir + "/*.png " + dest_dir)
-	
-
 
 	index_file = os.path.join(current_dir, subdir, "index.html")
 	with open(index_file, "w") as file:
