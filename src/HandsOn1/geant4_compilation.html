@@ -16,7 +16,7 @@ menu-based version of cmake exists (type <i>ccmake</i> instad of
 (<i>cmake-gui</i>). Geant4 Version ###G4VERSION requires cmake version at least ###MINCMAKEVERSION.<br/>
 
 Geant4 version ###G4VERSION contains <a href="https://en.wikipedia.org/wiki/C%2B%2B11">C++11</a>
-code, this mean that the compiler needs to support this standard.
+code, this means that the compiler needs to support this standard.
 With recent versions of Linux this is the default,
 but you may need to manually install and setup a compiler in some cases.<br/>
 Refer to the <a href="http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/InstallationGuide/html/index.html">Geant4 installation guide</a>
@@ -35,7 +35,7 @@ Many Linux distributions already have a pre-installed version of Qt. It is relat
 manually install Qt on a Linux or Mac system, but we will not cover
 this step in this tutorial. <br/>
 
-This component is optional, if you do not want to use Qt simply skip the Qt options during
+This component is optional, if you do not want to use Qt, simply skip the Qt options during
 configuration. <b>None of exercises require GUI interfaces to be completed.</b><br/><br/>
 
 If you do not have Qt or do not want to use it, the examples in
@@ -49,17 +49,16 @@ have issues on Mac systems. If this fail, contact us.
 <h4>Multi-threading</h4>
 Starting with Geant4 Version 11 series, we introduced event level parallelism via
 tasking mechanism. This means that we will develop a parallel application
-that will simulate events using all available cores of your machine.<br/>
+that will simulate events using multiple number of available cores of your machine.<br/>
 
-This is an optional component: we will show here how to turn it
-on, but if you do not want to enable MT you can still follow the exercises
+This is an optional component, by default it is on, but if you do not want to enable MT you can still follow the exercises
 as they are, since the code is also compatible with the sequential
 version of Geant4.<br/>
 
 
 <h4>Step 0: Obtain the Geant4 code</h4>
 After downloading and un-packing Geant4 tarball
-(<code>geant4-v11.2.0.tar.gz</code>) in an empty working
+(<code>geant4-v###G4VERSION.tar.gz</code>) in an empty working
 directory, you also need to
 create <i>build</i> and <i>install</i> directories where the compilation of Geant4 is
 performed, and resulted Geant4 libraries and related scripts are installed, respectively: cmake uses <a href="https://gitlab.kitware.com/cmake/community/-/wikis/FAQ">out of source builds</a>.
@@ -78,11 +77,9 @@ Let's configure Geant4:<br/><br/>
 	$ tar zxpf geant4-v###G4VERSION.tar.gz<br/>
 	$ mkdir build install<br/>
 	$ ls<br/>
-	build geant4-vgeant4-v###G4VERSION geant4-v11.2.0.tar.gz install<br/>
+	build geant4-vgeant4-v###G4VERSION geant4-v###G4VERSION.tar.gz install<br/>
 	$ cd build<br/>
-	$ cmake -DCMAKE_INSTALL_PREFIX=../install
-	-DGEANT4_BUILD_MULTITHREADED=ON -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_QT=ON
-	-DGEANT4_USE_OPENGL_X11=ON ../geant4-v###G4VERSION<br/>
+	$ cmake -DCMAKE_INSTALL_PREFIX=../install -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_OPENGL_X11=ON ../geant4-v###G4VERSION<br/>
 </codeblock>
 <br/>
 Note:
@@ -91,7 +88,7 @@ Note:
 		You may also download the source code from <a target="_new" href="https://gitlab.cern.ch/geant4/geant4/-/releases/v###G4VERSION">
 			CERN GitLab</a> or <a target="_new" href="https://github.com/Geant4/geant4/releases">GitHub</a>.
 	</li>
-	<li>Instead of <i>cmake</i>, you may use <i>ccmake</i> to configure build options one by one.
+	<li>Instead of <i>cmake</i>, you may use <i>ccmake</i> to configure build options one by one. With <i>ccmake</i> you may also easily configure, for example, where data files are stored.
 	</li>
 	<li>If you have an old version of Linux with a default compiler with a version &lt;4.8.2,
 		type <code>gcc --version</code> to get the compiler version, you need to have installed
@@ -117,14 +114,14 @@ few seconds on the configuration. The last lines should read:<br/><br/>
 
 Additional notes:
 <ul>
-	<li> If you do not want to use Qt, remove the <code>-DGEANT4_USE_QT=ON</code> option. If you do not want
-		multi-threaded support remove also the corresponding option.
+	<li> If you do not want to use Qt, remove the <code>-DGEANT4_USE_QT=ON</code> option. If you want
+		multi-threaded support to be removed, add <code>-DGEANT4_BUILD_MULTITHREADED=OFF</code>.
 	</li>
 	<li> If you disable Qt it is recommended to leave OpenGL with:
 		<code>-DGEANT4_USE_OPENGL_X11=ON</code>.
 	</li>
 	<li>
-		With Mac OS X you need XQuartz to be properly installed to use OPENGL_X11 option.
+		With Mac OS X you need XQuartz to be properly installed beforehand to use OPENGL_X11 option.
 	</li>
 	<li>
 		If you have installed Qt manually, and you are using Qt ###QTVERSION, you may need to
@@ -135,7 +132,7 @@ Additional notes:
 		installation manual</a> for a complete list of installation options. There are many more options available.
 	</li>
 	<li>If you already have installed Geant4 databases somewhere in your
-		system, you can avoid downloading automatically the library by adding
+		system, you can avoid downloading the same library by adding
 		<code>-DGEANT4_INSTALL_DATADIR=<i>where-the-dbs-are</i></code>.
 	</li>
 	<li>If you receive an error about
@@ -166,7 +163,7 @@ Compile Geant4, on a multi-core system with <i>N</i> cores you can
 substantially speedup compilation.<br/><br/>
 
 <codeblock>
-	$ cd &lt;tutorial&gt;<br/>
+	$ cd &lt;tutorial&gt;/build<br/>
 	$ make -j <i>N</i> #or gmake -j <i>2</i><br/>
 	$ make install<br/>
 </codeblock>
