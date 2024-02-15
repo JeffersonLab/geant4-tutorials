@@ -42,7 +42,7 @@ Once the files are edited, run the python script  `create_pages.py`
 to produce the `index.html` files in the HandsOnX directories:
 
 ```
-python create_pages.py
+./create_pages.py
 ```
 
 ---
