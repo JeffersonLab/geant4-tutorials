@@ -36,11 +36,14 @@ src/HandsOn1
 	 > to the users.
 
 Once the files are edited, run the python script  `create_pages.py`  
-to produce the `index.html` files in the HandsOnX directories:
+to create the HandsOnX directories containing `index.html`. 
 
 ```
 ./create_pages.py
 ```
+
+> [!Note]
+> The created HandsOnX directories should not be added to this repository.
 
 ---
 
