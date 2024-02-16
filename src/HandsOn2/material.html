@@ -1,0 +1,90 @@
+<hr>
+
+<p>
+<H2><A name=material>Defining Materials</A></H2>
+<p>
+<h3><font color="ff0000">Important note</font></h3>
+<b><font color="ff0000">Throughout this tutorial, where to edit the code is clearly marked in the corresponding file.
+Open the specified file and search a comment line that matches to the exercise name.
+That is the place you should add your code. If you are working on Exercise X.Y, here is the place.</font></b>
+<br><br>
+<TABLE border=1><TBODY>
+<tr><td><i><font color="ff0000">File name to be edited</font></i></td></tr>
+<TR><TD><code>
+&nbsp; //============================<br>
+&nbsp; // Exercise <b>X.Y</b><br>
+&nbsp; &nbsp; &nbsp; <i><font color="ff0000">put your code here</font></i>
+</code></TD></TR></TBODY></TABLE>
+</p>
+
+<p>
+<H3><A name=ex1a>Exercise 1.a:</a></H3>
+</p>
+<p>
+In this example, we have a specific method <code>DetectorConstruction::ConstructMaterials()</code> where all materials
+that are used in the application are built. Such method is not
+mandatory, but it may help to organize your code.<br>
+Create a <b>CsI</b> (<a
+href="http://en.wikipedia.org/wiki/Caesium_iodide">Cesium Iodide</a>)
+material starting from the elements.</p>
+<p>
+Some of its properties:
+<UL>
+  <LI>For Cs: Z=55 , Aeff=132.9*g/mol</LI>
+  <LI>For I : Z=53 , Aeff=126.9*g/mol</LI>
+  <LI>Density of crystal of CsI is: rho=4.51*g/cm^3</LI>
+</UL>
+After adding the needed code, re-compile (no need to do the cmake step again)
+and start once more the
+application. Note that at the moment we have created the material (and so Geant4
+kernel knows about it), but it is not yet used in any geometry element.<br>
+Observe Geant4 output, at the beginning of the
+application the list of materials will be shown, starting from the
+line <code>The materials defined are : </code>. At the end of
+the method <code>DetectorConstruction::ConstructMaterials()</code>
+there is a line that prints on screen the complete list of defined materials.
+Note the paragraph relative to CsI and its properties.<br>
+The UI command: <code>/material/g4/printMaterial CsI</code> can
+be issued at run-time to print the details of CsI. Check the other UI commands
+available in the <code>/material</code> directory.
+</p>
+
+<p>
+<H4>Solution</H4>
+<TABLE border=1><TBODY>
+<tr><td>DetectorConstruction.cc File:</tr></td>
+  <TR><TD><code><font color="ff0000">
+&nbsp; G4Element* el_i = new G4Element("Iodine","I", 53,126.9*g/mole);
+<br>&nbsp;    G4Element* el_cs = new G4Element("Cesium","Cs",55,132.9*g/mole);
+<br>&nbsp;    G4Material* mat_csi = new G4Material("CsI",4.51*g/cm3,2);
+<br>&nbsp;    mat_csi-&gt;AddElement(el_i,1);
+<br>&nbsp;    mat_csi-&gt;AddElement(el_cs,1);</font>
+</code></TD></TR></TBODY></TABLE>
+</p>
+
+<p>
+<H3><A name=ex1b>Exercise 1.b:</a></H3>
+</p>
+<p>
+Use NIST database to create Lead material.</p>
+<p>
+<B>Hint:</B> You can use UI command
+<code>/material/nist/listMaterials</code> to dump on screen the list
+of all <a
+href="http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Appendix/materialNames.html">Gean4-NIST compounds"</a>
+materials</a>.
+Search for the name relative to lead.<br>
+Build again the application and run it again. Note that now the list
+of materials includes lead element with all isotopes with natural abundances.<br>
+<b>Hint:</b> You can always use the command <code>/material/g4/printMaterial &lt;name&gt;</code> to print interactively the information on a specific material of your interest.
+</P>
+
+<p>
+<H4>Solution</H4>
+<TABLE border=1><TBODY>
+  <tr><td>DetectorConstruction.cc File:</tr></td>
+  <TR><TD><code><font color="ff0000">
+&nbsp;nistManager-&gt;FindOrBuildMaterial("G4_Pb");</font>
+</code></TD></TR></TBODY></TABLE>
+</p>
+

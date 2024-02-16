@@ -1,0 +1,52 @@
+
+<hr>
+
+<p>
+<H2><A name=geom>A very simple geometry</A></H2>
+In this example we will create a first geometry element. The goal of
+this exercise is to show how to define a shape, a logical volume and a placement.
+</p>
+
+<p>
+<H3><a name=ex2a>Exercise 2.a</a></H3>
+</p>
+<p>
+Add a box of to the setup.</p>
+<p>
+The box has full dimensions (X times Y times Z): 300x60x100 cm,
+select CsI as material. Place the box inside the logical volume
+<i>second arm</i>. It should be placed at the very back of this mother
+volume. At the end of the tutorials this simple box will become a
+calorimeter.<br>
+Re-compile and check that you obtain the correct behavior:<br><br>
+<img src="complete.png" width="600"/> <BR>
+</P>
+
+<p>
+<h4>Solution</h4>
+<TABLE border=1><TBODY>
+  <tr><td>DetectorConstruction.cc File:</tr></td>
+  <TR><TD><code><font color="ff0000">
+&nbsp; G4Material* material = G4Material::GetMaterial("CsI");
+<br>&nbsp; G4VSolid* hadCalorimeterSolid = new G4Box("HadCalorimeterBox",1.5*m,30.*cm,50.*cm);
+<br>&nbsp;    G4LogicalVolume* hadCalorimeterLogical = new G4LogicalVolume(hadCalorimeterSolid,material,"HadCalorimeterLogical");
+<br>&nbsp;    new G4PVPlacement(0,G4ThreeVector(0.,0.,3.*m),hadCalorimeterLogical,"HadCalorimeterPhysical",secondArmLogical,false,0,checkOverlaps);</font>
+</code></TD></TR></TBODY></TABLE>
+</p>
+
+<p>
+<H3><a name=ex2b>Exercise 2.b</a></h3>
+</p>
+<p>
+Change material of the box and observe effect on physics
+simulation.</p>
+<p>
+Modify the material of the box: instead of CsI, use the
+material <i>scintillator</i>. Simulate a single electron. Note how the material
+affects the shower dimensions:<br><br>
+<table><tbody><tr><td><img src="CsI.png" height="300"/></td><td><img src="sci.png" height="300"/></td></tr></tbody></table><br><br>
+The material is already created in the <code>ConstructMaterials</code> method, it has
+a long name becasue it is a particular type of plastic. You need just to retrieve it
+by name when using it in the <code>G4LogicalVolume</code>.
+</p>
+
