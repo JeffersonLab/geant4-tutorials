@@ -55,11 +55,12 @@ for subdir in sub_dirs:
 		os.makedirs(subdir)
 
 	print("\n > Subdir: ", subdir)
-	# copy all .png, .jpg and .gz files from src/subdir to subdir
+	# copy all .png, .jpg, .gif and .gz files from src/subdir to subdir
 	src_dir = os.path.join(src, subdir)
 	dest_dir = os.path.join(current_dir, subdir)
 	os.system("cp " + src_dir + "/*.png " + dest_dir)
 	os.system("cp " + src_dir + "/*.jpg " + dest_dir)
+	os.system("cp " + src_dir + "/*.gif " + dest_dir)
 	os.system("cp " + src_dir + "/*.gz " + dest_dir)
 
 	index_file = os.path.join(current_dir, subdir, "index.html")
