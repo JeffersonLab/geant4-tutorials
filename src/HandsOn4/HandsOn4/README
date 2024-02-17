@@ -1,10 +1,9 @@
-$Id: README 78001 2013-12-02 08:24:53Z gcosmo $
 
     =========================================================
     Geant4 - an Object-Oriented Toolkit for Simulation in HEP
     =========================================================
 
-                        SLAC Tutorial 2014
+                        Hands on 4
 			-------------------- 
 
   This example implements a double-arm spectrometer with wire chambers, 
