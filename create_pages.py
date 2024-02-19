@@ -11,6 +11,7 @@ import os
 
 # Generate the main.css file from the main.scss file
 os.system("sass main.scss main.css")
+os.system("rm main.css.map")
 
 # reads the content of versions.dat
 # and assign the values to a map
@@ -55,13 +56,17 @@ for subdir in sub_dirs:
 		os.makedirs(subdir)
 
 	print("\n > Subdir: ", subdir)
-	# copy all .png, .jpg, .gif and .gz files from src/subdir to subdir
+	# copy all .png, .jpg and .gif files from src/subdir to subdir
 	src_dir = os.path.join(src, subdir)
 	dest_dir = os.path.join(current_dir, subdir)
 	os.system("cp " + src_dir + "/*.png " + dest_dir)
 	os.system("cp " + src_dir + "/*.jpg " + dest_dir)
 	os.system("cp " + src_dir + "/*.gif " + dest_dir)
-	os.system("cp " + src_dir + "/*.gz " + dest_dir)
+	# create tar balls of the excersize codes and move them to subdir
+	if not subdir == "HandsOn1":
+		os.system("cd " + src_dir + " ; tar czf " + subdir + ".tar.gz " + subdir + " ; cd " + current_dir)
+		os.system("cd " + src_dir + " ; tar czf " + subdir + "-solution.tar.gz " + subdir + "-solution ; cd " + current_dir)
+		os.system("mv " + src_dir + "/*.gz " + dest_dir)
 
 	index_file = os.path.join(current_dir, subdir, "index.html")
 	with open(index_file, "w") as file:
