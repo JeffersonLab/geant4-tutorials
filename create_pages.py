@@ -56,12 +56,13 @@ for subdir in sub_dirs:
 		os.makedirs(subdir)
 
 	print("\n > Subdir: ", subdir)
-	# copy all .png, .jpg and .gif files from src/subdir to subdir
+	# copy all .png files from src/subdir to subdir
 	src_dir = os.path.join(src, subdir)
 	dest_dir = os.path.join(current_dir, subdir)
 	os.system("cp " + src_dir + "/*.png " + dest_dir)
-	os.system("cp " + src_dir + "/*.jpg " + dest_dir)
-	os.system("cp " + src_dir + "/*.gif " + dest_dir)
+	# copy .gif file in HandsOn4 from src/subdir to subdir
+	if subdir == "HandsOn4":
+		os.system("cp " + src_dir + "/*.gif " + dest_dir)
 	# create tar balls of the excersize codes and move them to subdir
 	if not subdir == "HandsOn1":
 		os.system("cd " + src_dir + " ; tar czf " + subdir + ".tar.gz " + subdir + " ; cd " + current_dir)
