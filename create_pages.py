@@ -54,13 +54,13 @@ sub_dirs = [d for d in os.listdir(src) if d.startswith("HandsOn") ]
 print("\n > Subdirectories to be published: ", sub_dirs)
 
 # move the main.* to the deploy directory
-shutil.copy("main.css", deploy_dir)
-shutil.copy("main.js", deploy_dir)
+shutil.copy("main.css",       deploy_dir)
+shutil.copy("main.js",        deploy_dir)
+shutil.copy("src/README.md",  deploy_dir)
 print("\n > Coontent of tutorial directory: ", os.listdir(deploy_dir))
 
 # Add the header and footer to the content of index.html in each subdirectory
 for subdir in sub_dirs:
-
 	# create subdir if it does not exist
 	deploy_subdir = os.path.join(deploy_dir, subdir)
 	if not os.path.exists(deploy_subdir):
