@@ -51,15 +51,22 @@ src = os.path.join(current_dir, "src")
 sub_dirs = [d for d in os.listdir(src) if d.startswith("HandsOn") ]
 print("\n > Subdirectories to be published: ", sub_dirs)
 
+
+# move the main.* to the deploy directory
+shutil.copy("main.css", deploy_dir)
+shutil.copy("main.js", deploy_dir)
+
+
+
 # Add the header and footer to the content of index.html in each subdirectory
 for subdir in sub_dirs:
+
 	# create subdir if it does not exist
 	deploy_subdir = os.path.join(deploy_dir, subdir)
 	if not os.path.exists(deploy_subdir):
 		os.makedirs(deploy_subdir)
 
 	print("\n > Source Subdir: ", subdir)
-	# copy all .png files from src/subdir to subdir
 	src_dir = os.path.join(src, subdir)
 
 
