@@ -4,7 +4,6 @@
 _Newport News, VA, USA_
 
 A four day tutorial course based on Geant4 version 11.2. 
-
  
 The lectures will cover all aspects of the toolkit of Geant4 version 11.2 
 from basic installation through advanced topics including multithreading 
