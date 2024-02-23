@@ -8,6 +8,7 @@
 
 
 import os
+import shutil
 
 # Generate the main.css file from the main.scss file
 os.system("sass main.scss main.css")
@@ -35,6 +36,7 @@ with open(versions_file, "r") as file:
 
 # Get the current directory
 current_dir = os.getcwd()
+deploy_dir = os.path.join(current_dir, "tutorial")
 
 # Get the content of header.html and footer.html
 header_file = os.path.join(current_dir, "header.html")
@@ -52,24 +54,31 @@ print("\n > Subdirectories to be published: ", sub_dirs)
 # Add the header and footer to the content of index.html in each subdirectory
 for subdir in sub_dirs:
 	# create subdir if it does not exist
-	if not os.path.exists(subdir):
-		os.makedirs(subdir)
+	deploy_subdir = os.path.join(deploy_dir, subdir)
+	if not os.path.exists(deploy_subdir):
+		os.makedirs(deploy_subdir)
 
-	print("\n > Subdir: ", subdir)
+	print("\n > Source Subdir: ", subdir)
 	# copy all .png files from src/subdir to subdir
 	src_dir = os.path.join(src, subdir)
-	dest_dir = os.path.join(current_dir, subdir)
-	os.system("cp " + src_dir + "/*.png " + dest_dir)
-	# copy .gif file in HandsOn4 from src/subdir to subdir
-	if subdir == "HandsOn4":
-		os.system("cp " + src_dir + "/*.gif " + dest_dir)
-	# create tar balls of the excersize codes and move them to subdir
-	if not subdir == "HandsOn1":
-		os.system("cd " + src_dir + " ; tar czf " + subdir + ".tar.gz " + subdir + " ; cd " + current_dir)
-		os.system("cd " + src_dir + " ; tar czf " + subdir + "-solution.tar.gz " + subdir + "-solution ; cd " + current_dir)
-		os.system("mv " + src_dir + "/*.gz " + dest_dir)
 
-	index_file = os.path.join(current_dir, subdir, "index.html")
+
+	#  Copy PNG and GIF files
+	image_files = [file for file in os.listdir(src_dir) if file.endswith('.png') or file.endswith('.gif')]
+	for file in image_files:
+		source_path = os.path.join(src_dir, file)
+		destination_path = os.path.join(deploy_subdir, file)
+		shutil.copy(source_path, destination_path)
+	print(f"   > Copied {image_files} to {deploy_subdir}")
+
+
+	# create tar balls of the exercise codes and move them to subdir
+	# if not subdir == "HandsOn1":
+	# 	os.system("cd " + src_dir + " ; tar czf " + subdir + ".tar.gz "          + subdir + " ; cd "          + current_dir)
+	# 	os.system("cd " + src_dir + " ; tar czf " + subdir + "-solution.tar.gz " + subdir + "-solution ; cd " + current_dir)
+	# 	os.system("mv " + src_dir + "/*.gz " + deploy_subdir)
+
+	index_file = os.path.join(current_dir, deploy_subdir, "index.html")
 	with open(index_file, "w") as file:
 		file.write(header)
 
