@@ -37,6 +37,8 @@ with open(versions_file, "r") as file:
 # Get the current directory
 current_dir = os.getcwd()
 deploy_dir = os.path.join(current_dir, "tutorial")
+if not os.path.exists(deploy_dir):
+	os.makedirs(deploy_dir)
 
 # Get the content of header.html and footer.html
 header_file = os.path.join(current_dir, "header.html")
@@ -51,12 +53,10 @@ src = os.path.join(current_dir, "src")
 sub_dirs = [d for d in os.listdir(src) if d.startswith("HandsOn") ]
 print("\n > Subdirectories to be published: ", sub_dirs)
 
-
 # move the main.* to the deploy directory
 shutil.copy("main.css", deploy_dir)
 shutil.copy("main.js", deploy_dir)
-
-
+print("\n > Coontent of tutorial directory: ", os.listdir(deploy_dir))
 
 # Add the header and footer to the content of index.html in each subdirectory
 for subdir in sub_dirs:
@@ -68,7 +68,6 @@ for subdir in sub_dirs:
 
 	print("\n > Source Subdir: ", subdir)
 	src_dir = os.path.join(src, subdir)
-
 
 	#  Copy PNG and GIF files
 	image_files = [file for file in os.listdir(src_dir) if file.endswith('.png') or file.endswith('.gif')]
