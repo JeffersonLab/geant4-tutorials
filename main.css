@@ -8,9 +8,6 @@ body {
   height: 100vh;
   overflow: auto; }
 
-.fcontent {
-  padding-top: 60px; }
-
 .content {
   padding-top: 60px;
   margin-top: -60px; }
@@ -96,12 +93,12 @@ top of the page (position:fixed and top:0)
 
 .color-box {
   border: 6px solid #f2f2f2;
-  padding: 10px;
+  padding: 20px;
   background-color: #333;
   margin: auto;
   width: 70%;
   font-size: 24px;
-  line-height: 2.0; }
+  line-height: 2.2; }
 
 .color-box a {
   text-decoration: none;

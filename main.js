@@ -15,7 +15,7 @@ function keep_top_bar() {
   if (window["pageYOffset"] >= sticky) {
     topnav.classList.add("sticky")
   } else {
-    topnav.classList.remove("sticky");
+  //  topnav.classList.remove("sticky");
   }
 
 }
