@@ -22,8 +22,8 @@ Instantiate a scoring manager in the <code>main()</code> function.
 <codeblock>
 	<div class="filename"> File: tutorial.cc</div>
 	<br/>
-	<div class="info">
-		// Activate UI-command base scorer<br/>
+	// Activate UI-command base scorer<br/>
+	<div class="tbmodified">
 		G4ScoringManager * scManager = G4ScoringManager::GetScoringManager();<br/>
 		scManager-&gt;SetVerboseLevel(1);<br/>
 	</div>
@@ -31,7 +31,7 @@ Instantiate a scoring manager in the <code>main()</code> function.
 
 <br/><br/>
 <div class="warning">
-	You might have a compilation error in <i>tutorial.cc</i>. Read the error message and identify what you need to add.
+	<strong>Warning:</strong> You might have a compilation error in <i>tutorial.cc</i>. Read the error message and identify what you need to add.
 </div>
 
 <br/><br/>
@@ -65,7 +65,7 @@ Dump the scored quantities to files and verify the content.<br/>
 <br/>
 
 <div class="info">
-	<b>Hint: </b> use the <code>help</code> command to understand the
+	<strong>Hint: </strong> use the <code>help</code> command to understand the
 	format of command line scoring UI commands.
 </div>
 
@@ -102,7 +102,7 @@ in this exercise. It can be used directly by the <code>G4tut</code> executable t
 <br/><br/>
 
 <div class="info">
-	<b>Note:</b>Reduce the number of simulated events (default
+	<strong>Note:</strong> Reduce the number of simulated events (default
 	2000) if the simulation takes too long.
 </div>
 

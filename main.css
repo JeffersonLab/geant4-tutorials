@@ -135,6 +135,12 @@ table td {
   border-left: 6px solid #2196F3;
   padding: 20px; }
 
+.tbmodified {
+  background-color: #fcfcfc;
+  border-left: 6px solid #ea63b2;
+  padding: 10px;
+  color: #ea2817; }
+
 .filename {
   background-color: #adaaaa;
   border-left: 6px solid #090808;

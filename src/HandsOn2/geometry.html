@@ -23,7 +23,7 @@ Re-compile and check that you obtain the correct behavior:<br/><br/>
 <codeblock>
 	<div class="filename"> File: DetectorConstruction.cc</div>
 	<br/>
-	<div class="info">
+	<div class="tbmodified">
 		G4Material* material = G4Material::GetMaterial("CsI");<br/>
 		G4VSolid* hadCalorimeterSolid = new G4Box("HadCalorimeterBox",1.5*m,30.*cm,50.*cm);<br/>
 		G4LogicalVolume* hadCalorimeterLogical = new G4LogicalVolume(hadCalorimeterSolid,material,"HadCalorimeterLogical");<br/>
