@@ -1,98 +1,72 @@
-<hr/><h2><a class="content" id=ho1_intro></a></h2>
+<hr/><h2><a class="content" id=ho2_intro></a></h2>
+<br/><br/><br/><br/><h1>Hands on 2: a simple setup</h1>
 
-<H1>Hands on 2: a simple setup</H1>
-<UL>
-  <LI><A href="#intro">Introduction</A>:
-  <UL>
-    <LI><a href="#ex0a">Exercise 0.a</a></LI>
-    <LI><a href="#ex0b">Exercise 0.b</a></LI>
-  </UL></LI>
-  <LI><A href="#material">Defining materials</A>:
-  <UL>
-    <LI><A href="#ex1a">Exercise 1.a</A></LI>
-    <LI><A href="#ex1b">Exercise 1.b</A></LI>
-  </UL></LI>
-  <LI><A href="#geom">A very simple geometry</A>
-  <UL>
-    <LI><A href="#ex2a">Exercise 2.a</A></LI>
-    <LI><A href="#ex2b">Exercise 2.b</A></LI>
-  </UL>
-  </LI>
-  <LI><A href="#scoring">Command line based scoring</A>
-  <UL>
-    <LI><a href="#ex3a">Exercise 3.a</a></li>
-    <li><a href="#ex3b">Exercise 3.b</a></li>
-    <li><a href="#ex3c">Exercise 3.c</a></li>
-    </UL>
-  </LI>
-</UL>
-
-<p>
-<hr>
-<H2><A name=intro>Introduction</A></H2>
 In this hands on you will learn:
-<UL>
-  <LI>How to define materials</LI>
-  <LI>How to define a very simple geometry</LI>
-  <LI>How to use command line scoring to record, store and display
-  simulation results</LI>
-</UL>
-Note: We do not use Qt GUI for HandsOn2.<br><br>
-The code for this hands-on session
-is <a href="HandsOn2.tar.gz">here</a> (
-for your reference, the complete solution
-is also availavble <a
-href="HandsOn2-solution.tar.gz">here</a>).
-Copy the the tar ball to your local area.<br><br>
-<!-- commands -->
-<TABLE border=1><TBODY><TR><TD><code>
-&nbsp; $ cd &lt;tutorial&gt; #change to your working directory<br>
-&nbsp; $ tar xzf HandsOn2.tar.gz<br>
-&nbsp; $ cd HandsOn2<br>
-&nbsp; $ ls #Take a look at the files<br>
-</code></TD></TR></TBODY></TABLE><br>
-</p>
+<ul>
+	<li>How to define materials</li>
+	<li>How to define a very simple geometry</li>
+	<li>How to use command line scoring to record, store and display
+		simulation results
+	</li>
+</ul>
 
-<P>
-Follow the instructions of <a href="../HandsOn1/index.html">Hands On
-1</a> to configure with <code>cmake</code> the Hands-on code and build
-it. The name of the executable is <code>G4tut</code>.<br>
-Try out the application:<br><br>
-<TABLE border=1><TBODY><TR><TD><code>
-&nbsp; $ cmake .<br>
-&nbsp; $ make -j <i>2</i> -f Makefile<br>
-&nbsp; $ ./G4tut
-</code></TD></TR></TBODY></TABLE><br>
-The following should appear:<BR><br>
-<img src="start.png" width="600"/> <BR>
+Note: We do not use Qt GUI for HandsOn2.<br/><br/>
+The problem code for this hands-on session
+is <a href="../HandsOn2-problem.tar.gz">here</a> (
+for your reference, the complete solution
+is also available <a href="../HandsOn2-solution.tar.gz">here</a>).
+Copy the the tar ball to your local area.<br/><br/>
+
+<codeblock>
+	$ cd &lt;tutorial&gt; #change to your working directory<br/>
+	$ tar xzf HandsOn2-problem.tar.gz<br/>
+	$ cd HandsOn2-problem<br/>
+	$ ls #Take a look at the files<br/>
+</codeblock>
+<br/>
+
+
+The name of the executable is <code>G4tut</code>.<br/><br/>
+Configure with <code>cmake</code> the Hands-on code, build it and run it:<br/><br/>
+
+<codeblock>
+	$ cmake .<br/>
+	$ make -j <i>2</i> -f Makefile<br/>
+	$ ./G4tut
+</codeblock>
+<br/>
+
+The following should appear:<br/><br/>
+<img src="start.png" width=###IMAGES_WIDTH/> <br/><br/>
+
 The default behavior of the application when started without command
 line arguments is to start the (G)UI (if enabled).
 You should find <code>Idle&gt;</code> prompt on your terminal screen.
-Familiarize with the Geant4 UI.<br>
-</p>
+Familiarize with the Geant4 UI.<br/>
 
-<p>
-<H3><a name=ex0a>Exercise 0.a:</a></H3>
-<b>Question 1</b>: Try <code>ls</code>, <code>help</code> and <code>help <i>&lt;UI_command&gt;</i></code>.<br>
+
+<h3><a>Exercise 0.a:</a></h3>
+
+<b>Question 1</b>: Try <code>ls</code>, <code>help</code> and <code>help <i>&lt;UI_command&gt;</i></code>.<br/>
 <b>Question 2</b>: Run 10 events.
-<br>
-<br>
-<TABLE border=1><TBODY><TR><TD><code>
-&nbsp; Idle&gt; /run/beamOn 10<br>
-&nbsp; Idle&gt; exit
-</code></TD></TR></TBODY></TABLE><br>
-</P>
+<br/><br/>
+<codeblock>
+	Idle&gt; /run/beamOn 10<br/>
+	Idle&gt; exit
+</codeblock>
 
-<p>
-<h3><a name=ex0b>Exercise 0.b:</a></h3>
-<p>Now run the application with a macro file as command line
-argument:<br><br>
-<TABLE border=1><TBODY><TR><TD><code>
-&nbsp; $ ./G4tut run1.mac
-</code></TD></TR></TBODY></TABLE><br><br>
-Check the content of the macro file <code>run1.mac</code>, start the application again interactively and
-using the help system check the syntax of the few commands used in the
-macro file.<br>
-Note: Other macro files in the <code>HandsOn2</code> direcory do not work until you finish all the exercises.
-</p>
+
+<h3><a>Exercise 0.b:</a></h3>
+
+Now run the application with a macro file as command line argument:<br/><br/>
+<codeblock>
+	$ ./G4tut run1.mac
+</codeblock>
+<br/><br/>
+
+Check the content of the macro file <code>run1.mac</code>,
+start the application again interactively and using the help system
+check the syntax of the few commands used in the macro file.<br/>
+Note: Other macro files in the <code>HandsOn2-problem</code> directory do not work until you finish all the exercises.
+
 

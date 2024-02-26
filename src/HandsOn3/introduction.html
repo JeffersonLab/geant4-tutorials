@@ -1,59 +1,59 @@
 <H1>Hands on 3: Build detector, retrieve simulation results</H1>
-<UL>
-  <LI><A href="#intro">Introduction</A>
-  <LI><A href="#geometry">Building the geometry</A>:
-  <UL>
-    <LI><A href="#ex1s1">Exercise 1 Step 1</A></LI>
-    <LI><A href="#ex1s2">Exercise 1 Step 2</A></LI>
-    <LI><A href="#ex1s3">Exercise 1 Step 3</A></LI>
-    <LI><A href="#ex1s4">Exercise 1 Step 4</A></LI>
-    <LI><A href="#ex1s5">Exercise 1 Step 5</A></LI>
-    <LI><a href="#ex1s6">Exercise 1 Step 6 (Optional)</a></li>
-  </UL></LI>
-  <LI><A href="#sd">Sensitive Detectors and Hits</A>
-  <UL>
-    <LI><A href="#ex2s1">Exercise 2 Step 1</A></LI>
-    <LI><A href="#ex2s2">Exercise 2 Step 2</A></LI>
-    <LI><A href="#ex2s3">Exercise 2 Step 3</A></LI>
-  </UL>
-  </LI>
-  <LI><A href="#dump">User Actions I</A>
-  <UL>
-    <LI><a href="#ex3">Exercise 3</a></li>
-    </UL>
-  </LI>
-</UL>
+<ul>
+  <li><a href="#intro">Introduction</a>
+  <li><a href="#geometry">Building the geometry</a>:
+  <ul>
+    <li><a href="#ex1s1">Exercise 1 Step 1</a></li>
+    <li><a href="#ex1s2">Exercise 1 Step 2</a></li>
+    <li><a href="#ex1s3">Exercise 1 Step 3</a></li>
+    <li><a href="#ex1s4">Exercise 1 Step 4</a></li>
+    <li><a href="#ex1s5">Exercise 1 Step 5</a></li>
+    <li><a href="#ex1s6">Exercise 1 Step 6 (Optional)</a></li>
+  </ul></li>
+  <li><a href="#sd">Sensitive Detectors and Hits</a>
+  <ul>
+    <li><a href="#ex2s1">Exercise 2 Step 1</a></li>
+    <li><a href="#ex2s2">Exercise 2 Step 2</a></li>
+    <li><a href="#ex2s3">Exercise 2 Step 3</a></li>
+  </ul>
+  </li>
+  <li><a href="#dump">User Actions I</a>
+  <ul>
+    <li><a href="#ex3">Exercise 3</a></li>
+    </ul>
+  </li>
+</ul>
 
 <hr>
 
-<p>
-<H2><A name=intro>Introduction</A></H2>
+
+<H2><a name=intro>Introduction</a></H2>
 In this third hands-on you will learn how to:
-<UL>
-  <LI>Create a semi-realistic geometry</LI>
-  <LI>Collect simulation output from sensitive detectors in hits</LI>
-  <LI>Use the event user-action to dump event information from hits on screen</LI>
-</UL>
+<ul>
+  <li>Create a semi-realistic geometry</li>
+  <li>Collect simulation output from sensitive detectors in hits</li>
+  <li>Use the event user-action to dump event information from hits on screen</li>
+</ul>
 The code for this hands-on session
 is <a href="HandsOn3.tar.gz">here</a> (
 for your reference, the complete solution
 is also availavble <a
 href="HandsOn3-solution.tar.gz">here</a>).
-Copy the the tar ball to your local area.<br><br>
+Copy the the tar ball to your local area.<br/><br/>
 Follow the instructions of <a href="../HandsOn1/index.html">Hands On
 1</a> to configure with <code>cmake</code> the code and build it. Try
-out the application:<br><br>
+out the application:<br/><br/>
 <TABLE border=1><TBODY><TR><TD><code>
-&nbsp; $ cd &lt;tutorial&gt;<br>
-&nbsp; $ tar xzf HandsOn3.tar.gz<br>
-&nbsp; $ cd HandsOn3<br>
-&nbsp; $ cmake .<br>
-&nbsp; $ make -j <i>2</i> -f Makefile<br>
+&nbsp; $ cd &lt;tutorial&gt;<br/>
+&nbsp; $ tar xzf HandsOn3.tar.gz<br/>
+&nbsp; $ cd HandsOn3<br/>
+&nbsp; $ cmake .<br/>
+&nbsp; $ make -j <i>2</i> -f Makefile<br/>
 &nbsp; $ ./G4tut
-</code></TD></TR></TBODY></TABLE><br>
-<font color="#ff0000">Note:</font> Ignore compiler warning messages. They disappear once you complete the exercise.<br><br>
-This geometry should be displayed:<br><br>
-<img src="initial.png"/><br><br>
+</code></TD></TR></TBODY></TABLE><br/>
+<font color="#ff0000">Note:</font> Ignore compiler warning messages. They disappear once you complete the exercise.<br/><br/>
+This geometry should be displayed:<br/><br/>
+<img src="initial.png"/><br/><br/>
 The geometry is same as <a href="../HandsOn2/index.html">Hands On
 2</a>, as we will start from here to build a two-arm spectrometer. The first arm
 is already defined, and in the first exercise you will build
@@ -71,14 +71,14 @@ the second arm completed with a calorimeter:
   absorber and Scintillator as active material (blue).
   </li>
 </ul>
-</p>
 
-<p>
+
+
 The second arm can be rotated between runs. The
 magnetic-field value can also be changed. User defined UI commands allow
-to change arm rotation and magnetic field value at run time.<br>
+to change arm rotation and magnetic field value at run time.<br/>
 At the end of this hands on the complete geometry will look
-like:<br><br>
+like:<br/><br/>
 <img src="final.png"/>
-</p>
+
 

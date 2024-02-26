@@ -1,178 +1,225 @@
-<hr>
+<h2><a class="content" id=ho2_scoring>Command line based scoring</a></h2>
 
-<p>
-<H2><A name=scoring>Command line based scoring</A></H2>
+
 In this exercise we will collect simulation information using
-command line scoring. A scoring mesh will be defined on top of the
-volume created in <a href="#ex2a">Exercise 2.a</a>, different quantities
-will be recorded,
-and we will show how to display and save in a text file.
-</p>
+command line scoring. <br/>br/>
 
-<p>
-<h3><a name=ex3a>Exercise 3.a</a></h3>
-</p>
-<p>
-Enable command line scoring.</p>
-<p>
+A scoring mesh will be defined on top of the
+volume created in Exercise 2.a, and different quantities will be recorded. <br/><br/>
+
+We will also show how to display and save in a text file. <br/><br/>
+
+
+<h3><a>Exercise 3.a</a></h3>
+
+
+Enable command line scoring: <br/>
+
 Instantiate a scoring manager in the <code>main()</code> function.
-</p>
 
-<p>
+
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-  <tr><td>tutorial.cc File:</tr></td>
-  <TR><TD><code>
-&nbsp; // Activate UI-command base scorer<font color="ff0000">
- <br>&nbsp;   G4ScoringManager * scManager = G4ScoringManager::GetScoringManager();
-  <br>&nbsp;  scManager-&gt;SetVerboseLevel(1);</font>
-</code></TD></TR></TBODY></TABLE>
-</p>
+<codeblock>
+	<div class="filename"> File: tutorial.cc</div>
+	<br/>
+	<div class="info">
+		// Activate UI-command base scorer<br/>
+		G4ScoringManager * scManager = G4ScoringManager::GetScoringManager();<br/>
+		scManager-&gt;SetVerboseLevel(1);<br/>
+	</div>
+</codeblock>
 
-<p>
-<font color="ff0000">You might have a compilation error in <i>tutorial.cc</i>. Read the error message and identify what you need to add.</font>
-</p>
+<br/><br/>
+<div class="warning">
+	You might have a compilation error in <i>tutorial.cc</i>. Read the error message and identify what you need to add.
+</div>
+
+<br/><br/>
+
+<h3><a>Exercise 3.b</a></h3>
 
 
-<p>
-<h3><a name=ex3b>Exercise 3.b</a></h3>
-</p>
-<p>
-Score some quantities: energy deposit, number of steps.</p>
-<p>
+Score some quantities: energy deposit, number of steps.
+<br/><br/>
+
 Using only UI commands create a scoring box mesh that is placed on top of the
-calorimeter <i>box</i>. The mesh should have the same dimension as the
-calorimeter and have (X times Y times Z)
-30x6x10 voxels. Score the following
+calorimeter <code>box</code>.
+
+<br/><br/>
+The mesh should have the same dimension as the
+calorimeter and have (X times Y times Z) <code>30x6x10</code> voxels.
+
+
+<br/><br/>
+Score the following
 quantities:
-<UL>
-  <LI>Energy deposits</li>
-  <li>Number of steps for gammas</li>
-  <li>Number of steps for e-</li>
- <li>Number of steps for e+</li>
+<ul>
+	<li>Energy deposits</li>
+	<li>Number of steps for gammas</li>
+	<li>Number of steps for e-</li>
+	<li>Number of steps for e+</li>
 </ul>
-Dump the scored quantities to files and verify the content.<br>
-<b>Hint: </b> use the <code>help</code> command to understand the
-format of command line scoring UI commands.
-</p>
-<p>
+
+Dump the scored quantities to files and verify the content.<br/>
+
+<br/>
+
+<div class="info">
+	<b>Hint: </b> use the <code>help</code> command to understand the
+	format of command line scoring UI commands.
+</div>
+
+<br/><br/>
+
 Starting from the content of the file <code>scoring.mac</code> reproduce in an
-interactive session the various steps used to score the quantities. Some of
-the UI commands used here depends on the UI commands used before.
+interactive session the various steps used to score the quantities.<br/>
+Some of the UI commands used here depends on the UI commands used before.<br/>
+
 For example the commands used to define a particle filter are used in combination
-with the preceding command defining the quantity to score. The command
-<code>/score/close</code> signals that all scoring volumes and associated quantities
+with the preceding command defining the quantity to score. <br/><br/>
+
+The command <code>/score/close</code> signals that all scoring volumes and associated quantities
 are now completed and configured.
-</p>
+<br/><br/>
 
-<p>
-There are two separate concepts to grasp when scoring: one is the scoring mesh (e.g.
-the shape, dimension and number of bins of the used <i>3D grid</i>), the other is the
-list of quantities measured in each cell of the grid.<br>
-You can have multiple quantities associated to a given
-mesh, but you can also have multiple meshes in the same application even with
-different geometries and possibily overlapping.
-</p>
+There are two separate concepts to grasp when scoring:
+<ul>
+	<li><b>The scoring mesh</b>: the shape, dimension and number of bins of the used <b>3D grid</b></li>
+	<li><b>The quantities to be scored</b>. You can have multiple quantities associated to a given
+		mesh, but you can also have multiple meshes in the same application even with
+		different geometries and possibily overlapping.
+	</li>
+</ul>
 
-<p>
+
 <h4>Solution</h4>
 The macro <code>scoring.mac</code> shows all the UI commands needed
-in this exercise. It can be used directly to create
-the output file:
-<TABLE border=1><TBODY><TR><TD><code>
-&nbsp; $ ./G4tut scoring.mac
- </code></TD></TR></TBODY></TABLE>
-<b>Note:</b>Reduce the number of simulated events (default
- 2000) if the simulation takes too long.<br><br>
-<TABLE border=1><TBODY>
-<tr><td>scoring.mac File:</tr></td>
- <TR><TD><code>
-&nbsp;/run/initialize
-<br>&nbsp;########################################
-<br>&nbsp;#
-<br>&nbsp;# define scoring mesh
-<br>&nbsp;#
-<br>&nbsp;/score/create/boxMesh boxMesh_1
-<br>&nbsp;#
-<br>&nbsp;#Create a mesh large as the box
-<br>&nbsp;/score/mesh/boxSize 150. 30. 50. cm
-<br>&nbsp;#Position it over the box
-<br>&nbsp;/score/mesh/translate/xyz 0 0 8 m
-<br>&nbsp;#mesh voxel size of 5cm
-<br>&nbsp;/score/mesh/nBin 30 6 10
-<br>&nbsp;# All these quantities are associated
-<br>&nbsp;# with the mesh with name "boxMesh_1"
-<br>&nbsp;/score/quantity/energyDeposit eDep
-<br>&nbsp;/score/quantity/nOfStep nOfStepGamma
-<br>&nbsp;/score/filter/particle gammaFilter gamma
-<br>&nbsp;/score/quantity/nOfStep nOfStepEMinus
-<br>&nbsp;/score/filter/particle eMinusFilter e-
-<br>&nbsp;/score/quantity/nOfStep nOfStepEPlus
-<br>&nbsp;/score/filter/particle ePlusFilter e+
-<br>&nbsp;#
-<br>&nbsp;/score/close
-<br>&nbsp;#
-<br>&nbsp;/run/verbose 1
-<br>&nbsp;/gun/particle e-
-<br>&nbsp;/run/beamOn 2000
-<br>&nbsp;########################################
-<br>&nbsp;#
-<br>&nbsp;# Dump scores to a file: tell G4 which
-<br>&nbsp;# mesh and which quantity should go in the output file
-<br>&nbsp;#
-<br>&nbsp;/score/dumpQuantityToFile boxMesh_1 nOfStepGamma nOfStepGamma.txt
-</code></TD></TR></TBODY></TABLE>
-</p>
+in this exercise. It can be used directly by the <code>G4tut</code> executable to create the output file:<br/><br/>
+<codeblock>
+	$ ./G4tut scoring.mac
+</codeblock>
 
-<p>
-<h3><a name=ex3c>Exercise 3.c</a></h3>
-</p>
-<p>
-Visualize scored quantities.</p>
-<p>
+<br/><br/>
+
+<div class="info">
+	<b>Note:</b>Reduce the number of simulated events (default
+	2000) if the simulation takes too long.
+</div>
+
+<br/><br/>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: scoring.mac</div>
+	<br/>
+	<div class="info">
+		/run/initialize<br/>
+		########################################<br/>
+		#<br/>
+		# define scoring mesh<br/>
+		#<br/>
+		/score/create/boxMesh boxMesh_1<br/>
+		#<br/>
+		#Create a mesh large as the box<br/>
+		/score/mesh/boxSize 150. 30. 50. cm<br/>
+		#Position it over the box<br/>
+		/score/mesh/translate/xyz 0 0 8 m<br/>
+		#mesh voxel size of 5cm<br/>
+		/score/mesh/nBin 30 6 10<br/>
+		# All these quantities are associated<br/>
+		# with the mesh with name "boxMesh_1"<br/>
+		/score/quantity/energyDeposit eDep<br/>
+		/score/quantity/nOfStep nOfStepGamma<br/>
+		/score/filter/particle gammaFilter gamma<br/>
+		/score/quantity/nOfStep nOfStepEMinus<br/>
+		/score/filter/particle eMinusFilter e-<br/>
+		/score/quantity/nOfStep nOfStepEPlus<br/>
+		/score/filter/particle ePlusFilter e+<br/>
+		#<br/>
+		/score/close<br/>
+		#<br/>
+		/run/verbose 1<br/>
+		/gun/particle e-<br/>
+		/run/beamOn 2000<br/>
+		########################################<br/>
+		#<br/>
+		# Dump scores to a file: tell G4 which<br/>
+		# mesh and which quantity should go in the output file<br/>
+		#<br/>
+		/score/dumpQuantityToFile boxMesh_1 nOfStepGamma nOfStepGamma.txt<br/>
+	</div>
+</codeblock>
+
+<br/><br/>
+
+<h3><a>Exercise 3.c</a></h3>
+
+
+Visualize scored quantities.
+
+<br/><br/>
+
 Using UI commands draw on the screen different scored
-quantities. For example the energy deposit looks like:<br><br>
-<img src="edep.png"/>
-</p>
+quantities. For example the energy deposit looks like:<br/><br/>
+<img src="edep.png" width=###IMAGES_WIDTH/>
 
-<p>
+
 <h4>Solution</h4>
 The macro file <code>draw.mac</code> shows how to draw scored
 quantities, in also shows how to draw slices using loops in UI
-commands.<br>
-This macro should be executed after
-<code>scoring.mac</code>:
-<TABLE border=1><TBODY><TR><TD><code>
-&nbsp; $ ./G4tut
-<br>&nbsp; Idle&gt; /control/execute scoring.mac
-<br>&nbsp; Idle&gt; /control/execute draw.mac
-</code></TD></TR></TBODY></TABLE>
-<br><br>
-<TABLE border=1><TBODY>
-<tr><td>draw.mac File:</tr></td>
-  <TR><TD><code>
-&nbsp;########################################
-<br>&nbsp;#
-<br>&nbsp;# drawing projections
-<br>&nbsp;#
-<br>&nbsp;/score/drawProjection boxMesh_1 eDep
-<br>&nbsp;/score/drawProjection boxMesh_1 nOfStepGamma
-<br>&nbsp;/score/drawProjection boxMesh_1 nOfStepEMinus
-<br>&nbsp;/score/drawProjection boxMesh_1 nOfStepEPlus
-<br>&nbsp;#
-<br>&nbsp;########################################
-<br>&nbsp;#
-<br>&nbsp;# drawing slices
-<br>&nbsp;#
-<br>&nbsp;/vis/scene/create
-<br>&nbsp;/vis/sceneHandler/attach scene-1
-<br>&nbsp;/score/colorMap/setMinMax ! 0. 800.
-<br>&nbsp;/control/loop drawSlice.mac iColumn 0 10 3
-</code></TD></TR></TBODY></TABLE><br>
+commands.<br/>
+
+This macro should be executed after<code>scoring.mac</code>:<br/><br/>
+
+<codeblock>
+	$ ./G4tut
+	Idle&gt; /control/execute scoring.mac
+	Idle&gt; /control/execute draw.mac
+</codeblock>
+
+
+<br/><br/>
+
+
+<codeblock>
+	<div class="filename"> File: draw.mac</div>
+	<br/>
+	<div class="info">
+		########################################<br/>
+		#<br/>
+		# drawing projections<br/>
+		#<br/>
+		/score/drawProjection boxMesh_1 eDep<br/>
+		/score/drawProjection boxMesh_1 nOfStepGamma<br/>
+		/score/drawProjection boxMesh_1 nOfStepEMinus<br/>
+		/score/drawProjection boxMesh_1 nOfStepEPlus<br/>
+		#<br/>
+		########################################<br/>
+		#<br/>
+		# drawing slices<br/>
+		#<br/>
+		/vis/scene/create<br/>
+		/vis/sceneHandler/attach scene-1<br/>
+		/score/colorMap/setMinMax ! 0. 800.<br/>
+		/control/loop drawSlice.mac iColumn 0 10 3<br/>
+	</div>
+</codeblock>
+
+<br/><br/>
+
+
 The macro files perform several views at the same time
-(<i>/score/drawProjection</i> commands), try out the
+(<code>/score/drawProjection</code> commands), try out the
 views one at the time in the command line.
-<table><tbody><tr><td><img src="edep.png" height="300"/></td><td><img
-  src="slices.png"  height="300"/></td></tr></tbody></table>
-</p>
+
+<br/><br/>
+
+<table>
+	<tr>
+		<td><img src="edep.png" width=###IMAGES_HWIDTH/></td>
+		<td><img src="slices.png" width=###IMAGES_HWIDTH/></td>
+	</tr>
+</table>
+
 

@@ -36,9 +36,13 @@ with open(versions_file, "r") as file:
 
 # Get the current directory
 current_dir = os.getcwd()
+
+# Create the tutorial directory
 deploy_dir = os.path.join(current_dir, "tutorial")
-if not os.path.exists(deploy_dir):
-	os.makedirs(deploy_dir)
+if os.path.exists(deploy_dir):
+	shutil.rmtree(deploy_dir)
+os.makedirs(deploy_dir)
+
 
 # Get the content of header.html and footer.html
 header_file = os.path.join(current_dir, "header.html")
@@ -59,6 +63,8 @@ shutil.copy("main.js",        deploy_dir)
 shutil.copy("src/index.html", deploy_dir)
 print("\n > Coontent of tutorial directory: ", os.listdir(deploy_dir))
 
+
+
 # Add the header and footer to the content of index.html in each subdirectory
 for subdir in sub_dirs:
 	# create subdir if it does not exist
@@ -77,12 +83,6 @@ for subdir in sub_dirs:
 		shutil.copy(source_path, destination_path)
 	print(f"   > Copied {image_files} to {deploy_subdir}")
 
-
-	# create tar balls of the exercise codes and move them to subdir
-	# if not subdir == "HandsOn1":
-	# 	os.system("cd " + src_dir + " ; tar czf " + subdir + ".tar.gz "          + subdir + " ; cd "          + current_dir)
-	# 	os.system("cd " + src_dir + " ; tar czf " + subdir + "-solution.tar.gz " + subdir + "-solution ; cd " + current_dir)
-	# 	os.system("mv " + src_dir + "/*.gz " + deploy_subdir)
 
 	index_file = os.path.join(current_dir, deploy_subdir, "index.html")
 	with open(index_file, "w") as file:
@@ -124,5 +124,19 @@ for subdir in sub_dirs:
 
 	with open(index_file, "w") as file:
 		file.write(filedata)
+
+# create a tar ball for each subdirectory in ho_materials and move it to tutorial
+ho_materials = os.path.join(current_dir, "ho_materials")
+if os.path.exists(ho_materials):
+	ho_materials_dirs = [tdir for tdir in os.listdir(ho_materials) if
+	                     os.path.isdir(os.path.join(ho_materials, tdir))]
+	ho_materials_dirs.sort()
+	print(f"\n> Creating tar balls for {ho_materials_dirs}")
+	for dir_to_be_zipped in ho_materials_dirs:
+		tar_command = "cd " + ho_materials + ";"
+		tar_command += " tar czf " + "../tutorial/" + dir_to_be_zipped + ".tar.gz " + dir_to_be_zipped + ";"
+		tar_command += " cd " + current_dir
+		os.system(tar_command)
+
 
 print("\n > Done!\n")

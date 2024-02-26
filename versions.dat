@@ -19,4 +19,6 @@
 ###G4STARTLOG9: "**************************************************************"
 ###DOCKERIMAGEFEDORA:"jeffersonlab/sim:11.2.0-fedora36"
 ###DOCKERIMAGEUBUNTU:"jeffersonlab/sim:11.2.0-ubuntu22"
+###IMAGES_WIDTH:"900"
+###IMAGES_HWIDTH:"450"
 

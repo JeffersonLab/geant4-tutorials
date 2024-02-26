@@ -122,7 +122,7 @@ top of the page (position:fixed and top:0)
   width: 70%;
   font-size: 24px;
 
-  line-height: 2.2;
+  line-height: 2.5;
 }
 
 .color-box a {
@@ -149,4 +149,36 @@ table td {
 
 .alternate td {
   border: 1px solid #888;
+}
+
+.danger {
+  background-color: #ffdddd;
+  border-left: 6px solid #f44336;
+  padding: 20px;
+}
+
+.success {
+  background-color: #ddffdd;
+  border-left: 6px solid #04AA6D;
+  padding: 20px;
+}
+
+.info {
+  background-color: #e7f3fe;
+  border-left: 6px solid #2196F3;
+  padding: 20px;
+}
+
+.filename {
+  background-color: #adaaaa;
+  border-left: 6px solid #090808;
+  padding-left: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.warning {
+  background-color: #ffffcc;
+  border-left: 6px solid #ffeb3b;
+  padding: 20px;
 }
