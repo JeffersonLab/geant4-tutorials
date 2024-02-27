@@ -8,438 +8,517 @@ store in ntuples and histograms the content of hits collections.
 
 
 The goal of the g4analysis module is to provide
-light-weight support for simple storage of data. You need
-an AIDA-compliant tool or ROOT to visualize histograms.<br/>
-Alternatively at this <a href="plot_histofiles.py">link</a> you can
-find a simple python script that will display the CSV histograms
-produced by g4analysis if you have the matplotlib python package.<br/>
-If you want to use matlab/octave you can plot the 1D histograms from this tutorial with the following commands:<br/><br/>
-<TABLE border=1><TBODY><TR><TD><CODE>
-          &nbsp; &gt;&gt; data=readcsv("Tutorial_h1_Chamber1.csv")<br/>
-          &nbsp; &gt;&gt; x=(1:50)<br/>
-          &nbsp; &gt;&gt; y=data(9:58,2)<br/>
-          &nbsp; &gt;&gt; plot(x,y)<br/>
-</CODE></TD></TR></TBODY></TABLE><br/>
-With ROOT this is shows how histograms look like:<br/>
-<img src="root-img.png" width=###IMAGES_WIDTH/><br/>
-While this is how they look like in JAS3:<br/>
-<img src="aida-img.png" width=###IMAGES_WIDTH/><br/>
-And this is how one histogram looks like in Octave:<br/>
-<img src="octave.png" width="300"/><br/>
-And this is how the histograms look like in matplotlib using the provided plot_histofiles.py script:<br/>
-<img src="matplotlib.png" width=###IMAGES_WIDTH/><br/><br/>
-For this tutorial the VM has installed ROOT system (not matplotlib or
-octave), so we use this as the default format.<br/>
-If you do not know ROOT, this is for you. Get the ROOT
-<a href="plot.C">plot.C</a>
-script and copy it the working directory.
-To visualize histograms in ROOT type:
-<TABLE boreder=1><TBODY><TR><TD><CODE>
-&nbsp; $ root -l plot.C <br/>
-&nbsp; root[0] #Type ".q" to exit root
-</CODE></TD></TR></TBODY></TABLE><br/>
+light-weight support for simple storage of data.
+
+<br/><br/>
+
+We show below four different ways to visualize the histograms produced by g4analysis.
+
+<br/><br/>
+
+1. Using <strong>ROOT</strong> <br/><br/>
+You can use the provided <a href="plot.C">plot.C</a>
+to display the histograms produced by g4analysis by typing on a terminal:<br/>
 The plotting script relies on the histogram names and file to be the one
 produced by the solution of this exercise.
+<br/><br/>
+<codeblock>
+	root -l plot.C
+	root[0] #Type ".q" to exit root
+</codeblock>
+<img src="root-img.png" width=###IMAGES_WIDTH/><br/>
 
-<b>Hint:</b> Histograms are automatically merged from all worker
-threads. With a concept similar to what shown in <a href="#ex1s3">Exercise
-1 Step 3</a> histograms are summed at the end of the run. A single
-histograms file
-"Tutorial.[root|xml]" exists (for CSV each histogram is written out
-in a separate file, with file name "Tutorial_h{1,2}_{name}.csv"). For ntuples it makes not so much sense
-the automatic merging, because what you will do for analysis is to process one file
-after the other. In ROOT terminology you will create a TChain (<i>
-ITupleFactory::createChained</i> in AIDA); with CSV format
-the merging is as simple as: <code>cat *_t*.csv &gt; merged.csv</code>.<br/>
-For ntuples the file name format is: "Tutorial_t*.[root|xml]", for CSV the format is: "Tutorial_nt_[ntupleName]_t*.csv".
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/><br/><br/>
+
+2. Using an <strong>AIDA-compliant tool</strong> <br/>
+example in JAS3:<br/><br/>
+<img src="aida-img.png" width=###IMAGES_WIDTH/><br/>
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/><br/><br/>
+
+3. Using <strong>matlab/octave</strong><br/>
+You can plot the 1D histograms from this tutorial with the following commands:<br/><br/>
+<codeblock>
+	data=readcsv("Tutorial_h1_Chamber1.csv")<br/>
+	x=(1:50)<br/>
+	y=data(9:58,2)<br/>
+	plot(x,y)<br/>
+</codeblock>
+<br/><br/>
+<img src="octave.png" width=###IMAGES_WIDTH/><br/>
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/><br/><br/>
+
+4. Using <strong>matplotlib</strong><br/>
+You can use the provided <a href="plot_histofiles.py">plot_histofiles.py</a>
+to display the CSV histograms produced by g4analysis .<br/>
+<br/><br/>
+<img src="matplotlib.png" width=###IMAGES_WIDTH/><br/><br/>
 
 
+<div class="danger">
+	For this tutorial both the VM and the docker image have installed ROOT system (not matplotlib or
+	octave), so we use this as the default format.<br/>
+</div>
 
-<h3><a name="ex3s1">Exercise 3 Step 1</a></h3>
+
+<br/><br/>
+
+<div class="info">
+
+	<strong>Histogrames:</strong><br/><br/>
+	G4analysis Histograms are automatically merged from all worker threads, with the concept similar to what shown in HandsOn 3.<br/>
+	<ul>
+		<li>ROOT, XML: histograms are merged in a single file named <code>Tutorial.[root|xml]</code></li>
+		<li>CSV: histograms are written in separate files named <code>Tutorial_h{1,2}_{name}.csv</code></li>
+	</ul>
+	<br/>
+
+	<strong>Ntuples:</strong><br/><br/>
+	For ntuples it makes not much sense to do the automatic merging, because what you will do for analysis is to process one file
+	after the other.
+	<ul>
+		<li>ROOT: <code>TChain</code></li>
+		<li>AIDA: <code>ITupleFactory::createChained</code></li>
+		<li>CSV: <code>cat *_t*.csv &gt; merged.csv</code></li>
+	</ul>
+	<br/>
+
+	For ntuples the file name is: <code>Tutorial_t*.[root|xml]</code>, for CSV the name is: <code>Tutorial_nt_[ntupleName]_t*.csv</code>.
+
+</div>
+<br/><br/>
+
+<h3>Exercise 3 Step 1</h3>
 
 Define content of the output file(s).
+
+<br/><br/>
 
 Create output file(s) and define their content: four histograms and
 one nutple.
 <ul>
-  <li>First histogram: number of hits in first arm drift-chambers.</li>
-    <li>Second histogram: number of hits in second arm
-  drift-chambers.</li>
-    <li>Third histogram: 2D histo containing X vs Y of all hits in
-  first arm drift chamber.</li>
-    <li>Foruth histogram: 2D histo containing X vs Y of all hits in
-  second arm drift chamber.</li>
-  <li>One ntuple containing the following data:
-  <ul>
-    <li>Integer column: number of hits in first drift chamber</li>
-        <li>Integer column: number of hits in second drift chamber</li>
-        <li>Double column: energy in electromagnetic
-        calorimeter</li>
-        <li>Double column: energy in hadronic calorimeter</li>
-        <li>Double column: time on first hodscope (whatever time if
-        multiple hits)</li>
-        <li>Double column: time on second hodosope (whatever time if
-        multiple hits)</li>
-      </ul>
-  </li>
+	<li>First histogram: number of hits in first arm drift-chambers.</li>
+	<li>Second histogram: number of hits in second arm
+		drift-chambers.
+	</li>
+	<li>Third histogram: 2D histo containing X vs Y of all hits in
+		first arm drift chamber.
+	</li>
+	<li>Foruth histogram: 2D histo containing X vs Y of all hits in
+		second arm drift chamber.
+	</li>
+	<li>One ntuple containing the following data:
+		<ul>
+			<li>Integer column: number of hits in first drift chamber</li>
+			<li>Integer column: number of hits in second drift chamber</li>
+			<li>Double column: energy in electromagnetic
+				calorimeter
+			</li>
+			<li>Double column: energy in hadronic calorimeter</li>
+			<li>Double column: time on first hodscope (whatever time if
+				multiple hits)
+			</li>
+			<li>Double column: time on second hodosope (whatever time if
+				multiple hits)
+			</li>
+		</ul>
+	</li>
 </ul>
 
-
-
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-<tr><td>RunAction.cc file:</td></tr>
-  <TR><TD><code>
-&nbsp;RunAction::RunAction()
-<br/>&nbsp; : G4UserRunAction()
-<br/>&nbsp;{
-<br/><font color="#ff0000">&nbsp;  // Create analysis manager
-<br/>&nbsp;  // Create analysis manager, set output format and file name
-<br/>&nbsp;  auto analysisManager = G4AnalysisManager::Instance();
-<br/>&nbsp;
-<br/>&nbsp;  // Default settings
-<br/>&nbsp;  analysisManager-&gt;SetDefaultFileType("root");
-<br/>&nbsp;  G4cout &lt;&lt; "Using " &lt;&lt; analysisManager-&gt;GetType() &lt;&lt; G4endl;
-<br/>&nbsp;  analysisManager-&gt;SetVerboseLevel(1);
-<br/>&nbsp;  analysisManager-&gt;SetFileName("Tutorial");
-<br/>&nbsp;
-<br/>&nbsp;  // Book histograms, ntuple
-<br/>&nbsp;  //
-<br/>&nbsp;
-<br/>&nbsp;  // Creating 1D histograms
-<br/>&nbsp;  analysisManager-&gt;CreateH1("Chamber1","Drift Chamber 1 # Hits", 50, 0., 50); // h1 Id = 0
-<br/>&nbsp;  analysisManager-&gt;CreateH1("Chamber2","Drift Chamber 2 # Hits", 50, 0., 50); // h1 Id = 1
-<br/>&nbsp;
-<br/>&nbsp;  // Creating 2D histograms
-<br/>&nbsp;  analysisManager-&gt;CreateH2("Chamber1_XY","Drift Chamber 1 X vs Y",50, -1000., 1000, 50, -300., 300.); // h2 Id = 0
-<br/>&nbsp;  analysisManager-&gt;CreateH2("Chamber2_XY","Drift Chamber 2 X vs Y",50, -1500., 1500, 50, -300., 300.); // h2 Id = 1
-<br/>&nbsp;
-<br/>&nbsp;  // Creating ntuple
-<br/>&nbsp;  //
-<br/>&nbsp;  analysisManager-&gt;CreateNtuple("Tutorial", "Hits");
-<br/>&nbsp;  analysisManager-&gt;CreateNtupleIColumn("Dc1Hits");  // column Id = 0
-<br/>&nbsp;  analysisManager-&gt;CreateNtupleIColumn("Dc2Hits");  // column Id = 1
-<br/>&nbsp;  analysisManager-&gt;CreateNtupleDColumn("ECEnergy"); // column Id = 2
-<br/>&nbsp;  analysisManager-&gt;CreateNtupleDColumn("HCEnergy"); // column Id = 3
-<br/>&nbsp;  analysisManager-&gt;CreateNtupleDColumn("Time1");    // column Id = 4
-<br/>&nbsp;  analysisManager-&gt;CreateNtupleDColumn("Time2");    // column Id = 5
-<br/>&nbsp;  analysisManager-&gt;FinishNtuple(); //Do not forget this line!
-<br/></font>&nbsp;}
-</code></TD></TR></TBODY></TABLE><br/>
-<b>Note:</b> We book histograms and define the nutple in the constructor of the
-<code>G4UserRunAction</code> class, however you should note that this
-class is instantiated only once per job, even if multiple runs are
-simulated. This means that you cannot change the content of the output
-file between runs. If you think that you will do that, you can book
-histograms and define columns in the ntuple in the
-<code>BeginOfRunAction</code> method.
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+	RunAction::RunAction() : G4UserRunAction()<br/>
+	{<br/>
+	<div class="tbmodified">
+		&emsp;// Create analysis manager<br/>
+		&emsp;// Create analysis manager, set output format and file name<br/>
+		&emsp;auto analysisManager = G4AnalysisManager::Instance();<br/>
+		<br/>
+		&emsp;// Default settings<br/>
+		&emsp;analysisManager-&gt;SetDefaultFileType("root");<br/>
+		&emsp;G4cout &lt;&lt; "Using " &lt;&lt; analysisManager-&gt;GetType() &lt;&lt; G4endl;<br/>
+		&emsp;analysisManager-&gt;SetVerboseLevel(1);<br/>
+		&emsp;analysisManager-&gt;SetFileName("Tutorial");<br/>
+		<br/>
+		&emsp;// Book histograms, ntuple<br/>
+		&emsp;//<br/>
+		<br/>
+		&emsp;// Creating 1D histograms<br/>
+		&emsp;analysisManager-&gt;CreateH1("Chamber1","Drift Chamber 1 # Hits", 50, 0., 50); // h1 Id = 0<br/>
+		&emsp;analysisManager-&gt;CreateH1("Chamber2","Drift Chamber 2 # Hits", 50, 0., 50); // h1 Id = 1<br/>
+		<br/>
+		&emsp;// Creating 2D histograms<br/>
+		&emsp;analysisManager-&gt;CreateH2("Chamber1_XY","Drift Chamber 1 X vs Y",50, -1000., 1000, 50, -300., 300.); // h2 Id = 0<br/>
+		&emsp;analysisManager-&gt;CreateH2("Chamber2_XY","Drift Chamber 2 X vs Y",50, -1500., 1500, 50, -300., 300.); // h2 Id = 1<br/>
+		<br/>
+		&emsp;// Creating ntuple<br/>
+		&emsp;//<br/>
+		&emsp;analysisManager-&gt;CreateNtuple("Tutorial", "Hits");<br/>
+		&emsp;analysisManager-&gt;CreateNtupleIColumn("Dc1Hits"); // column Id = 0<br/>
+		&emsp;analysisManager-&gt;CreateNtupleIColumn("Dc2Hits"); // column Id = 1<br/>
+		&emsp;analysisManager-&gt;CreateNtupleDColumn("ECEnergy"); // column Id = 2<br/>
+		&emsp;analysisManager-&gt;CreateNtupleDColumn("HCEnergy"); // column Id = 3<br/>
+		&emsp;analysisManager-&gt;CreateNtupleDColumn("Time1"); // column Id = 4<br/>
+		&emsp;analysisManager-&gt;CreateNtupleDColumn("Time2"); // column Id = 5<br/>
+		&emsp;analysisManager-&gt;FinishNtuple(); //Do not forget this line!<br/>
+	</div>
+	}
+</codeblock>
 
+<br/><br/>
 
+<div class="warning">
+	<strong>Note:</strong> We book histograms and define the nutple in the constructor of the
+	<code>G4UserRunAction</code> class, however you should note that this
+	class is instantiated only once per job, even if multiple runs are
+	simulated. This means that you cannot change the content of the output
+	file between runs. If you think that you will do that, you can book
+	histograms and define columns in the ntuple in the
+	<code>BeginOfRunAction</code> method.
+</div>
 
-<h3><a name="ex3s2">Exercise 3 Step 2</a></h3>
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 3 Step 2</h3>
 
 Open the output file at each new run.
 
-Defining an output file and its content, it is not enough, you need
+<br/><br/>
+
+Defining an output file and its content is not enough, you need
 to explicitly open it. The best way to do so is to open it at the
-beginning of a new run. In more complex setups where you will perform
+beginning of a new run. <br/>
+<br/>
+In more complex setups where you will perform
 more than one run per job, you can change the file
 name at each new run (e.g. via UI commands or append the run number to
-the file name), so you can produce one file output for each
-run.
+the file name), so you can produce one file output for each run.
 
 
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-<tr><td>RunAction.cc file:</td></tr>
-  <TR><TD><code>
-&nbsp; void RunAction::BeginOfRunAction(const G4Run* /*run*/)
-<br/>&nbsp;{
-<br/>&nbsp;    // Get analysis manager
-<br/><font color="#ff0000">&nbsp;  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-<br/></font>&nbsp;    // Open an output file
-<br/>&nbsp;  // The default file name is set in RunAction::RunAction(),
-<br/>&nbsp;  // it can be overwritten in a macro
-<br/><font color="#ff0000">&nbsp;  analysisManager-&gt;OpenFile();
-<br/></font>&nbsp;}
-</code></TD></TR></TBODY></TABLE>
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+	void RunAction::BeginOfRunAction(const G4Run* /*run*/)<br/>
+	{<br/>
+	&emsp;// Get analysis manager
+	<div class="tbmodified">
+		&emsp;// Create analysis manager<br/>
+		&emsp;G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+	</div>
+	&emsp;// Open an output file
+	&emsp;// The default file name is set in RunAction::RunAction(),
+	&emsp;// it can be overwritten in a macro
+	<div class="tbmodified">
+		&emsp;analysisManager-&gt;OpenFile();
+	</div>
+	}
+</codeblock>
 
 
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
 
-<h3><a name="ex3s3">Exercise 3 Step 3</a></h3>
+<h3>Exercise 3 Step 3</h3>
 
 Write out the file.
+
+<br/><br/>
 
 Output files must be explicitly written to disk and closed. It is a
 good idea to do that at the end of the run.
 
-
-
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-<tr><td>RunAction.cc file:</td></tr>
-<TR><TD><code>
-&nbsp;void RunAction::EndOfRunAction(const G4Run* run)
-<br/>&nbsp;{
-<br/><font color="f0000">&nbsp;    const Run* myrun = dynamic_cast&lt;const Run*&gt;(run);
-<br/>&nbsp;    if ( myrun )
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        G4int nEvents = myrun-&gt;GetNumberOfEvent();
-<br/>&nbsp;&nbsp;&nbsp;        if ( nEvents &lt; 1 )
-<br/>&nbsp;&nbsp;&nbsp;        {
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            G4ExceptionDescription msg;
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            msg &lt;&lt; "Run consists of 0 events";
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            G4Exception("RunAction::EndOfRunAction()",
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                        "Code001", JustWarning, msg);
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            nEvents=1;
-<br/>&nbsp;&nbsp;&nbsp;        }
-<br/>&nbsp;&nbsp;&nbsp;        G4double em_ene = myrun-&gt;GetEmEnergy();
-<br/>&nbsp;&nbsp;&nbsp;        G4double had_ene = myrun-&gt;GetHadEnergy();
-<br/>&nbsp;&nbsp;&nbsp;        G4double shower_shape = myrun-&gt;GetShowerShape();
-<br/>&nbsp;&nbsp;&nbsp;       G4int safety = ( nEvents &gt; 0 ? nEvents : 1);//To avoid divisions by zero
-<br/>&nbsp;&nbsp;&nbsp;        G4cout&lt;&lt;"Run["&lt;&lt;myrun-&gt;GetRunID()&lt;&lt;"] With: "&lt;&lt;nEvents&lt;&lt;"Events\n"
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        &lt;&lt;" &lt;E_em&gt;="&lt;&lt;G4BestUnit(em_ene/safety,"Energy")&lt;&lt;"\n"
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        &lt;&lt;" &lt;E_had&gt;="&lt;&lt;G4BestUnit(had_ene/safety,"Energy")&lt;&lt;"\n"
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        &lt;&lt;" &lt;E&gt;="&lt;&lt;G4BestUnit((em_ene+had_ene)/safety,"Energy")&lt;&lt;"\n"
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        &lt;&lt;" &lt;ShowerShape&gt;="&lt;&lt;shower_shape/safety&lt;&lt;G4endl;
-<br/>&nbsp;    } else {
-<br/>&nbsp;&nbsp;&nbsp;        G4ExceptionDescription msg;
-<br/>&nbsp;&nbsp;&nbsp;        msg &lt;&lt; "Run is not of correct type, skypping analysis via RunAction";
-<br/>&nbsp;&nbsp;&nbsp;       G4Exception("RunAction::EndOfRunAction()","Code001", JustWarning, msg);
-<br/>&nbsp;    }
-<br/></font>&nbsp;
-<br/>&nbsp;  //=================================
-<br/>&nbsp;  // Exercise 3 Step 3:
-<br/>&nbsp;  // Write and close output file
-<br/>&nbsp;  // save histograms &amp; ntuple
-<br/>&nbsp;  //
-<br/>&nbsp;  G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-<br/>&nbsp;  analysisManager-&gt;Write();
-<br/>&nbsp;  analysisManager-&gt;CloseFile();
-<br/>&nbsp;}
-</code></TD></TR></TBODY></TABLE>
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+	void RunAction::EndOfRunAction(const G4Run* run)<br/>
+	{<br/>
+	<div class="tbmodified">
+		&emsp;const Run* myrun = dynamic_cast&lt;const Run*&gt;(run);<br/>
+		&emsp;if ( myrun )<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;G4int nEvents = myrun-&gt;GetNumberOfEvent();<br/>
+		&emsp;&emsp;if ( nEvents &lt; 1 )<br/>
+		&emsp;&emsp;{<br/>
+		&emsp;&emsp;&emsp;&emsp;G4ExceptionDescription msg;<br/>
+		&emsp;&emsp;&emsp;&emsp;msg &lt;&lt; "Run consists of 0 events";<br/>
+		&emsp;&emsp;&emsp;&emsp;G4Exception("RunAction::EndOfRunAction()", "Code001", JustWarning, msg);<br/>
+		&emsp;&emsp;&emsp;&emsp;nEvents=1;<br/>
+		&emsp;&emsp;}<br/>
+		&emsp;&emsp;G4double em_ene = myrun-&gt;GetEmEnergy();<br/>
+		&emsp;&emsp;G4double had_ene = myrun-&gt;GetHadEnergy();<br/>
+		&emsp;&emsp;G4double shower_shape = myrun-&gt;GetShowerShape();<br/>
+		&emsp;&emsp;G4int safety = ( nEvents &gt; 0 ? nEvents : 1);//To avoid divisions by zero<br/>
+		&emsp;&emsp;G4cout&lt;&lt;"Run["&lt;&lt;myrun-&gt;GetRunID()&lt;&lt;"] With: "&lt;&lt;nEvents&lt;&lt;"Events\n"<br/>
+		&emsp;&emsp;&lt;&lt;" &lt;E_em&gt;="&lt;&lt;G4BestUnit(em_ene/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp;&lt;&lt;" &lt;E_had&gt;="&lt;&lt;G4BestUnit(had_ene/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp;&lt;&lt;" &lt;E&gt;="&lt;&lt;G4BestUnit((em_ene+had_ene)/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp;&lt;&lt;" &lt;ShowerShape&gt;="&lt;&lt;shower_shape/safety&lt;&lt;G4endl;<br/>
+		&emsp;} else {<br/>
+		&emsp;&emsp;G4ExceptionDescription msg;<br/>
+		&emsp;&emsp;msg &lt;&lt; "Run is not of correct type, skypping analysis via RunAction";<br/>
+		&emsp;&emsp;G4Exception("RunAction::EndOfRunAction()","Code001", JustWarning, msg);<br/>
+		}
+	</div>
+
+	&emsp;//=================================<br/>
+	&emsp;// Exercise 3 Step 3:<br/>
+	&emsp;// Write and close output file<br/>
+	&emsp;// save histograms &amp; ntuple<br/>
+	&emsp;//<br/>
+	&emsp;G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();<br/>
+	&emsp;analysisManager-&gt;Write();<br/>
+	&emsp;analysisManager-&gt;CloseFile();<br/>
+	}
+</codeblock>
 
 
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
 
-<h3><a name="ex3s4">Exercise 3 Step 4</a></h3>
+<h3>Exercise 3 Step 4</h3>
 
 Fill histograms and ntuple with data.
+
+<br/><br/>
 
 At the end of each event you should retrieve informaiton from hits
 collection and fill the histograms and ntuple objects.
 You can access filled hits at the end of each event in
 <code>EventAction</code> class.
 
-
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-<tr><td>EventAction.cc file:</td></tr>
-  <TR><TD><code>
-&nbsp;void EventAction::EndOfEventAction(const G4Event* event)
-<br/>&nbsp;{
-<br/>&nbsp;    G4HCofThisEvent* hce = event-&gt;GetHCofThisEvent();
-<br/>&nbsp;    if (!hce)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        G4ExceptionDescription msg;
-<br/>&nbsp;&nbsp;&nbsp;        msg &lt;&lt; "No hits collection of this event found.\n";
-<br/>&nbsp;&nbsp;&nbsp;        G4Exception("EventAction::EndOfEventAction()","Code001", JustWarning, msg);
-<br/>&nbsp;&nbsp;&nbsp;        return;
-<br/>&nbsp;    }
-<br/>&nbsp;
-<br/>&nbsp;    // Get hits collections
-<br/>&nbsp;    HodoscopeHitsCollection* hHC1 = static_cast&lt;HodoscopeHitsCollection*&gt;(hce-&gt;GetHC(fHHC1ID));
-<br/>&nbsp;    HodoscopeHitsCollection* hHC2 = static_cast&lt;HodoscopeHitsCollection*&gt;(hce-&gt;GetHC(fHHC2ID));
-<br/>&nbsp;    DriftChamberHitsCollection* dHC1 = static_cast&lt;DriftChamberHitsCollection*&gt;(hce-&gt;GetHC(fDHC1ID));
-<br/>&nbsp;    DriftChamberHitsCollection* dHC2 = static_cast&lt;DriftChamberHitsCollection*&gt;(hce-&gt;GetHC(fDHC2ID));
-<br/>&nbsp;    EmCalorimeterHitsCollection* ecHC = static_cast&lt;EmCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(fECHCID));
-<br/>&nbsp;    HadCalorimeterHitsCollection* hcHC = static_cast&lt;HadCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(fHCHCID));
-<br/>&nbsp;
-<br/>&nbsp;    if ( (!hHC1) || (!hHC2) || (!dHC1) || (!dHC2) || (!ecHC) || (!hcHC) )
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        G4ExceptionDescription msg;
-<br/>&nbsp;&nbsp;&nbsp;        msg &lt;&lt; "Some of hits collections of this event not found.\n";
-<br/>&nbsp;&nbsp;&nbsp;        G4Exception("EventAction::EndOfEventAction()","Code001", JustWarning, msg);
-<br/>&nbsp;&nbsp;&nbsp;        return;
-<br/>&nbsp;    }
-<br/>&nbsp;
-<br/>&nbsp;    //
-<br/>&nbsp;    // Fill histograms &amp; ntuple
-<br/>&nbsp;    //
-<br/>&nbsp;    //=================================
-<br/>&nbsp;    // Exercise 3 Step 4:
-<br/>&nbsp;    // Fill histograms &amp; ntuple
-<br/>&nbsp;
-<br/><font color="ff0000">&nbsp;    // Get analysis manager
-<br/>&nbsp;    G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
-<br/>&nbsp;
-<br/>&nbsp;    // Fill histograms
-<br/>&nbsp;
-<br/>&nbsp;    G4int n_hit = dHC1-&gt;entries();
-<br/>&nbsp;    analysisManager-&gt;FillH1(0, n_hit);
-<br/>&nbsp;
-<br/>&nbsp;    for (G4int i=0;i&lt;n_hit;i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;       DriftChamberHit* hit = (*dHC1)[i];
-<br/>&nbsp;&nbsp;&nbsp;       G4ThreeVector localPos = hit-&gt;GetLocalPos();
-<br/>&nbsp;&nbsp;&nbsp;       analysisManager-&gt;FillH2(0, localPos.x(), localPos.y());
-<br/>&nbsp;    }
-<br/>&nbsp;
-<br/>&nbsp;    n_hit = dHC2-&gt;entries();
-<br/>&nbsp;    analysisManager-&gt;FillH1(1, n_hit);
-<br/>&nbsp;
-<br/>&nbsp;    for (G4int i=0;i&lt;n_hit;i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;       DriftChamberHit* hit = (*dHC2)[i];
-<br/>&nbsp;&nbsp;&nbsp;       G4ThreeVector localPos = hit-&gt;GetLocalPos();
-<br/>&nbsp;&nbsp;&nbsp;       analysisManager-&gt;FillH2(1, localPos.x(), localPos.y());
-<br/>&nbsp;    }
-<br/>&nbsp;
-<br/>&nbsp;    // Fill ntuple
-<br/>&nbsp;
-<br/>&nbsp;    // Dc1Hits
-<br/>&nbsp;    analysisManager-&gt;FillNtupleIColumn(0, dHC1-&gt;entries());
-<br/>&nbsp;    // Dc2Hits
-<br/>&nbsp;    analysisManager-&gt;FillNtupleIColumn(1, dHC1-&gt;entries());
-<br/>&nbsp;
-<br/>&nbsp;    // ECEnergy
-<br/>&nbsp;    G4int totalEmHit = 0;
-<br/>&nbsp;    G4double totalEmE = 0.;
-<br/>&nbsp;    for (G4int i=0;i&lt;80;i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        EmCalorimeterHit* hit = (*ecHC)[i];
-<br/>&nbsp;&nbsp;&nbsp;        G4double eDep = hit-&gt;GetEdep();
-<br/>&nbsp;&nbsp;&nbsp;        if (eDep&gt;0.)
-<br/>&nbsp;&nbsp;&nbsp;        {
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            totalEmHit++;
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            totalEmE += eDep;
-<br/>&nbsp;&nbsp;&nbsp;        }
-<br/>&nbsp;    }
-<br/>&nbsp;    analysisManager-&gt;FillNtupleDColumn(2, totalEmE);
-<br/>&nbsp;
-<br/>&nbsp;    // HCEnergy
-<br/>&nbsp;    G4int totalHadHit = 0;
-<br/>&nbsp;    G4double totalHadE = 0.;
-<br/>&nbsp;    for (G4int i=0;i&lt;20;i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        HadCalorimeterHit* hit = (*hcHC)[i];
-<br/>&nbsp;&nbsp;&nbsp;        G4double eDep = hit-&gt;GetEdep();
-<br/>&nbsp;&nbsp;&nbsp;       if (eDep&gt;0.)
-<br/>&nbsp;&nbsp;&nbsp;        {
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            totalHadHit++;
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            totalHadE += eDep;
-<br/>&nbsp;&nbsp;&nbsp;        }
-<br/>&nbsp;    }
-<br/>&nbsp;    analysisManager-&gt;FillNtupleDColumn(3, totalHadE);
-<br/>&nbsp;
-<br/>&nbsp;    // Time 1
-<br/>&nbsp;    for (size_t i=0;i&lt;hHC1-&gt;entries();i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;      analysisManager-&gt;FillNtupleDColumn(4,(*hHC1)[i]-&gt;GetTime());
-<br/>&nbsp;    }
-<br/>&nbsp;
-<br/>&nbsp;    // Time 2
-<br/>&nbsp;    for (size_t i=0;i&lt;hHC2-&gt;entries();i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;      analysisManager-&gt;FillNtupleDColumn(5,(*hHC2)[i]-&gt;GetTime());
-<br/>&nbsp;    }
-<br/>&nbsp;
-<br/>&nbsp;    analysisManager-&gt;AddNtupleRow();
-<br/></font>&nbsp;
-<br/>&nbsp;    //
-<br/>&nbsp;    // Print diagnostics: UI command /run/printProgress can be used
-<br/>&nbsp;    // to set frequency of how often info should be dumpled
-<br/>&nbsp;    //
-<br/>&nbsp;
-<br/>&nbsp;    G4int printModulo = G4RunManager::GetRunManager()-&gt;GetPrintProgress();
-<br/>&nbsp;    if ( printModulo==0 || event-&gt;GetEventID() % printModulo != 0) return;
-<br/>&nbsp;
-<br/>&nbsp;    G4PrimaryParticle* primary = event-&gt;GetPrimaryVertex(0)-&gt;GetPrimary(0);
-<br/>&nbsp;    G4cout &lt;&lt; G4endl
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           &lt;&lt; "&gt;&gt;&gt; Event " &lt;&lt; event-&gt;GetEventID() &lt;&lt; " &gt;&gt;&gt; Simulation truth : "
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           &lt;&lt; primary-&gt;GetG4code()-&gt;GetParticleName()
-<br/>&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;          &lt;&lt; " " &lt;&lt; primary-&gt;GetMomentum() &lt;&lt; G4endl;
-<br/>&nbsp;
-<br/>&nbsp;    // Hodoscope 1
-<br/>&nbsp;    n_hit = hHC1-&gt;entries();
-<br/>&nbsp;    G4cout &lt;&lt; "Hodoscope 1 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;
-<br/>&nbsp;    for (G4int i=0;i&lt;n_hit;i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        HodoscopeHit* hit = (*hHC1)[i];
-<br/>&nbsp;&nbsp;&nbsp;        hit-&gt;Print();
-<br/>&nbsp;    }
-<br/>&nbsp;
-<br/>&nbsp;    // Hodoscope 2
-<br/>&nbsp;    n_hit = hHC2-&gt;entries();
-<br/>&nbsp;    G4cout &lt;&lt; "Hodoscope 2 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;
-<br/>&nbsp;    for (G4int i=0;i&lt;n_hit;i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        HodoscopeHit* hit = (*hHC2)[i];
-<br/>&nbsp;&nbsp;&nbsp;        hit-&gt;Print();
-<br/>&nbsp;    }
-<br/>&nbsp;
-<br/>&nbsp;    // Drift chamber 1
-<br/>&nbsp;    n_hit = dHC1-&gt;entries();
-<br/>&nbsp;    G4cout &lt;&lt; "Drift Chamber 1 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;
-<br/>&nbsp;    for (G4int i2=0;i2&lt;5;i2++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        for (G4int i=0;i&lt;n_hit;i++)
-<br/>&nbsp;&nbsp;&nbsp;        {
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            DriftChamberHit* hit = (*dHC1)[i];
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            if (hit-&gt;GetLayerID()==i2) hit-&gt;Print();
-<br/>&nbsp;&nbsp;&nbsp;        }
-<br/>&nbsp;    }
-<br/>&nbsp;
-<br/>&nbsp;    // Drift chamber 2
-<br/>&nbsp;    n_hit = dHC2-&gt;entries();
-<br/>&nbsp;    G4cout &lt;&lt; "Drift Chamber 2 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;
-<br/>&nbsp;    for (G4int i2=0;i2&lt;5;i2++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        for (G4int i=0;i&lt;n_hit;i++)
-<br/>&nbsp;&nbsp;&nbsp;       {
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            DriftChamberHit* hit = (*dHC2)[i];
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            if (hit-&gt;GetLayerID()==i2) hit-&gt;Print();
-<br/>&nbsp;&nbsp;&nbsp;        }
-<br/>&nbsp;    }
-<br/>&nbsp;
-<br/>&nbsp;    // EM calorimeter
-<br/><font color="#ff0000">&nbsp;    G4cout &lt;&lt; "EM Calorimeter has " &lt;&lt; totalEmHit &lt;&lt; " hits. Total Edep is "
-<br/>&nbsp;    &lt;&lt; totalEmE/MeV &lt;&lt; " (MeV)" &lt;&lt; G4endl;
-<br/></font>&nbsp;
-<br/>&nbsp;    // Had calorimeter
-<br/><font color="#ff0000">&nbsp;    G4cout &lt;&lt; "Hadron Calorimeter has " &lt;&lt; totalHadHit &lt;&lt; " hits. Total Edep is "
-<br/>&nbsp;    &lt;&lt; totalHadE/MeV &lt;&lt; " (MeV)" &lt;&lt; G4endl;
-<br/></font>&nbsp;}
-</code></TD></TR></TBODY></TABLE>
+<codeblock>
+	<div class="filename"> File: EventAction.cc</div>
+	<br/>
+	void EventAction::EndOfEventAction(const G4Event* event)<br/>
+	{<br/>
+	&emsp;G4HCofThisEvent* hce = event-&gt;GetHCofThisEvent();<br/>
+	&emsp;if (!hce)<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;G4ExceptionDescription msg;<br/>
+	&emsp;&emsp;msg &lt;&lt; "No hits collection of this event found.\n";<br/>
+	&emsp;&emsp;G4Exception("EventAction::EndOfEventAction()","Code001", JustWarning, msg);<br/>
+	&emsp;&emsp;return;<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;// Get hits collections<br/>
+	&emsp;HodoscopeHitsCollection* hHC1 = static_cast&lt;HodoscopeHitsCollection*&gt;(hce-&gt;GetHC(fHHC1ID));<br/>
+	&emsp;HodoscopeHitsCollection* hHC2 = static_cast&lt;HodoscopeHitsCollection*&gt;(hce-&gt;GetHC(fHHC2ID));<br/>
+	&emsp;DriftChamberHitsCollection* dHC1 = static_cast&lt;DriftChamberHitsCollection*&gt;(hce-&gt;GetHC(fDHC1ID));<br/>
+	&emsp;DriftChamberHitsCollection* dHC2 = static_cast&lt;DriftChamberHitsCollection*&gt;(hce-&gt;GetHC(fDHC2ID));<br/>
+	&emsp;EmCalorimeterHitsCollection* ecHC = static_cast&lt;EmCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(fECHCID));<br/>
+	&emsp;HadCalorimeterHitsCollection* hcHC = static_cast&lt;HadCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(fHCHCID));<br/>
+	<br/>
+	&emsp;if ( (!hHC1) || (!hHC2) || (!dHC1) || (!dHC2) || (!ecHC) || (!hcHC) )<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;G4ExceptionDescription msg;<br/>
+	&emsp;&emsp;msg &lt;&lt; "Some of hits collections of this event not found.\n";<br/>
+	&emsp;&emsp;G4Exception("EventAction::EndOfEventAction()","Code001", JustWarning, msg);<br/>
+	&emsp;&emsp;return;<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;//<br/>
+	&emsp;// Fill histograms &amp; ntuple<br/>
+	&emsp;//<br/>
+	&emsp;//=================================<br/>
+	&emsp;// Exercise 3 Step 4:<br/>
+	&emsp;// Fill histograms &amp; ntuple<br/>
+	<br/>
+	<div class="tbmodified">
+		&emsp;// Get analysis manager<br/>
+		&emsp;G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();<br/>
+		<br/>
+		&emsp;// Fill histograms<br/>
+		<br/>
+		&emsp;G4int n_hit = dHC1-&gt;entries();<br/>
+		&emsp;analysisManager-&gt;FillH1(0, n_hit);<br/>
+		<br/>
+		&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;DriftChamberHit* hit = (*dHC1)[i];<br/>
+		&emsp;&emsp;G4ThreeVector localPos = hit-&gt;GetLocalPos();<br/>
+		&emsp;&emsp;analysisManager-&gt;FillH2(0, localPos.x(), localPos.y());<br/>
+		&emsp;}<br/>
+		<br/>
+		&emsp;n_hit = dHC2-&gt;entries();<br/>
+		&emsp;analysisManager-&gt;FillH1(1, n_hit);<br/>
+		<br/>
+		&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;DriftChamberHit* hit = (*dHC2)[i];<br/>
+		&emsp;&emsp;G4ThreeVector localPos = hit-&gt;GetLocalPos();<br/>
+		&emsp;&emsp;analysisManager-&gt;FillH2(1, localPos.x(), localPos.y());<br/>
+		&emsp;}<br/>
+		<br/>
+		&emsp;// Fill ntuple<br/>
+		<br/>
+		&emsp;// Dc1Hits<br/>
+		&emsp;analysisManager-&gt;FillNtupleIColumn(0, dHC1-&gt;entries());<br/>
+		&emsp;// Dc2Hits<br/>
+		&emsp;analysisManager-&gt;FillNtupleIColumn(1, dHC1-&gt;entries());<br/>
+		<br/>
+		&emsp;// ECEnergy<br/>
+		&emsp;G4int totalEmHit = 0;<br/>
+		&emsp;G4double totalEmE = 0.;<br/>
+		&emsp;for (G4int i=0;i&lt;80;i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;EmCalorimeterHit* hit = (*ecHC)[i];<br/>
+		&emsp;&emsp;G4double eDep = hit-&gt;GetEdep();<br/>
+		&emsp;&emsp;if (eDep&gt;0.)<br/>
+		&emsp;&emsp;{<br/>
+		&emsp;&emsp;&emsp;totalEmHit++;<br/>
+		&emsp;&emsp;&emsp;totalEmE += eDep;<br/>
+		&emsp;&emsp;}<br/>
+		&emsp; }<br/>
+		&emsp;analysisManager-&gt;FillNtupleDColumn(2, totalEmE);<br/>
+		<br/>
+		&emsp;// HCEnergy<br/>
+		&emsp;G4int totalHadHit = 0;<br/>
+		&emsp;G4double totalHadE = 0.;<br/>
+		&emsp;for (G4int i=0;i&lt;20;i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;HadCalorimeterHit* hit = (*hcHC)[i];<br/>
+		&emsp;&emsp;G4double eDep = hit-&gt;GetEdep();<br/>
+		&emsp;&emsp;if (eDep&gt;0.)<br/>
+		&emsp;&emsp;{<br/>
+		&emsp;&emsp;&emsp;totalHadHit++;<br/>
+		&emsp;&emsp;&emsp;totalHadE += eDep;<br/>
+		&emsp;&emsp;}<br/>
+		&emsp;}<br/>
+		&emsp;analysisManager-&gt;FillNtupleDColumn(3, totalHadE);<br/>
+		<br/>
+		&emsp;// Time 1<br/>
+		&emsp;for (size_t i=0;i&lt;hHC1-&gt;entries();i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;analysisManager-&gt;FillNtupleDColumn(4,(*hHC1)[i]-&gt;GetTime());<br/>
+		&emsp;}<br/>
+		<br/>
+		&emsp;// Time 2<br/>
+		&emsp;for (size_t i=0;i&lt;hHC2-&gt;entries();i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;analysisManager-&gt;FillNtupleDColumn(5,(*hHC2)[i]-&gt;GetTime());<br/>
+		&emsp;}<br/>
+		<br/>
+		&emsp;analysisManager-&gt;AddNtupleRow();<br/>
+		<br/>
+	</div>
+	&emsp;//<br/>
+	&emsp;// Print diagnostics: UI command /run/printProgress can be used<br/>
+	&emsp;// to set frequency of how often info should be dumpled<br/>
+	<br/>
+	&emsp;G4int printModulo = G4RunManager::GetRunManager()-&gt;GetPrintProgress();<br/>
+	&emsp;if ( printModulo==0 || event-&gt;GetEventID() % printModulo != 0) return;<br/>
+	<br/>
+	&emsp;G4PrimaryParticle* primary = event-&gt;GetPrimaryVertex(0)-&gt;GetPrimary(0);<br/>
+	&emsp;G4cout &lt;&lt; G4endl<br/>
+	&emsp;&lt;&lt; "&gt;&gt;&gt; Event " &lt;&lt; event-&gt;GetEventID() &lt;&lt; " &gt;&gt;&gt; Simulation truth : "<br/>
+	&emsp;&lt;&lt; primary-&gt;GetG4code()-&gt;GetParticleName()<br/>
+	&emsp;&lt;&lt; " " &lt;&lt; primary-&gt;GetMomentum() &lt;&lt; G4endl;<br/>
+	<br/>
+	&emsp;// Hodoscope 1<br/>
+	&emsp;n_hit = hHC1-&gt;entries();<br/>
+	&emsp;G4cout &lt;&lt; "Hodoscope 1 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;<br/>
+	&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;HodoscopeHit* hit = (*hHC1)[i];<br/>
+	&emsp;&emsp;hit-&gt;Print();<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;// Hodoscope 2<br/>
+	&emsp;n_hit = hHC2-&gt;entries();<br/>
+	&emsp;G4cout &lt;&lt; "Hodoscope 2 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;<br/>
+	&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;HodoscopeHit* hit = (*hHC2)[i];<br/>
+	&emsp;&emsp;hit-&gt;Print();<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;// Drift chamber 1<br/>
+	&emsp;n_hit = dHC1-&gt;entries();<br/>
+	&emsp;G4cout &lt;&lt; "Drift Chamber 1 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;<br/>
+	&emsp;for (G4int i2=0;i2&lt;5;i2++)<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+	&emsp;&emsp;{<br/>
+	&emsp;&emsp;&emsp;DriftChamberHit* hit = (*dHC1)[i];<br/>
+	&emsp;&emsp;&emsp;if (hit-&gt;GetLayerID()==i2) hit-&gt;Print();<br/>
+	&emsp;&emsp;}<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;// Drift chamber 2<br/>
+	&emsp;n_hit = dHC2-&gt;entries();<br/>
+	&emsp;G4cout &lt;&lt; "Drift Chamber 2 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;<br/>
+	&emsp;for (G4int i2=0;i2&lt;5;i2++)<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+	&emsp;&emsp;{<br/>
+	&emsp;&emsp;&emsp;DriftChamberHit* hit = (*dHC2)[i];<br/>
+	&emsp;&emsp;&emsp;if (hit-&gt;GetLayerID()==i2) hit-&gt;Print();<br/>
+	&emsp;&emsp;}<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;// EM calorimeter<br/>
+	<div class="tbmodified">
+		&emsp; G4cout &lt;&lt; "EM Calorimeter has " &lt;&lt; totalEmHit &lt;&lt; " hits. Total Edep is "<br/>
+		&emsp; &lt;&lt; totalEmE/MeV &lt;&lt; " (MeV)" &lt;&lt; G4endl;<br/>
+	</div>
+	&emsp;// Had calorimeter<br/>
+	<div class="tbmodified">
+		&emsp; G4cout &lt;&lt; "Hadron Calorimeter has " &lt;&lt; totalHadHit &lt;&lt; " hits. Total Edep is "<br/>
+		&emsp; &lt;&lt; totalHadE/MeV &lt;&lt; " (MeV)" &lt;&lt; G4endl;<br/>
+	</div>
+	}
+</codeblock>
 
 
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
 
-<h3><a name="ex3s5">Exercise 3 Step 5</a></h3>
+<h3>Exercise 3 Step 5</h3>
 
 Select output file format.
 
-You can select the output file format by changing the format name of <code>SetDefaultFileType()</code>.
-Currently <code>"csv", "hdf5", "root"</code> and <code>"xml"</code> are available.
+<br/><br/>
 
+You can select the output file format by changing the format name of <code>SetDefaultFileType()</code>.
+
+<br/><br/>
+
+<div class="info">
+	Currently <code>"csv", "hdf5", "root"</code> and <code>"xml"</code> are available.
+</div>
 
 
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-<tr><td>RunAction.cc file:</td></tr>
-  <TR><TD><code>
-&nbsp;RunAction::RunAction()
-<br/>&nbsp; : G4UserRunAction()
-<br/>&nbsp;{
-<br/>&nbsp;  // Create analysis manager
-<br/>&nbsp;  // Create analysis manager, set output format and file name
-<br/>&nbsp;  auto analysisManager = G4AnalysisManager::Instance();
-<br/>&nbsp;
-<br/>&nbsp;  // Default settings
-<br/>&nbsp;  analysisManager-&gt;SetDefaultFileType(<font color="#ff0000">"root"</font>);
-<br/>&nbsp;  G4cout &lt;&lt; "Using " &lt;&lt; analysisManager-&gt;GetType() &lt;&lt; G4endl;
-<br/>&nbsp;  analysisManager-&gt;SetVerboseLevel(1);
-<br/>&nbsp;  analysisManager-&gt;SetFileName("Tutorial");
-<br/>&nbsp;
-<br/>&nbsp;}
-</code></TD></TR></TBODY></TABLE><br/>
-
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+	RunAction::RunAction() : G4UserRunAction()<br/>
+	{<br/>
+	&emsp;// Create analysis manager<br/>
+	&emsp;// Create analysis manager, set output format and file name<br/>
+	&emsp;auto analysisManager = G4AnalysisManager::Instance();<br/>
+	<br/>
+	&emsp;// Default settings<br/>
+	<div class="tbmodified">
+		&emsp;analysisManager-&gt;SetDefaultFileType(root");<br/>
+	</div>
+	&emsp;G4cout &lt;&lt; "Using " &lt;&lt; analysisManager-&gt;GetType() &lt;&lt; G4endl;<br/>
+	&emsp;analysisManager-&gt;SetVerboseLevel(1);<br/>
+	&emsp;analysisManager-&gt;SetFileName("Tutorial");<br/>
+	}
+</codeblock>
 

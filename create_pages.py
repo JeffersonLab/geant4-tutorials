@@ -75,8 +75,8 @@ for subdir in sub_dirs:
 	print("\n > Source Subdir: ", subdir)
 	src_dir = os.path.join(src, subdir)
 
-	#  Copy PNG and GIF files
-	image_files = [file for file in os.listdir(src_dir) if file.endswith('.png') or file.endswith('.gif')]
+	#  Copy PNG, GIF, root macros and python files
+	image_files = [file for file in os.listdir(src_dir) if file.endswith('.png') or file.endswith('.gif') or file.endswith('.C') or file.endswith('.py')]
 	for file in image_files:
 		source_path = os.path.join(src_dir, file)
 		destination_path = os.path.join(deploy_subdir, file)
