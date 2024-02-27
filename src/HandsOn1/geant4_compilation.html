@@ -38,13 +38,14 @@ this step in this tutorial. <br/>
 This component is optional, if you do not want to use Qt, simply skip the Qt options during
 configuration. <b>None of exercises require GUI interfaces to be completed.</b><br/><br/>
 
-If you do not have Qt or do not want to use it, the examples in
-this tutorial will fall back to simple OpenGL graphics. In such a case
-to enable OpenGL graphics, use
-<code>-DGEANT_USE_OPENGL_X11=ON</code> when configuring G4 with
-<i>cmake</i>. <br/> While for Linux this should not be a problem, it could
-have issues on Mac systems. If this fail, contact us.
-
+<div class="warning">
+	If you do not have Qt or do not want to use it, the examples in
+	this tutorial will fall back to simple OpenGL graphics. In such a case
+	to enable OpenGL graphics, use
+	<code>-DGEANT_USE_OPENGL_X11=ON</code> when configuring G4 with
+	<i>cmake</i>. <br/> While for Linux this should not be a problem, it could
+	have issues on Mac systems. If this fail, contact us.
+</div>
 
 <h4>Multi-threading</h4>
 Starting with Geant4 Version 11 series, we introduced event level parallelism via
@@ -82,25 +83,28 @@ Let's configure Geant4:<br/><br/>
 	$ cmake -DCMAKE_INSTALL_PREFIX=../install -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_OPENGL_X11=ON ../geant4-v###G4VERSION<br/>
 </codeblock>
 <br/>
-Note:
-<ul>
-	<li>If you do not have <i>wget</i> you may download the Geant4 tar ball from <a href="https://geant4.web.cern.ch/support/download">Geant4 download page</a>.
-		You may also download the source code from <a target="_new" href="https://gitlab.cern.ch/geant4/geant4/-/releases/v###G4VERSION">
-			CERN GitLab</a> or <a target="_new" href="https://github.com/Geant4/geant4/releases">GitHub</a>.
-	</li>
-	<li>Instead of <i>cmake</i>, you may use <i>ccmake</i> to configure build options one by one. With <i>ccmake</i> you may also easily configure, for example, where data files are stored.
-	</li>
-	<li>If you have an old version of Linux with a default compiler with a version &lt;4.8.2,
-		type <code>gcc --version</code> to get the compiler version, you need to have installed
-		an alternative more recent compiler. For example if you have a CentOS 6 or Scientific Linux 6
-		distributions you need to manually install a recent compiler. After doing that you need
-		to prepend to the <code>cmake</code> line: <code>CC=gcc CXX=g++</code> and make sure that
-		gcc and g++ binaries are the correct one.<br/>
-		Replace <code>gcc</code> and <code>g++</code> with your alternative compiler if you have one
-		and you want to use it
-		(e.g. <code>icc</code> and <code>icpc</code> for Intel C compiler).<br/>
-	</li>
-</ul>
+
+<div class="info">
+	<strong>Notes:</strong>
+	<ul>
+		<li>If you do not have <i>wget</i> you may download the Geant4 tar ball from <a href="https://geant4.web.cern.ch/support/download">Geant4 download page</a>.
+			You may also download the source code from <a target="_new" href="https://gitlab.cern.ch/geant4/geant4/-/releases/v###G4VERSION">
+				CERN GitLab</a> or <a target="_new" href="https://github.com/Geant4/geant4/releases">GitHub</a>.
+		</li>
+		<li>Instead of <i>cmake</i>, you may use <i>ccmake</i> to configure build options one by one. With <i>ccmake</i> you may also easily configure, for example, where data files are stored.
+		</li>
+		<li>If you have an old version of Linux with a default compiler with a version &lt;4.8.2,
+			type <code>gcc --version</code> to get the compiler version, you need to have installed
+			an alternative more recent compiler. For example if you have a CentOS 6 or Scientific Linux 6
+			distributions you need to manually install a recent compiler. After doing that you need
+			to prepend to the <code>cmake</code> line: <code>CC=gcc CXX=g++</code> and make sure that
+			gcc and g++ binaries are the correct one.<br/>
+			Replace <code>gcc</code> and <code>g++</code> with your alternative compiler if you have one
+			and you want to use it
+			(e.g. <code>icc</code> and <code>icpc</code> for Intel C compiler).<br/>
+		</li>
+	</ul>
+</div>
 
 
 If everything goes as expected <Code>cmake</code> will work
@@ -111,52 +115,52 @@ few seconds on the configuration. The last lines should read:<br/><br/>
 	-- Build files have been written to: &lt;tutorial&gt/build<br/>
 </codeblock><br/>
 
-
-Additional notes:
-<ul>
-	<li> If you do not want to use Qt, remove the <code>-DGEANT4_USE_QT=ON</code> option. If you want
-		multi-threaded support to be removed, add <code>-DGEANT4_BUILD_MULTITHREADED=OFF</code>.
-	</li>
-	<li> If you disable Qt it is recommended to leave OpenGL with:
-		<code>-DGEANT4_USE_OPENGL_X11=ON</code>.
-	</li>
-	<li>
-		With Mac OS X you need XQuartz to be properly installed beforehand to use OPENGL_X11 option.
-	</li>
-	<li>
-		If you have installed Qt manually, and you are using Qt ###QTVERSION, you may need to
-		add: <code>-DCMAKE_PREFIX_PATH=&lt;where-qt-is-installed&gt;/###QTVERSION/gcc_64</code>
-		to cmake options if Qt is not found (you may need to adjust the path).
-	</li>
-	<li>Refer to the <a href="http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/InstallationGuide/html/index.html">
-		installation manual</a> for a complete list of installation options. There are many more options available.
-	</li>
-	<li>If you already have installed Geant4 databases somewhere in your
-		system, you can avoid downloading the same library by adding
-		<code>-DGEANT4_INSTALL_DATADIR=<i>where-the-dbs-are</i></code>.
-	</li>
-	<li>If you receive an error about
-		EXPAT libraries, you can disable them with <code>-DGEANT4_USE_SYSTEM_EXPAT=OFF</code>.
-	</li>
-	<li>If you want to use an already installed version of CLHEP,
-		instead of using the Geant4 internal one, you can specify that via the option:
-		<code>-DGEANT4_USE_SYSTEM_CLHEP=OFF</code>. You may need to specify
-		where to find CLHEP (see installation manuals).
-	</li>
-	<li>If you want to use an IDE you can specify the
-		option <code>-G&lt;ide-type-goes-here&gt;</code> (run cmake without options to see a list of
-		supported IDEs on your system. For example
-		<ul>
-			<li>
-				on Mac OS X with Xcode: <code>cmake -GXcode [...]</code></li>
-			<li>forKDevelop3 support: <code>-GKDevelop3</code></li>
-			<li>for Eclipse: <code>cmake -G"Eclipse CDT4 - Unix Makefiles" [...]</code></li>
-		</ul>
-		In such a case instead
-		of makefiles cmake will create project files for that IDE.
-	</li>
-</ul>
-
+<div class="info">
+	<strong>Additional Notes and configuration options:</strong>
+	<ul>
+		<li> If you do not want to use Qt, remove the <code>-DGEANT4_USE_QT=ON</code> option. If you want
+			multi-threaded support to be removed, add <code>-DGEANT4_BUILD_MULTITHREADED=OFF</code>.
+		</li>
+		<li> If you disable Qt it is recommended to leave OpenGL with:
+			<code>-DGEANT4_USE_OPENGL_X11=ON</code>.
+		</li>
+		<li>
+			With Mac OS X you need XQuartz to be properly installed beforehand to use OPENGL_X11 option.
+		</li>
+		<li>
+			If you have installed Qt manually, and you are using Qt ###QTVERSION, you may need to
+			add: <code>-DCMAKE_PREFIX_PATH=&lt;where-qt-is-installed&gt;/###QTVERSION/gcc_64</code>
+			to cmake options if Qt is not found (you may need to adjust the path).
+		</li>
+		<li>Refer to the <a href="http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/InstallationGuide/html/index.html">
+			installation manual</a> for a complete list of installation options. There are many more options available.
+		</li>
+		<li>If you already have installed Geant4 databases somewhere in your
+			system, you can avoid downloading the same library by adding
+			<code>-DGEANT4_INSTALL_DATADIR=<i>where-the-dbs-are</i></code>.
+		</li>
+		<li>If you receive an error about
+			EXPAT libraries, you can disable them with <code>-DGEANT4_USE_SYSTEM_EXPAT=OFF</code>.
+		</li>
+		<li>If you want to use an already installed version of CLHEP,
+			instead of using the Geant4 internal one, you can specify that via the option:
+			<code>-DGEANT4_USE_SYSTEM_CLHEP=OFF</code>. You may need to specify
+			where to find CLHEP (see installation manuals).
+		</li>
+		<li>If you want to use an IDE you can specify the
+			option <code>-G&lt;ide-type-goes-here&gt;</code> (run cmake without options to see a list of
+			supported IDEs on your system. For example
+			<ul>
+				<li>
+					on Mac OS X with Xcode: <code>cmake -GXcode [...]</code></li>
+				<li>forKDevelop3 support: <code>-GKDevelop3</code></li>
+				<li>for Eclipse: <code>cmake -G"Eclipse CDT4 - Unix Makefiles" [...]</code></li>
+			</ul>
+			In such a case instead
+			of makefiles cmake will create project files for that IDE.
+		</li>
+	</ul>
+</div>
 
 <h4>Step 2: Compilation</h4>
 Compile Geant4, on a multi-core system with <i>N</i> cores you can
@@ -169,10 +173,22 @@ substantially speedup compilation.<br/><br/>
 </codeblock>
 
 <br/>
-<b>Note</b>: If not sure how many cores you have use  N=2.<br/>
-<b>Note</b>: you can have a verbose compilation (for example to see the exact
-compilation options) using <code>make VERBOSE=1 -j <i>2</i></code>.<br/><br/>
 
+<div class="info">
+	<strong>Notes:</strong>
+	<ul>
+		<li>
+			If not sure how many cores you have use <code>N=2</code>.
+		</li>
+		<li>
+			You can have a verbose compilation (for example to see the exact
+			compilation options) using <code>make VERBOSE=1 -j <i>2</i></code>.
+		</li>
+
+	</ul>
+</div>
+
+<br/>
 
 After Geant4 has been compiled and installed the content of the
 &lt;tutorial&gt;/install directory should contain the directories:

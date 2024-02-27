@@ -1,193 +1,265 @@
-<hr>
+<h2><a class="content" id=ho4_runaction>User Actions II</a></h2>
 
-
-<h2><a name="runaction">User Actions II</a></h2>
-In <a href="../HandsOn3/index.html#ex3">Exercise 3 of Hands On 3</a>
+In <a href="../HandsOn3/index.html#ho3_ex3">Exercise 3 of Hands On 3</a>
 you have printed on screen, for each simulated event, the hits
-collected in the hodosope. In this exercise we will show how to
-accumualte some information (the energy deposited in the calorimeters)
-over the entire run. We will also show how to <i>merge</i> (i.e.
-<i>reduce</i> or combine) the results in a multi-threaded application.<br/>
+collected in the hodoscope.
+
+<br/><br/>
+
+In this exercise we will show how to
+accumulate some information (the energy deposited in the calorimeters)
+over the entire run. We will also show how to <i>merge</i>
+(i.e. <i>reduce</i> or combine) the results in a multi-threaded application.
+
+<br/><br/>
+
+
 The goal of these two exercises is to calculate the average energy
 released in the electromagnetic and hadronic calorimeter and the
-average partial shower shape. A shower shape is a quantity that
-somehow describes the charactersitics spatial dimensions of
-particle showers in calorimeters. In this example we will calcualte
-the fraction of energy released in the electromagnetic
-calorimeter. An electron or gamma has the <i>em
-fraction</i> very close to 1; a hadron will have a smaller
-value of the em
-fraction.
+average partial shower shape.
+<br/><br/>
 
+<div class="info">
+	A shower shape is a quantity that
+	describes the characteristic spatial dimensions of
+	particle showers in calorimeters. In this example we will calcualte
+	the fraction of energy released in the electromagnetic
+	calorimeter. An electron or gamma has the
+	<i>em fraction</i> very close to 1; a hadron will have a smaller
+	value of the em fraction.
+</div>
 
-During Exercise 1 you will modify the application to accumulate the
-energy released in calorimeters in each event. You will modify 2 files: <code>Run.hh</code> and
-<code>Run.cc</code>, implementing a user-defined <code>G4Run</code> class.<br/>
-During Exercise 2 you will modify the file
-<code>RunAction.cc</code>, that implements the user defined
-<code>G4UserRunAction</code> class, to retrieve the information
-collected in the first exercise and dump on screen the results of your
-data analysis: energy in calorimeters and shower shape.<br/>
+<br/>
+
+<ul>
+	<li>
+		In Exercise 1 you will modify the application to accumulate the
+		energy released in calorimeters in each event. <br/>
+		You will modify 2 files: <code>Run.hh</code> and
+		<code>Run.cc</code>, implementing a user-defined <code>G4Run</code> class.<br/><br/>
+	</li>
+	<li>
+		In Exercise 2 you will modify the file
+		<code>RunAction.cc</code>, that implements the user defined
+		<code>G4UserRunAction</code> class, to retrieve the information
+		collected in the first exercise and dump on screen the results of your
+		data analysis: energy in calorimeters and shower shape.<br/>
+	</li>
+</ul>
+
+<br/>
+
 During the simulation of a run an instance of a <code>G4Run</code> exists
 and is managed by Geant4 kernel. User should extend this class to
 accumulate user data.
 
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
 
+<h3>Exercise 1 Step 1</h3>
 
-<h3><a name="ex1s1">Exercise 1 Step 1</a></h3>
+Create a user-defined run class.
 
-Create a user-defined run class
+<br/><br/>
+
 Modify the file <code>Run.hh</code>, a class inheriting
-from <code>G4Run</code>. Extend the class to contain the information
-to be stored: the total energy deposited in the two calorimeters and the
-accumulated shower shape (of types double). Since you will need to access hits
+from <code>G4Run</code>: extend the class to contain the information
+to be stored (of types double):
+
+<ul>
+	<li>the total energy deposited in the two calorimeters</li>
+	<li>the accumulated shower shape</li>
+</ul>
+
+<br/>
+
+Since you will need to access hits
 collections from calorimeters, add two integer data members to keep
-track of the hits collection ids.<br/>
-<b>Question:</b> what are the data members of the base class
-<code>G4Run</code>?
+track of the hits collection ids.<br/><br/>
 
-
+<div class="warning">
+	<strong>Question:</strong> what are the data members of the base class
+	<code>G4Run</code>?
+</div>
 
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-<tr><td>  Run.hh File:</td></tr>
-  <TR><TD><code>
-<br/>&nbsp;class Run : public G4Run {
-<br/>&nbsp;public:
-<br/>&nbsp;    Run();
-<br/>&nbsp;  virtual ~Run() {};
-<br/>&nbsp;  virtual void RecordEvent(const G4Event*);
-<br/>&nbsp;  virtual void Merge(const G4Run*);
-<br/><font color="#ff0000">&nbsp;    G4double GetEmEnergy() const { return em_ene; }
-<br/>&nbsp;    G4double GetHadEnergy() const { return had_ene; }
-<br/>&nbsp;    G4double GetShowerShape() const { return shower_shape; }
-<br/>&nbsp;private:
-<br/>&nbsp;    G4double em_ene; //accumulated energy in EM calo
-<br/>&nbsp;    G4double had_ene;//accumulated energy in HAD calo
-<br/>&nbsp;    G4double shower_shape;//accumulated shower shape (
-    f=EM/(EM+HAD) )
-<br/>&nbsp;    G4int ECHCID; //ID for EM hits collection
-<br/>&nbsp;    G4int HCHCID; //ID for HAD hits collection
-<br/></font>&nbsp;};
-</code></TD></TR></TBODY></TABLE>
+<codeblock>
+	<div class="filename"> File: Run.hh</div>
+	<br/>
+	class Run : public G4Run {<br/>
+	public:<br/>
+	&emsp;Run();<br/>
+	&emsp;virtual ~Run() {};<br/>
+	&emsp;virtual void RecordEvent(const G4Event*);<br/>
+	&emsp;virtual void Merge(const G4Run*);<br/>
+	<div class="tbmodified">
+		&emsp;G4double GetEmEnergy() const { return em_ene; }<br/>
+		&emsp;G4double GetHadEnergy() const { return had_ene; }<br/>
+		&emsp;G4double GetShowerShape() const { return shower_shape; }<br/>
+		private:<br/>
+		&emsp;G4double em_ene; //accumulated energy in EM calo<br/>
+		&emsp;G4double had_ene;//accumulated energy in HAD calo<br/>
+		&emsp;G4double shower_shape;//accumulated shower shape (<br/>
+		&emsp;f=EM/(EM+HAD) )<br/>
+		&emsp;G4int ECHCID; //ID for EM hits collection<br/>
+		&emsp;G4int HCHCID; //ID for HAD hits collection<br/>
+	</div>
+</codeblock>
 
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
 
+<h3>Exercise 1 Step 2</h3>
 
-<h3><a name="ex1s2">Exercise 1 Step 2</a></h3>
+Accumulate physics quantities.
 
-Accumualte physics quantities
+<br/><br/>
+
 Modify in file <code>Run.cc</code> the method
 <code>RecordEvent</code>. This method is called by Geant4 kernel at
 the end of each event passing the pointer to the current event.
+<br/><br/>
 Retrieve here the hits collections of both calorimeters, loop on all hits and
 calculate the needed physics quantities. In the constructor of Run class
 initialize the class data members to an initial value (0 for energy
-and shape and -1 for ids).<br/>
-<b>Hint:</b> Note that the initial value of -1 for hits id allows
-you to be efficient in searching the hits by collection: if id==-1 you
-need to search the collections, if not you already did this opeartion
-and you can skip the heavy search by string.
+and shape and -1 for ids).
 
+<br/><br/>
 
+<div class="info">
+	<strong>Hint:</strong> Note that the initial value of -1 for hits id allows
+	you to be efficient in searching the hits by collection: if id==-1 you
+	need to search the collections, if not you already did this opeartion
+	and you can skip the heavy search by string.
+</div>
 
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-<tr><td>Run.cc</td></tr>
-<TR><TD><code>
-<br/>&nbsp;Run::Run()
-<br/>&nbsp;<font color="#ff0000">: G4Run() ,
-<br/>&nbsp;&nbsp;em_ene(0), had_ene(0), shower_shape(0) , ECHCID(-1), HCHCID(-1)</font>
-<br/>&nbsp;{ }
+<codeblock>
+	<div class="filename"> File: Run.cc</div>
+	<br/>
+	<div class="tbmodified">
+		Run::Run(): G4Run(), em_ene(0), had_ene(0), shower_shape(0) , ECHCID(-1), HCHCID(-1) { } <br/>
+	</div>
+	void Run::RecordEvent(const G4Event* evt)<br/>
+	{<br/>
+	<div class="tbmodified">
+		// Forward call to base class<br/>
+		// This is important, can you tell why?<br/>
+		G4Run::RecordEvent(evt);<br/>
+		<br/>
+		if ( ECHCID == -1 || HCHCID == -1) {<br/>
+		&emsp; G4SDManager* sdManager = G4SDManager::GetSDMpointer();<br/>
+		&emsp; ECHCID = sdManager-&gt;GetCollectionID("EMcalorimeter/EMcalorimeterColl");<br/>
+		&emsp; HCHCID = sdManager-&gt;GetCollectionID("HadCalorimeter/HadCalorimeterColl");<br/>
+		}<br/>
+		G4HCofThisEvent* hce = evt-&gt;GetHCofThisEvent();<br/>
+		if (!hce) {<br/>
+		&emsp; G4ExceptionDescription msg;<br/>
+		&emsp; msg &lt;&lt; "No hits collection of this event found.\n";<br/>
+		&emsp; G4Exception("Run::RecordEvent()","Code001", JustWarning, msg);<br/>
+		&emsp; return;<br/>
+		}<br/>
+		const EmCalorimeterHitsCollection* emHC = static_cast&lt;const EmCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(ECHCID));<br/>
+		const HadCalorimeterHitsCollection* hadHC = static_cast&lt;const HadCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(HCHCID));<br/>
+		if ( !emHC || !hadHC )<br/>
+		{<br/>
+		&emsp; G4ExceptionDescription msg;<br/>
+		&emsp; msg &lt;&lt; "Some of hits collections of this event not found.\n";<br/>
+		&emsp; G4Exception("Run::RecordEvent()","Code001", JustWarning, msg);<br/>
+		&emsp; return;<br/>
+		}<br/>
+		G4double em = 0;<br/>
+		G4double had = 0;<br/>
+		for (size_t i=0;i&lt;emHC-&gt;GetSize();i++)<br/>
+		{<br/>
+		&emsp; EmCalorimeterHit* hit = (*emHC)[i];<br/>
+		&emsp; em += hit-&gt;GetEdep();<br/>
+		}<br/>
+		for (size_t i=0;i&lt;hadHC-&gt;GetSize();i++)<br/>
+		{<br/>
+		&emsp; HadCalorimeterHit* hit = (*hadHC)[i];<br/>
+		&emsp; had += hit-&gt;GetEdep();<br/>
+		}<br/>
+		had_ene += had;<br/>
+		em_ene += em;<br/>
+		if ( had+em &gt; 0 ) //Protect agains the case had+em=0<br/>
+		&emsp; shower_shape += ( em/(had+em) );<br/>
+		<br/>
+	</div>
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
 <br/>
-<br/>&nbsp;void Run::RecordEvent(const G4Event* evt)
-<br/>&nbsp;{
-<br/><font color="#ff0000">&nbsp;    //Forward call to base class
-<br/>&nbsp;    //This is important, can you tell why?
-<br/>&nbsp;    G4Run::RecordEvent(evt);
-<br/>&nbsp;
-<br/>&nbsp;    if ( ECHCID == -1 || HCHCID == -1) {
-<br/>&nbsp;&nbsp;&nbsp;        G4SDManager* sdManager = G4SDManager::GetSDMpointer();
-<br/>&nbsp;&nbsp;&nbsp;        ECHCID = sdManager-&gt;GetCollectionID("EMcalorimeter/EMcalorimeterColl");
-<br/>&nbsp;&nbsp;&nbsp;        HCHCID = sdManager-&gt;GetCollectionID("HadCalorimeter/HadCalorimeterColl");
-<br/>&nbsp;    }
-<br/>&nbsp;    G4HCofThisEvent* hce = evt-&gt;GetHCofThisEvent();
-<br/>&nbsp;    if (!hce) {
-<br/>&nbsp;&nbsp;&nbsp;        G4ExceptionDescription msg;
-<br/>&nbsp;&nbsp;&nbsp;        msg &lt;&lt; "No hits collection of this event found.\n";
-<br/>&nbsp;&nbsp;&nbsp;        G4Exception("Run::RecordEvent()","Code001", JustWarning, msg);
-<br/>&nbsp;&nbsp;&nbsp;        return;
-<br/>&nbsp;    }
-<br/>&nbsp;    const EmCalorimeterHitsCollection* emHC = static_cast&lt;const EmCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(ECHCID));
-<br/>&nbsp;    const HadCalorimeterHitsCollection* hadHC = static_cast&lt;const HadCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(HCHCID));
-<br/>&nbsp;    if ( !emHC || !hadHC )
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        G4ExceptionDescription msg;
-<br/>&nbsp; &nbsp;&nbsp;       msg &lt;&lt; "Some of hits collections of this event not found.\n";
-<br/>&nbsp;&nbsp;&nbsp;        G4Exception("Run::RecordEvent()","Code001", JustWarning, msg);
-<br/>&nbsp; &nbsp;&nbsp;       return;
-<br/>&nbsp;    }
-<br/>&nbsp;    G4double em = 0;
-<br/>&nbsp;    G4double had = 0;
-<br/>&nbsp;    for (size_t i=0;i&lt;emHC-&gt;GetSize();i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        EmCalorimeterHit* hit = (*emHC)[i];
-<br/>&nbsp;&nbsp;&nbsp;        em += hit-&gt;GetEdep();
-<br/>&nbsp;    }
-<br/>&nbsp;    for (size_t i=0;i&lt;hadHC-&gt;GetSize();i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        HadCalorimeterHit* hit = (*hadHC)[i];
-<br/>&nbsp;&nbsp;&nbsp;        had += hit-&gt;GetEdep();
-<br/>&nbsp;    }
-<br/>&nbsp;    had_ene += had;
-<br/>&nbsp;    em_ene += em;
-<br/>&nbsp;    if ( had+em &gt; 0 ) //Protect agains the case had+em=0
-<br/>&nbsp;&nbsp;&nbsp;        shower_shape += ( em/(had+em) );
-<br/></font>&nbsp;}
-</code></TD></TR></TBODY></TABLE>
 
-
-
-<h3><a name="ex1s3">Exercise 1 Step 3</a></h3>
+<h3>Exercise 1 Step 3</h3>
 
 Implement reduction for multi-threading.
 
+<br/><br/>
+
 This step is optional for application without multi-thread support.<br/>
 Why you need this? Remember in a multi-threaded application each
-worker thread has its own instance of class <code>
-G4Run</code>. Events are distributed and you end the simulation with many run
+worker thread has its own instance of class <code>G4Run</code>.
+
+<br/><br/>
+
+Events are distributed and you end the simulation with many run
 objects (one per worker thread). Geant4 provides a way to merge these
 sub-runs into a single <i>global</i> one. This is done implementing a
 <code>Merge</code> method in the <code>Run</code> class.
 Geant4 kernel works in a way that the worker
 threads will call the <code>Merge</code> method of the <b>master</b> run
-object passing a pointer to the <b>worker</b> run object. This
-animation explains what is happening under the hood (Geant4
-kernel will take care of synchronizing the threads to avoid race conditions):<br/>
-<img src="merge.gif"/>
+object passing a pointer to the <b>worker</b> run object.
 
+<br/><br/>
+
+
+The animation below explains what is happening under the hood.
+
+<br/><br/>
+
+<div class="success">
+	Geant4 kernel will take care of synchronizing the threads to avoid race conditions):<br/>
+</div>
+
+<br/><br/>
+
+
+<img src="merge.gif" width=###IMAGES_WIDTH//>
 
 
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-<tr><td>Run.cc File:</td></tr>
-  <TR><TD><code>
-<br/>&nbsp;void Run::Merge(const G4Run* aRun)
-<br/>&nbsp;{
-<br/><font color="#ff0000">&nbsp;    const Run* localRun = static_cast&lt;const Run*&gt;(aRun);
-<br/>&nbsp;    em_ene += localRun-&gt;GetEmEnergy();
-<br/>&nbsp;    had_ene += localRun-&gt;GetHadEnergy();
-<br/>&nbsp;    shower_shape += localRun-&gt;GetShowerShape();
-<br/>&nbsp;    //Forward call to base-class
-<br/>&nbsp;    //This is important, can you tell why?
-<br/>&nbsp;    G4Run::Merge(localRun);
-<br/></font>&nbsp;}
-</code></TD></TR></TBODY></TABLE>
+<codeblock>
+	<div class="filename"> File: Run.cc</div>
+	<br/>
+	void Run::Merge(const G4Run* aRun)<br/>
+	{<br/>
+	<div class="tbmodified">
+		&emsp; const Run* localRun = static_cast&lt;const Run*&gt;(aRun);<br/>
+		&emsp; em_ene += localRun-&gt;GetEmEnergy();<br/>
+		&emsp; had_ene += localRun-&gt;GetHadEnergy();<br/>
+		&emsp; shower_shape += localRun-&gt;GetShowerShape();<br/>
+		&emsp; // Forward call to base-class<br/>
+		&emsp; // This is important, can you tell why?<br/>
+		&emsp; G4Run::Merge(localRun);<br/>
+	</div>
+	}
+</codeblock>
 
 
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
 
-<h3><a name="ex1s4">Exercise 1 Step 4</a></h3>
+<h3>Exercise 1 Step 4</h3>
 
 Create an instance of user-defined run class at each new run.
+
+<br/><br/>
 
 Now that you have extended <code>G4Run</code> you need to tell
 Geant4 kernel to use it instead of the default one. To do so you need
@@ -197,75 +269,94 @@ Geant4 at the beginning of each run). The method is already implemented in
 <code>RunAction.cc</code> file.
 
 
-
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-<tr><td>RunAction.cc File</td></tr>
-  <TR><TD><code>
-<br/>&nbsp;G4Run* RunAction::GenerateRun() {
-<br/>&nbsp;    return new Run;
-<br/>&nbsp;}
-</code></TD></TR></TBODY></TABLE>
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+
+	<div class="tbmodified">
+		G4Run* RunAction::GenerateRun() {<br/>
+		return new Run;<br/>
+		}
+	</div>
+
+</codeblock>
 
 
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
 
-<h3><a name="ex2">Exercise 2</a></h3>
+<h3>Exercise 2</h3>
 
 Calculate physics quantities and print them on screen.
+
+<br/><br/>
+
 Now that <code>Run</code> class has been modified to include user
 data we can print out the summary of our simple data analysis at the end of the
-run. To do that we modify the method <code>EndOfRunAction</code> of
-the <code>RunAction</code> class (<code>RunAction.cc</code> file). Retrieve from
-the run object the information you need and calculate the average
-energy release in calorimeters and the shower shape.<br/>
-<b>Hint 1:</b> Note that Geant4 will pass you an object of type
-<code>G4Run</code> (the base class). You need to make an appropriate cast to
-access your data.<br/>
-<b>Hint 2:</b> The total number of events is a data member of base
-class <code>G4Run</code>. Check in online documentation how to get
-it.<br/>
-<b>Hint 3:</b> The quantity have been stored in Geant4 natural
-units. A useful function <code>G4BestUnit</code> can be used to print
-on screen a variable with a dimension. For example:<br/><br/>
-<table border=1><tbody><tr><td><code>
-G4double someValue = 0.001*GeV;<br/>
-G4cout&lt;&lt; G4BestUnit( someValue , "Energy" )&lt;&lt;G4endl; //Will print "1 MeV"
-</code></td></tr></tbody></table>
+run.
 
+<br/><br/>
+
+To do that we modify the method <code>EndOfRunAction</code> of
+the <code>RunAction</code> class (<code>RunAction.cc</code> file). <br/>
+
+Retrieve from the run object the information you need and calculate the average
+energy release in calorimeters and the shower shape.<br/>
+
+<br/><br/>
+
+<div class="info">
+	<strong>Hint 1:</strong> Note that Geant4 will pass you an object of type
+	<code>G4Run</code> (the base class). You need to make an appropriate cast to
+	access your data.<br/>
+	<strong>Hint 2:</strong> The total number of events is a data member of base
+	class <code>G4Run</code>. Check in online documentation how to get
+	it.<br/>
+	<strong>Hint 3:</strong> The quantity have been stored in Geant4 natural
+	units. A useful function <code>G4BestUnit</code> can be used to print
+	on screen a variable with a dimension. For example:<br/><br/>
+	<codeblock>
+		G4double someValue = 0.001*GeV;<br/>
+		G4cout&lt;&lt; G4BestUnit( someValue , "Energy" )&lt;&lt;G4endl; //Will print "1 MeV"
+	</codeblock>
+</div>
 
 
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-<tr><td>RunAction.cc File</td></tr>
-  <TR><TD><code>
- <br/>&nbsp;void RunAction::EndOfRunAction(const G4Run* run)
-<br/>&nbsp;{
- <br/><font color="#ff0000">&nbsp;   const Run* myrun = dynamic_cast&lt;const Run*&gt;(run);
- <br/>&nbsp;   if ( myrun )
- <br/>&nbsp;   {
- <br/>&nbsp;&nbsp;&nbsp;       G4int nEvents = myrun-&gt;GetNumberOfEvent();
- <br/>&nbsp;&nbsp;&nbsp;       if ( nEvents &lt; 1 )
- <br/>&nbsp;&nbsp;&nbsp;       {
- <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           G4ExceptionDescription msg;
- <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           msg &lt;&lt; "Run consists of 0 events";
- <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           G4Exception("RunAction::EndOfRunAction()","Code001", JustWarning, msg);
- <br/>&nbsp;&nbsp;&nbsp;       }
- <br/>&nbsp;&nbsp;&nbsp;       G4double em_ene = myrun-&gt;GetEmEnergy();
- <br/>&nbsp;&nbsp;&nbsp;       G4double had_ene = myrun-&gt;GetHadEnergy();
- <br/>&nbsp;&nbsp;&nbsp;       G4double shower_shape = myrun-&gt;GetShowerShape();
- <br/>&nbsp;&nbsp;&nbsp;       G4int safety = ( nEvents &gt; 0 ? nEvents : 1);//To avoid divisions by zero
-
- <br/>&nbsp;&nbsp;&nbsp;       G4cout&lt;&lt;"Run["&lt;&lt;myrun-&gt;GetRunID()&lt;&lt;"] With: "&lt;&lt;nEvents&lt;&lt;"Events\n"
- <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       &lt;&lt;" &lt;E_em&gt;="&lt;&lt;G4BestUnit(em_ene/safety,"Energy")&lt;&lt;"\n"
- <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       &lt;&lt;" &lt;E_had&gt;="&lt;&lt;G4BestUnit(had_ene/safety,"Energy")&lt;&lt;"\n"
- <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       &lt;&lt;" &lt;E&gt;="&lt;&lt;G4BestUnit((em_ene+had_ene)/safety,"Energy")&lt;&lt;"\n"
- <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;       &lt;&lt;" &lt;ShowerShape&gt;="&lt;&lt;shower_shape/safety&lt;&lt;G4endl;
- <br/>&nbsp;   } else {
- <br/>&nbsp;       G4ExceptionDescription msg;
- <br/>&nbsp;       msg &lt;&lt; "Run is not of correct type, skipping analysis";
- <br/>&nbsp;       G4Exception("RunAction::EndOfRunAction()","Code001", JustWarning, msg);
- <br/>&nbsp;   }
- <br/></font>&nbsp;}
-</code></TD></TR></TBODY></TABLE>
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+	void RunAction::EndOfRunAction(const G4Run* run)<br/>
+	{<br/>
+	<div class="tbmodified">
+		&emsp;const Run* myrun = dynamic_cast&lt;const Run*&gt;(run);<br/>
+		&emsp;if ( myrun )<br/>
+		&emsp;{<br/>
+		&emsp;&emsp; G4int nEvents = myrun-&gt;GetNumberOfEvent();<br/>
+		&emsp;&emsp; if ( nEvents &lt; 1 )<br/>
+		&emsp;&emsp; {<br/>
+		&emsp;&emsp;&emsp; G4ExceptionDescription msg;<br/>
+		&emsp;&emsp;&emsp; msg &lt;&lt; "Run consists of 0 events";<br/>
+		&emsp;&emsp;&emsp; G4Exception("RunAction::EndOfRunAction()","Code001", JustWarning, msg);<br/>
+		&emsp;&emsp; }<br/>
+		&emsp;&emsp; G4double em_ene = myrun-&gt;GetEmEnergy();<br/>
+		&emsp;&emsp; G4double had_ene = myrun-&gt;GetHadEnergy();<br/>
+		&emsp;&emsp; G4double shower_shape = myrun-&gt;GetShowerShape();<br/>
+		&emsp;&emsp; G4int safety = ( nEvents &gt; 0 ? nEvents : 1);//To avoid divisions by zero<br/>
+		<br/>
+		&emsp;&emsp; G4cout&lt;&lt;"Run["&lt;&lt;myrun-&gt;GetRunID()&lt;&lt;"] With: "&lt;&lt;nEvents&lt;&lt;"Events\n"<br/>
+		&emsp;&emsp; &lt;&lt;" &lt;E_em&gt;="&lt;&lt;G4BestUnit(em_ene/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp; &lt;&lt;" &lt;E_had&gt;="&lt;&lt;G4BestUnit(had_ene/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp; &lt;&lt;" &lt;E&gt;="&lt;&lt;G4BestUnit((em_ene+had_ene)/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp; &lt;&lt;" &lt;ShowerShape&gt;="&lt;&lt;shower_shape/safety&lt;&lt;G4endl;<br/>
+		&emsp;} else {<br/>
+		&emsp;&emsp;G4ExceptionDescription msg;<br/>
+		&emsp;&emsp;msg &lt;&lt; "Run is not of correct type, skipping analysis";<br/>
+		&emsp;&emsp;G4Exception("RunAction::EndOfRunAction()","Code001", JustWarning, msg);<br/>
+		&emsp;}
+	</div>
+</codeblock>
 
 

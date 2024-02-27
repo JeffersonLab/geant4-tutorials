@@ -1,96 +1,109 @@
-<H1>Hands on 4: First physics measurments</H1>
-<ul>
-  <li><a href="#intro">Introduction</a>
-  <li><a href="#runaction">User Actions II</a>:
-  <ul>
-    <li><a href="#ex1s1">Exercise 1 Step 1</a></li>
-    <li><a href="#ex1s2">Exercise 1 Step 2</a></li>
-    <li><a href="#ex1s3">Exercise 1 Step 3</a></li>
-    <li><a href="#ex1s4">Exercise 1 Step 4</a></li>
-    <li><a href="#ex2">Exercise 2</a></li>
-  </ul></li>
-  <li><a href="#ana">Using g4analysis to store results</a>
-  <ul>
-    <li><a href="#ex3s1">Exercise 3 Step 1</a></li>
-    <li><a href="#ex3s2">Exercise 3 Step 2</a></li>
-    <li><a href="#ex3s3">Exercise 3 Step 3</a></li>
-    <li><a href="#ex3s4">Exercise 3 Step 4</a></li>
-    <li><a href="#ex3s5">Exercise 3 Step 5</a></li>
-  </ul>
-  </li>
-</ul>
+<hr/><h2><a class="content" id=ho4_intro></a></h2>
 
-<hr>
+<br/><br/><br/><br/><h1>Hands on 4: First physics measurements</h1>
 
-
-<h2><a name=intro>Introduction</a></h2>
-<b>Note:</b> The code of this tutorial is a modified version of Geant4 example B5. You can review almost all concepts from this tutorial in the example that can be found under:
-&lt;geant4&gt;/examples/basic/B5.<br/>
 In this fourth hands-on you will learn:
 <ul>
-  <li>How to define a user run class to accumulate quantities from different
-  events.</li>
-  <li>How to process this information to make a simple physics
-  measurement using <code>G4UserRunAction</code>.</li>
-  <li>How to store physics results on output files with
-  <code>g4analysis</code> for post-processing analysis.</li>
-  <li>How to modify physics list using constructors.</li>
+	<li>How to define a user run class to accumulate quantities from different
+		events.
+	</li>
+	<li>How to process this information to make a simple physics
+		measurement using <code>G4UserRunAction</code>.
+	</li>
+	<li>How to store physics results on output files with
+		<code>g4analysis</code> for post-processing analysis.
+	</li>
+	<li>How to modify physics list using constructors.</li>
 </ul>
-The code for this hands-on session
-is <a href="HandsOn4.tar.gz">here</a> (
-for your reference, the complete solution
-is also availavble <a
-href="HandsOn4-solution.tar.gz">here</a>).
-Copy the the tar ball to your local area.<br/><br/>
-Follow the instructions of <a href="../HandsOn1/index.html">Hands On
-1</a> to configure with <code>cmake</code> the example and build it.
-Try out the application:<br/><br/>
-<TABLE border=1><TBODY><TR><TD><code>
-&nbsp; $ cd &lt;tutorial&gt;<br/>
-&nbsp; $ tar xzf HandsOn4.tar.gz<br/>
-&nbsp; $ cd HandsOn4<br/>
-&nbsp; $ cmake .<br/>
-&nbsp; $ make -j <i>2</i> -f Makefile<br/>
-&nbsp; $ ./G4tut
-</code></TD></TR></TBODY></TABLE><br/>
-<font color="#ff0000">Note:</font> Ignore compiler warning messages. They disappear once you complete the exercise.<br/><br/>
 
-The geometry is the same as the completion of the <a
-href="../HandsOn3/index.html">previous hands on</a>.<br/>
-We will not modify the geometry anymnore, but several sensitive
-detectors and hits classes have been added to the setup. Take a moment
-to look at the classes whose filenames ends with strings "SD" and "Hit". In particular it
-is important that you understand how the calorimeter hits work. In the
-exercise number 2 you will calculate a very simple physics quantity (a
-partial shower shape) from the energy released in calorimeters.<br/>
-Geant4 does not provide/recommend specific utilities for the analysis opeartions
-because these are strongly detector-specific. However we provide a
-light-weight histogramming and ntuple facility. These are compatible
-with AIDA and ROOT output format and they do not require any library
-installed on the system. They can also dump output in tabular form
-in text files (CSV) to import data in (virtually) any analysis system
-(pylab, R, Octave, Excel, Matlab,
-Mathematica, ...). If you do not have an
-AIDA-compliant tool nor ROOT installed, will not be
-able to display histograms, but you will still be able to read data
-written in CSV format.
+<br/>
+<hr/><br/>
+
+<div class="success">
+	<strong>Material:</strong> <br/><br/>
+	The problem code for this hands-on session
+	can be downloaded <a href="../HandsOn4-problem.tar.gz">here</a>.<br/>
+	For your reference, the complete solution
+	is also available <a href="../HandsOn4-solution.tar.gz">here</a>.<br/>
+	Copy the the tar ball to your local area.<br/><br/>
+</div>
+
+<br/>
+<hr/><br/>
+
+Un-tar the code, configure it with <code>cmake</code>, build it, and run it:<br/><br/>
+
+<codeblock>
+	$ cd &lt;tutorial&gt; #change to your working directory<br/>
+	$ tar xzf HandsOn4-problem.tar.gz<br/>
+	$ cd HandsOn4-problem<br/>
+	$ cmake .<br/>
+	$ make -j 2 -f Makefile<br/>
+	$ ./G4tut
+</codeblock>
+<br/>
 
 
-For your interest here are some links:<br/>
-<ul>
-  <li> <a href="http://continuum.io/downloads">Anaconda Distribution:
-  Scientific Python Stack</a>
-  <li> <a href="https://www.gnu.org/software/octave/">GNU Octave</a>
-  (open-source MATLAB-inspired)</li>
-  <li><a href="http://www.r-project.org">R</a> (statistical analysis,
-de-facto standard among statisticians)</li>
-  <li><a href="http://root.cern.ch">ROOT</a> (HEP oriented)</li>
-  <li><a href="http://jas.freehep.org/jas3/">Java Analysis Studio 3</a>
-  (AIDA compliant tool with additional support for ROOT files, HEP orineted)</li>
-  <li><a href="http://piti118.github.io/babar_python_tutorial/">Better
-Analysis Workflow with [I]Python</a> (HEP oriented, python based, includes
-reading from ROOT files TTrees, can be added on top of other scientific python stacks).</li>
-  <li><a href="http://pandas.pydata.org/">Pandas</a> (Python Data Analysis Library)</li>
-</ul>
+<div class="warning">
+	<strong>Note:</strong> Ignore compiler warning messages. They will disappear once you complete the exercise.
+</div>
+
+<br/>
+
+<div class="info">
+	The code of this tutorial is a modified version of Geant4 example B5. You can review almost all concepts from this tutorial in the example that can be found under:
+	&lt;geant4&gt;/examples/basic/B5.
+</div>
+
+<br/>
+
+The geometry is the same as the completion of the previous hands on.<br/>
+We will not modify the geometry anymore, but several sensitive
+detectors and hits classes have been added to the setup. <br/><br/>
+
+Take a moment to look at the classes whose filenames ends with strings
+<code>SD</code> and <code>Hit</code>. In particular it
+is important that you understand how the calorimeter hits work.
+
+In exercise number 2 you will calculate a very simple physics quantity (a
+partial shower shape) from the energy released in calorimeters.<br/><br/>
+
+<div class="info">
+	Geant4 does not provide/recommend specific utilities for the analysis operations
+	because these are strongly detector-specific. <br/
+	However we do provide a light-weight histogramming and ntuple facility.<br/>
+	These are compatible
+	with AIDA and ROOT output format and they do not require any library
+	installed on the system. They can also dump output in tabular form
+	in text files (CSV) to import data in (virtually) any analysis system
+	(pylab, R, Octave, Excel, Matlab,Mathematica, ...). <br/>
+	If you do not have an
+	AIDA-compliant tool nor ROOT installed, will not be
+	able to display histograms, but you will still be able to read data
+	written in CSV format.
+	<br/><br/>
+	For your interest here are some links:<br/>
+	<ul>
+		<li><a href="http://continuum.io/downloads">Anaconda Distribution:
+			Scientific Python Stack</a>
+		<li><a href="https://www.gnu.org/software/octave/">GNU Octave</a>
+			(open-source MATLAB-inspired)
+		</li>
+		<li><a href="http://www.r-project.org">R</a> (statistical analysis,
+			de-facto standard among statisticians)
+		</li>
+		<li><a href="http://root.cern.ch">ROOT</a> (HEP oriented)</li>
+		<li><a href="http://jas.freehep.org/jas3/">Java Analysis Studio 3</a>
+			(AIDA compliant tool with additional support for ROOT files, HEP orineted)
+		</li>
+		<li><a href="http://piti118.github.io/babar_python_tutorial/">Better
+			Analysis Workflow with [I]Python</a> (HEP oriented, python based, includes
+			reading from ROOT files TTrees, can be added on top of other scientific python stacks).
+		</li>
+		<li><a href="http://pandas.pydata.org/">Pandas</a> (Python Data Analysis Library)</li>
+	</ul>
+</div>
+
+
 
 

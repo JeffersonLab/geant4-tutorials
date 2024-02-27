@@ -35,7 +35,7 @@ Check the <code>DetectorConstruction.hh</code> file, since many
 variables you will need are already defined there.
 
 
-<h3><a>Exercise 1 Step 1</a></h3>
+<h3>Exercise 1 Step 1</h3>
 
 Implement the second hodoscope.
 
@@ -74,7 +74,7 @@ The hodoscopes tiles are composed of scintillator material. <br/><br/>
 	<div class="tbmodified">
 		G4VSolid* hodoscope2Solid = new G4Box("hodoscope2Box",5.*cm,20.*cm,0.5*cm);<br/>
 		fHodoscope2Logical = new G4LogicalVolume(hodoscope2Solid,scintillator,"hodoscope2Logical");<br/>
-		for (G4int i=0;i&lt;25;i++) {<br/>
+		for (G4int i=0;i&lt;25;i++) <br/>{<br/>
 		&nbsp;&nbsp;&nbsp; G4double x2 = (i-12)*10.*cm;<br/>
 		&nbsp;&nbsp;&nbsp; new G4PVPlacement(0,G4ThreeVector(x2,0.,0.),fHodoscope2Logical,"hodoscope2Physical",secondArmLogical,false,i,checkOverlaps);<br/>
 		}
@@ -86,7 +86,7 @@ The hodoscopes tiles are composed of scintillator material. <br/><br/>
 <hr style="border-style: dotted; border-width: 1px;"/>
 <br/>
 
-<h3><a>Exercise 1 Step 2</a></h3>
+<h3>Exercise 1 Step 2</h3>
 
 Build the drift chambers.
 <br/><br/>
@@ -117,7 +117,7 @@ starting from -2.5 m to -0.5 m along the Z coordinate.
 	<div class="tbmodified">
 		G4VSolid* chamber2Solid = new G4Box("chamber2Box",1.5*m,30.*cm,1.*cm);<br/>
 		G4LogicalVolume* chamber2Logical = new G4LogicalVolume(chamber2Solid,argonGas,"chamber2Logical");<br/>
-		for (G4int i=0;i&lt;5;i++) {<br/>
+		for (G4int i=0;i&lt;5;i++) <br/>{<br/>
 		&nbsp;&nbsp;&nbsp; G4double z2 = (i-2)*0.5*m - 1.5*m;<br/>
 		&nbsp;&nbsp;&nbsp; new G4PVPlacement(0,G4ThreeVector(0.,0.,z2),chamber2Logical,"chamber2Physical",secondArmLogical,false,i,checkOverlaps);<br/>
 		}
@@ -129,7 +129,7 @@ starting from -2.5 m to -0.5 m along the Z coordinate.
 <hr style="border-style: dotted; border-width: 1px;"/>
 <br/>
 
-<h3><a>Exercise 1 Step 3</a></h3>
+<h3>Exercise 1 Step 3</h3>
 
 Add a virtual wire plane in the drift chambers.
 
@@ -175,7 +175,7 @@ application, beside making the code more compact and readable).
 <hr style="border-style: dotted; border-width: 1px;"/>
 <br/>
 
-<h3><a>Exercise 1 Step 4</a></h3>
+<h3>Exercise 1 Step 4</h3>
 
 Build an electromagnetic calorimeter.
 
@@ -249,12 +249,11 @@ energy lost by the particle).
 </codeblock>
 
 
-
 <br/><br/>
 <hr style="border-style: dotted; border-width: 1px;"/>
 <br/>
 
-<h3><a>Exercise 1 Step 5</a></h3>
+<h3>Exercise 1 Step 5</h3>
 
 Implement the hadronic calorimeter
 <br/><br/>
@@ -272,21 +271,35 @@ here).
 
 <br/><br/>
 
-
 Implement the calorimeter using replicas to slice a larger volume into
 smaller units. <br/>
 
-Each cell has 20 layers of 4 cm thick lead plate and 1 cm
-thick scintillator plate. The size of the plate is 30 cm square. The
-calorimeter has 10 towers of 2 cells each. Here is a
-schematic drawing of the calorimeter. From left to right: the full
-calorimeter with a single tower;
-a single tower is divided in two cells; the third picture shows a single
-cell
-with a single layer; finally a single layer with the active scintillator tile.
-Beam is perpendicular to the screen.<br/>
+<ul>
+	<li>Each cell has 20 layers of 4 cm thick lead plate and 1 cm
+		thick scintillator plate.
+	</li>
+	<li>The size of the plate is 30 cm square</li>
+	<li>The calorimeter has 10 towers of 2 cells each
+	</li>
+</ul>
 
-<img src="replica.jpg"/><br/>
+
+<div class="info">
+
+	Below is a schematic drawing of the calorimeter. <br/>
+	From left to right:
+	<ul>
+		<li>the full calorimeter with a single tower</li>
+		<li>a single tower is divided in two cells</li>
+		<li>the third picture shows a single cell with a single layer;</li>
+		<li>finally a single layer with the active scintillator tile.</li>
+	</ul>
+	The beam is perpendicular to the screen.<br/>
+</div>
+
+
+<img src="replica.png" width=###IMAGES_WIDTH/><br/>
+
 <ul>
 	<li>
 		The whole Hadronic calorimeter box is made of lead. The size is 3 m in
@@ -309,145 +322,160 @@ Beam is perpendicular to the screen.<br/>
 		Finally a scintillator tile should be placed inside each layer.
 	</li>
 </ul>
-You can now test the setup, use UI commands
-<code>/tutorial/detector/armAngle</code>,
+
+You can now test the setup. <br/><br/>
+Use UI commands <code>/tutorial/detector/armAngle</code>,
 <code>/tutorial/field/value</code> to move the second arm and set the
-magnetic field. Note that geometry can be changed only between
-runs. The methods <code>DefineCommands</code> gives an example on how
+magnetic field.<br/><br/>
+
+The methods <code>DefineCommands</code> gives an example on how
 to define application specific commands (this is an advanced topic not
 discussed in this Hands-On). Use the
-<code>help</code> UI command to get help on commands.
+<code>help</code> UI command to get help on commands.<br/><br/>
+
+<div class="warning">
+	Note that the geometry can be changed only between
+	runs. <br/>
+</div>
 
 
 <h4>Solution</h4>
-<TABLE border=1>
-	<TBODY>
-	<tr>
-		<td>DetectorConstruction.cc File:
-	</tr>
-	</td>
-	<TR>
-		<TD><code>
-			&nbsp; // Step 5: Add a "sandwich" hadronic calorimeter of dimensions:
-			// (300,60,100)cm.
-			// The calorimeter absorber is made of lead. It is divided in
-			// towers of (30,60,100)cm. Use replica along X-axis
-			// for towers.
-			// A tower is composed of cells, "stacked" along Y-axis
-			// Each cell has dimension (30,30,100)cm.
-			// A cells has "layers" along Z-axis. Each layer has dimensions
-			// (30,30,5)cm. Also in this case use replicas.
-			// Finally in each layer there is a tile of scintillator material
-			// of dimensions (30,30,1)cm
-			// hadron calorimeter<font color="ff0000">
-			G4VSolid* hadCalorimeterSolid = new G4Box("HadCalorimeterBox",1.5*m,30.*cm,50.*cm);
-			G4LogicalVolume* hadCalorimeterLogical = new G4LogicalVolume(hadCalorimeterSolid,lead,"HadCalorimeterLogical");
-			new G4PVPlacement(0,G4ThreeVector(0.,0.,3.*m),hadCalorimeterLogical,"HadCalorimeterPhysical",secondArmLogical,false,0,checkOverlaps);</font>
-			<br/>&nbsp;
-			// hadron calorimeter column<font color="ff0000">
-			G4VSolid* HadCalColumnSolid = new G4Box("HadCalColumnBox",15.*cm,30.*cm,50.*cm);
-			G4LogicalVolume* HadCalColumnLogical = new G4LogicalVolume(HadCalColumnSolid,lead,"HadCalColumnLogical");
-			new G4PVReplica("HadCalColumnPhysical",HadCalColumnLogical,hadCalorimeterLogical,kXAxis,10,30.*cm);</font>
-			<br/>&nbsp;
-			// hadron calorimeter cell<font color="ff0000">
-			G4VSolid* HadCalCellSolid = new G4Box("HadCalCellBox",15.*cm,15.*cm,50.*cm);
-			G4LogicalVolume* HadCalCellLogical = new G4LogicalVolume(HadCalCellSolid,lead,"HadCalCellLogical");
-			new G4PVReplica("HadCalCellPhysical",HadCalCellLogical,HadCalColumnLogical,kYAxis,2,30.*cm);</font>
-			<br/>&nbsp;
-			// hadron calorimeter layers<font color="ff0000">
-			G4VSolid* HadCalLayerSolid = new G4Box("HadCalLayerBox",15.*cm,15.*cm,2.5*cm);
-			G4LogicalVolume* HadCalLayerLogical = new G4LogicalVolume(HadCalLayerSolid,lead,"HadCalLayerLogical");
-			new G4PVReplica("HadCalLayerPhysical",HadCalLayerLogical,HadCalCellLogical,kZAxis,20,5.*cm);</font>
-			<br/>&nbsp;
-			// scintillator plates<font color="ff0000">
-			G4VSolid* HadCalScintiSolid = new G4Box("HadCalScintiBox",15.*cm,15.*cm,0.5*cm);
-			fHadCalScintiLogical = new G4LogicalVolume(HadCalScintiSolid,scintillator,"HadCalScintiLogical");
-			new G4PVPlacement(0,G4ThreeVector(0.,0.,2.*cm),fHadCalScintiLogical,"HadCalScintiPhysical",HadCalLayerLogical,false,0,checkOverlaps);</font>
-		</code></TD>
-	</TR>
-	</TBODY>
-</TABLE>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	// Step 5: Add a "sandwich" hadronic calorimeter of dimensions:<br/>
+	// (300,60,100)cm.<br/>
+	// The calorimeter absorber is made of lead. It is divided in<br/>
+	// towers of (30,60,100)cm. Use replica along X-axis<br/>
+	// for towers.<br/>
+	// A tower is composed of cells, "stacked" along Y-axis<br/>
+	// Each cell has dimension (30,30,100)cm.<br/>
+	// A cells has "layers" along Z-axis. Each layer has dimensions<br/>
+	// (30,30,5)cm. Also in this case use replicas.<br/>
+	// Finally in each layer there is a tile of scintillator material<br/>
+	// of dimensions (30,30,1)cm<br/>
+	// hadron calorimeter<br/>
+	<div class="tbmodified">
+		G4VSolid* hadCalorimeterSolid = new G4Box("HadCalorimeterBox",1.5*m,30.*cm,50.*cm);<br/>
+		G4LogicalVolume* hadCalorimeterLogical = new G4LogicalVolume(hadCalorimeterSolid,lead,"HadCalorimeterLogical");<br/>
+		new G4PVPlacement(0,G4ThreeVector(0.,0.,3.*m),hadCalorimeterLogical,"HadCalorimeterPhysical",secondArmLogical,false,0,checkOverlaps);<br/>
+	</div>
+	// hadron calorimeter column<br/>
+	<div class="tbmodified">
+		G4VSolid* HadCalColumnSolid = new G4Box("HadCalColumnBox",15.*cm,30.*cm,50.*cm);<br/>
+		G4LogicalVolume* HadCalColumnLogical = new G4LogicalVolume(HadCalColumnSolid,lead,"HadCalColumnLogical");<br/>
+		new G4PVReplica("HadCalColumnPhysical",HadCalColumnLogical,hadCalorimeterLogical,kXAxis,10,30.*cm);<br/>
+	</div>
+	// hadron calorimeter cell<br/>
+	<div class="tbmodified">
+		G4VSolid* HadCalCellSolid = new G4Box("HadCalCellBox",15.*cm,15.*cm,50.*cm);<br/>
+		G4LogicalVolume* HadCalCellLogical = new G4LogicalVolume(HadCalCellSolid,lead,"HadCalCellLogical");<br/>
+		new G4PVReplica("HadCalCellPhysical",HadCalCellLogical,HadCalColumnLogical,kYAxis,2,30.*cm);<br/>
+	</div>
+	// hadron calorimeter layers<br/>
+	<div class="tbmodified">
+		G4VSolid* HadCalLayerSolid = new G4Box("HadCalLayerBox",15.*cm,15.*cm,2.5*cm);<br/>
+		G4LogicalVolume* HadCalLayerLogical = new G4LogicalVolume(HadCalLayerSolid,lead,"HadCalLayerLogical");<br/>
+		new G4PVReplica("HadCalLayerPhysical",HadCalLayerLogical,HadCalCellLogical,kZAxis,20,5.*cm);<br/>
+	</div>
+	// scintillator plates<br/>
+	<div class="tbmodified">
+		G4VSolid* HadCalScintiSolid = new G4Box("HadCalScintiBox",15.*cm,15.*cm,0.5*cm);<br/>
+		fHadCalScintiLogical = new G4LogicalVolume(HadCalScintiSolid,scintillator,"HadCalScintiLogical");<br/>
+		new G4PVPlacement(0,G4ThreeVector(0.,0.,2.*cm),fHadCalScintiLogical,"HadCalScintiPhysical",HadCalLayerLogical,false,0,checkOverlaps);<br/>
+	</div>
+</codeblock>
+
 
 <br/><br/>
 <hr style="border-style: dotted; border-width: 1px;"/>
 <br/>
 
-<h3><a>Exercise 1 Step 6 (Optional)</a></h3>
+<h3>Exercise 1 Step 6 (Optional)</h3>
 
 Provide visualization attributes for the second arm volumes.
-Note
-that hadronic calorimeter sub-structure is by default made invisible to reduce
-visual clutter. This is helpful to hide the geometry details less important
-to the simulation.
 
+<br/><br/>
+
+<div class="info">
+	Note that hadronic calorimeter sub-structure is by default made invisible to reduce
+	visual clutter. This is helpful to hide the geometry details less important
+	to the simulation.
+</div>
 
 <h4>Solution</h4>
-<TABLE border=1>
-	<TBODY>
-	<tr>
-		<td>DetectorConstruction File:
-	</tr>
-	</td>
-	<TR>
-		<TD><code>
-			&nbsp; // visualization attributes ------------------------------------------------
-			// Step 6: uncomment visualization attributes of the newly created volumes
-			G4VisAttributes* visAttributes = new G4VisAttributes(G4Colour(1.0,1.0,1.0));
-			visAttributes-&gt;SetVisibility(false);
-			worldLogical-&gt;SetVisAttributes(visAttributes);
-			fVisAttributes.push_back(visAttributes);
-			<br/>&nbsp;
-			visAttributes = new G4VisAttributes(G4Colour(0.9,0.9,0.9)); // LightGray
-			fMagneticLogical-&gt;SetVisAttributes(visAttributes);
-			fVisAttributes.push_back(visAttributes);
-			<br/>&nbsp;
-			visAttributes = new G4VisAttributes(G4Colour(1.0,1.0,1.0));
-			visAttributes-&gt;SetVisibility(false);
-			firstArmLogical-&gt;SetVisAttributes(visAttributes);
-			secondArmLogical-&gt;SetVisAttributes(visAttributes);
-			fVisAttributes.push_back(visAttributes);
-			<br/>&nbsp;
-			visAttributes = new G4VisAttributes(G4Colour(0.8888,0.0,0.0));
-			fHodoscope1Logical-&gt;SetVisAttributes(visAttributes);
-			<br/><font color="#ff0000">&nbsp; fHodoscope2Logical-&gt;SetVisAttributes(visAttributes);
-			<br/></font>&nbsp; fVisAttributes.push_back(visAttributes);
-			<br/>&nbsp;
-			visAttributes = new G4VisAttributes(G4Colour(0.0,1.0,0.0));
-			chamber1Logical-&gt;SetVisAttributes(visAttributes);
-			<br/><font color="#ff0000">&nbsp; chamber2Logical-&gt;SetVisAttributes(visAttributes);
-			<br/></font>&nbsp; fVisAttributes.push_back(visAttributes);
-			<br/>&nbsp;
-			visAttributes = new G4VisAttributes(G4Colour(0.0,0.8888,0.0));
-			visAttributes-&gt;SetVisibility(false);
-			fWirePlane1Logical-&gt;SetVisAttributes(visAttributes);
-			<br/><font color="#ff0000">&nbsp; fWirePlane2Logical-&gt;SetVisAttributes(visAttributes);
-			<br/></font>&nbsp; fVisAttributes.push_back(visAttributes);
-			<br/>&nbsp;
-			visAttributes = new G4VisAttributes(G4Colour(0.8888,0.8888,0.0));
-			visAttributes-&gt;SetVisibility(false);
-			<br/><font color="#ff0000">&nbsp; emCalorimeterLogical-&gt;SetVisAttributes(visAttributes);
-			<br/></font>&nbsp; fVisAttributes.push_back(visAttributes);
-			<br/>&nbsp;
-			visAttributes = new G4VisAttributes(G4Colour(0.9,0.9,0.0));
-			<br/><font color="#ff0000">&nbsp; fCellLogical-&gt;SetVisAttributes(visAttributes);
-			<br/></font>&nbsp; fVisAttributes.push_back(visAttributes);
-			<br/>&nbsp;
-			visAttributes = new G4VisAttributes(G4Colour(0.0, 0.0, 0.9));
-			<br/><font color="#ff0000">&nbsp; hadCalorimeterLogical-&gt;SetVisAttributes(visAttributes);
-			<br/></font>&nbsp; fVisAttributes.push_back(visAttributes);
-			<br/>&nbsp;
-			visAttributes = new G4VisAttributes(G4Colour(0.0, 0.0, 0.9));
-			visAttributes-&gt;SetVisibility(false);
-			<br/><font color="#ff0000">&nbsp; HadCalColumnLogical-&gt;SetVisAttributes(visAttributes);
-			HadCalCellLogical-&gt;SetVisAttributes(visAttributes);
-			HadCalLayerLogical-&gt;SetVisAttributes(visAttributes);
-			fHadCalScintiLogical-&gt;SetVisAttributes(visAttributes);
-			<br/></font>&nbsp; fVisAttributes.push_back(visAttributes);
-		</code></TD>
-	</TR>
-	</TBODY>
-</TABLE>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	// Step 6: uncomment visualization attributes of the newly created volumes.<br/>
+	// You may need to review the names of the logical volumes<br/>
+	// visualization attributes ------------------------------------------------<br/>
+	G4VisAttributes* visAttributes = new G4VisAttributes(G4Colour(1.0,1.0,1.0));<br/>
+	visAttributes->SetVisibility(false);<br/>
+	worldLogical->SetVisAttributes(visAttributes);<br/>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.9,0.9,0.9)); // LightGray<br/>
+	fMagneticLogical->SetVisAttributes(visAttributes);<br/>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(1.0,1.0,1.0));<br/>
+	visAttributes->SetVisibility(false);<br/>
+	firstArmLogical->SetVisAttributes(visAttributes);<br/>
+	secondArmLogical->SetVisAttributes(visAttributes);<br/>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.8888,0.0,0.0));<br/>
+	fHodoscope1Logical->SetVisAttributes(visAttributes);<br/>
+	<div class="tbmodified">
 
-
+		fHodoscope2Logical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.0,1.0,0.0));<br/>
+	chamber1Logical->SetVisAttributes(visAttributes);<br/>
+	<div class="tbmodified">
+		chamber2Logical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.0,0.8888,0.0));<br/>
+	visAttributes->SetVisibility(false);<br/>
+	fWirePlane1Logical->SetVisAttributes(visAttributes);<br/>
+	<div class="tbmodified">
+		fWirePlane2Logical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.8888,0.8888,0.0));<br/>
+	visAttributes->SetVisibility(false);<br/>
+	<div class="tbmodified">
+		emCalorimeterLogical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.9,0.9,0.0));<br/>
+	<div class="tbmodified">
+		fCellLogical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.0, 0.0, 0.9));<br/>
+	<div class="tbmodified">
+		hadCalorimeterLogical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.0, 0.0, 0.9));<br/>
+	visAttributes->SetVisibility(false);<br/>
+	<div class="tbmodified">
+		HadCalColumnLogical->SetVisAttributes(visAttributes);<br/>
+		HadCalCellLogical->SetVisAttributes(visAttributes);<br/>
+		HadCalLayerLogical->SetVisAttributes(visAttributes);<br/>
+		fHadCalScintiLogical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+</codeblock>
 
 

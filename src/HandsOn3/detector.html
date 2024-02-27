@@ -1,299 +1,377 @@
 <h2><a class="content" id=ho3_sd>Sensitive Detectors and Hits</a></h2>
 
 In this exercise we will cover basic aspects of retrieving
-physics quantities from the simulation kernel.
+physics quantities from the simulation kernel.<br/><br/>
+
 The basic simulation output is called
-<i>hit</i> (a user-defined class inheriting from <code>G4VHit</code>):
-an energy deposit in space and time. Typically we are not
-interested in hits in all detector elements, but instead we want to
-retrieve information only for the relevant detector
-components, to simulate the detector read-out (e.g. the scintillator tiles
-in the hadronic calorimeter, and not the lead absorber).
+<code>hit</code> (a user-defined class inheriting from <code>G4VHit</code>):<br/><br/>
 
+<div class="info">
+	<strong>hit</strong>: an energy deposit in space and time.
+</div>
 
-In Geant4 this is achieved with the concepts of <i>hits</i> and
-<i>sensitive detectors</i> (SD): you can attach a SD (a user class
+<br/>
+
+Typically we are not interested in hits in all detector elements, but instead we want to
+retrieve information only for the detector components we are interested in (e.g. the scintillator tiles
+in the hadronic calorimeter, and not the lead absorber)
+For those, we want to simulate the detector read-out .
+
+<br/><br/>
+
+In Geant4 this is achieved with the concepts of <code>hits</code> and
+<code>sensitive detectors</code> (SD): you can attach a SD (a user class
 inheriting from <code>G4VSensitiveDetector</code>) to a logical
 volume, in this way Geant4 will call your user-code when a particle is
-tracked in this specific volume. Information can be retrieved from the
-<code>G4Step</code> (e.g. energy
-deposited along the step) and a new hit is created (or an
-existing hit is updated). Geant4 will keep track of all hits created
+tracked in this specific volume.
+
+<br/><br/>
+
+Information can be retrieved from the
+<code>G4Step</code> (e.g. energy deposited along the step) and a new hit is created (or an
+existing hit is updated). <br/>
+
+Geant4 will keep track of all hits created
 in the application. These can be retrieved at the end of the event for further
-post-processing and writing to output.<br/>
+post-processing and writing to output.<br/><br/>
+
+
 We will show how to measure a quantity, for each event,
 from the hodoscopes. The goal is to measure at what time and in which hodoscope
 tile there was a hit.<br/>
 The exercise is divided in three parts, and you will have to modify
 four files:
 <ul>
-  <li><code>HodoscopeHit.hh</code> and <code>HodoscopeHit.cc</code> files
-    implement the hit class for the hodoscope.</li>
-  <li><code>HodoscopeSD.cc</code> implements the hodoscope sensitive
-  detector.</li>
-  <li><code>DetectorConstruction.cc</code> instantiates the sensitive detector
-  and attaches it to the correct logical volume.</li>
+	<li><code>HodoscopeHit.hh</code> and <code>HodoscopeHit.cc</code> files
+		implement the hit class for the hodoscope.
+	</li>
+	<li><code>HodoscopeSD.cc</code> implements the hodoscope sensitive
+		detector.
+	</li>
+	<li><code>DetectorConstruction.cc</code> instantiates the sensitive detector
+		and attaches it to the correct logical volume.
+	</li>
 </ul>
 
 
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
 
-<h3><a name="ex2s1">Exercise 2 Step 1</a></h3>
+<h3>Exercise 2 Step 1</h3>
 
-Create a hit class.
-This concrete Hit class represents a data container for only two
-quantities: an integer value, representing the index of the hodoscope tile
-that fired; and a double value, representing the time in which the
-hodoscope tile fired. Reminder: a hodoscope is a simple set of
-scintillators that measure the time in which a charged particle
-passes through it. It can be used to performed time-of-flight
-measurement and coarse-granularity position measurements.<br/>
+Create a concrete hit class.
+
+<br/><br/>
+
+In this exercise the concrete hit class represents a data container for only two
+quantities:
+
+<ul>
+	<li>an integer value, representing the index of the hodoscope tile
+		that fired;
+	</li>
+	<li>a double value, representing the time in which the
+		hodoscope tile fired.
+	</li>
+</ul>
+
+
+<div class="info">
+	<strong>Reminder</strong>: a hodoscope is a simple set of
+	scintillators that measure the time in which a charged particle
+	passes through it. It can be used to performed time-of-flight
+	measurement and coarse-granularity position measurements.
+</div>
+
+<br/>
+
+
 You will need to modify the <code>HodoscopeHit</code> class. The class skeleton is
 already prepared, you should add two data members that identify which hodoscope
-tile has fired and register the time of the hit.<br/>
-Note, that empty Constructor, the operators new and delete have been already
-implemented. You should remove the empty implementation and
-implement the correct methods. Implement/modify the <code>Print</code> method to dump
-the hit content.<br/>
-<b>Important note on <code>operator new</code> and
-<code>operator delete</code>:</b> hits can put some
-pressure on CPU, because, for each event, many hits may be created
- and deleted at the end of the
-event. Allocating on the heap is a
-(relatively) CPU-intensive operation, thus the handling of hits may
-cause some
-performance degradation in a complex application.<br/>
-To mitigate this we
-use an <i>allocator</i> that allows for an efficient re-use memory and
-avoid many calls to new/delete.<br/>
-The first time a hit is created a memory <i>pool</i> is created that can hold
-(like in an array) many hits. Each time a hit is created
-with new operator we first look in this pool for an available
-<i>pre-allocated memory location</i>. If an empty slot is available, we
-re-use it, otherwise we grow the pool to contain more
-hits.<br/>
-With this technique we reduce substantially the new/delete cycles needed
-for the simulation.<br/>
-An additional complication is that in multi-threading
-environments special attention is needed for the use of allocators.<br/>
-We recognize this is an advanced topic that requires some
-more advanced knowledge of C++. If you do not feel
-comfortable with this discussion, you can remove from the HodoscopeHit.hh file
-the lines defining the new and delete operators, the application will
-work perfectly and since the hits are very simple and the simulation
-program is not too complex you will not see any CPU penalty.
+tile has fired and register the time of the hit.<br/><br/>
 
+
+Implement/modify the <code>Print</code> method to dump
+the hit content.<br/><br/>
+
+<div class="warning">
+	The operators <code>new</code> and <code>delete</code> have been
+	emptied. You should remove the empty implementation and
+	implement the correct methods.<br/><br/>
+	<strong>Note on <code>new</code> and <code>delete</code></strong>:<br/><br/>
+	Hits can put some pressure on CPU, because, for each event, many hits may be created
+	and deleted at the end of the event. <br/>
+	Allocating on the heap is a (relatively) CPU-intensive operation,
+	thus the handling of hits may cause some
+	performance degradation in a complex application.<br/>
+	To mitigate this we use an ad-hoc <b><i>allocator</i></b> that allows for an efficient re-use memory and
+	avoid many calls to new/delete.<br/>
+	The first time a hit is created a memory <b><i>pool</i></b> is created that can hold
+	(like in an array) many hits. Each time a hit is created
+	with new operator we first look in this pool for an available
+	<b><i>pre-allocated memory location</i></b>. If an empty slot is available, we
+	re-use it, otherwise we grow the pool to contain more
+	hits.<br/><br/>
+	With this technique we reduce substantially the new/delete cycles needed
+	for the simulation.<br/><br/>
+	An additional complication is that in multi-threading
+	environments special attention is needed for the use of allocators.<br/>
+	We recognize this is an advanced topic that requires some
+	more advanced knowledge of C++. If you do not feel
+	comfortable with this discussion, you can remove from the HodoscopeHit.hh file
+	the lines defining the new and delete operators, the application will
+	work perfectly and since the hits are very simple and the simulation
+	program is not too complex you will not see any CPU penalty.
+</div>
+
+<br/>
 
 
 This exercise implements a single sensitive detector and one hit
-type. In <a href="../HandsOn4/index.html">Hands On 4</a> additional
+type. In Hands On 4 additional
 sensitive detectors are used with hits in the drift chambers and in
 the calorimeters. You can study that code to see additional types
 of hits (calorimeter hits are of some interest since <i>accumulate</i> energy
 from several steps instead of creating a new hit at each step).
 
-
-
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-  <TR><TD>HodoscopeHit.hh file:</TD></TR>
-  <TR><TD><code>
-class HodoscopeHit : public G4VHit
-<br/>&nbsp;{
-<br/>&nbsp;public:
-<br/>&nbsp;    HodoscopeHit(G4int i,G4double t);
-<br/>&nbsp;    virtual ~HodoscopeHit() {}
-<br/>&nbsp;
-<br/>&nbsp;    inline void *operator new(size_t);
-<br/>&nbsp;    inline void operator delete(void*aHit);
-<br/>&nbsp;
-<br/><font color="ff0000">&nbsp;    void Print();
-<br/>&nbsp;
-<br/>&nbsp;    G4int GetID() const { return fId; }
-<br/>&nbsp;
-<br/>&nbsp;    void SetTime(G4double val) { fTime = val; }
-<br/>&nbsp;    G4double GetTime() const { return fTime; }
-<br/>&nbsp;
-<br/>&nbsp;private:
-<br/>&nbsp;    G4int fId;
-<br/>&nbsp;    G4double fTime;
-<br/></font>};
-<br/>&nbsp;
-<br/>&nbsp;typedef G4THitsCollection&lt;HodoscopeHit&gt; HodoscopeHitsCollection;
-<br/>&nbsp;
-<br/>&nbsp;extern G4ThreadLocal G4Allocator&lt;HodoscopeHit&gt;* HodoscopeHitAllocator;
-<br/>&nbsp;
-<br/><font color="ff0000">&nbsp;inline void* HodoscopeHit::operator new(size_t)
-<br/>&nbsp;{
-<br/>&nbsp;&nbsp;&nbsp;    if (!HodoscopeHitAllocator)
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        HodoscopeHitAllocator = new G4Allocator&lt;HodoscopeHit&gt;;
-<br/>&nbsp;&nbsp;&nbsp;    return (void*)HodoscopeHitAllocator-&gt;MallocSingle();
-<br/>&nbsp;}
-<br/>&nbsp;
-<br/>&nbsp;inline void HodoscopeHit::operator delete(void*aHit)
-<br/>&nbsp;{
-<br/>&nbsp;&nbsp;&nbsp;    HodoscopeHitAllocator-&gt;FreeSingle((HodoscopeHit*) aHit);
-<br/>&nbsp;}
-</font></code></TD></TR>
-<TR><TD>HodoscopeHit.cc file:</TD></TR>
-<TR><TD><CODE>
-<br/>&nbsp;G4ThreadLocal G4Allocator&lt;HodoscopeHit&gt;* HodoscopeHitAllocator;
-<br/>&nbsp;
-<br/><font color="#ff0000">&nbsp;HodoscopeHit::HodoscopeHit(G4int i,G4double t)
-<br/>&nbsp;: G4VHit(), fId(i), fTime(t)
-<br/>&nbsp;{}
-<br/>&nbsp;
-<br/>&nbsp;void HodoscopeHit::Print()
-<br/>&nbsp;{
-<br/>&nbsp;&nbsp;&nbsp;    G4cout &lt;&lt; "  Hodoscope[" &lt;&lt; fId &lt;&lt; "] " &lt;&lt; fTime/ns &lt;&lt; " (nsec)" &lt;&lt; G4endl;
-<br/>&nbsp;}
-<br/>&nbsp;
-</code></td/></tr>
-</TBODY></TABLE>
+
+<codeblock>
+	<div class="filename"> File: HodoscopeHit.hh</div>
+	<br/>
+
+	class HodoscopeHit : public G4VHit<br/>
+	<br/>{<br/>
+	public:<br/>
+	&emsp;HodoscopeHit(G4int i,G4double t) ;<br/>
+	&emsp;virtual ~HodoscopeHit() {}<br/>
+	<br/>
+	&emsp;inline void *operator new(size_t) ;<br/>
+	&emsp;inline void operator delete(void*aHit);<br/>
+	<br/>
+
+	<div class="tbmodified">
+		void Print();<br/>
+		<br/>
+		G4int GetID() const { return fId; }<br/>
+		<br/>
+		void SetTime(G4double val) { fTime = val; }<br/>
+		G4double GetTime() const { return fTime; }<br/>
+		<br/>
+		private:<br/>
+		&emsp;G4int fId;<br/>
+		&emsp;G4double fTime;<br/>
+	</div>
+	};<br/><br/>
+	<br/>
+	typedef G4THitsCollection&lt;HodoscopeHit&gt; HodoscopeHitsCollection; <br/>
+	<br/>
+	<div class="tbmodified">
+		extern G4ThreadLocal G4Allocator&lt;HodoscopeHit&gt;* HodoscopeHitAllocator;<br/>
+		<br/>
+		inline void* HodoscopeHit::operator new(size_t) <br/>{<br/>
+		&emsp; if (!HodoscopeHitAllocator)<br/>
+		&emsp;&emsp; HodoscopeHitAllocator = new G4Allocator&lt;HodoscopeHit&gt;<br/>
+		&emsp; return (void*)HodoscopeHitAllocator-&gt;MallocSingle();<br/>
+		}<br/>
+		<br/>
+		inline void HodoscopeHit::operator delete(void*aHit) <br/>{<br/>
+		&emsp; HodoscopeHitAllocator-&gt;FreeSingle((HodoscopeHit*) aHit);<br/>
+		}<br/>
+	</div>
+</codeblock>
+
+<br/><br/>
+
+<codeblock>
+	<div class="filename"> File: HodoscopeHit.cc</div>
+	<br/>
+	G4ThreadLocal G4Allocator&lt;HodoscopeHit&gt;* HodoscopeHitAllocator;<br/>
+	<div class="tbmodified">
+		HodoscopeHit::HodoscopeHit(G4int i,G4double t)<br/>
+		: G4VHit(), fId(i), fTime(t)<br/>
+		{}<br/>
+		<br/>
+		void HodoscopeHit::Print()<br/>
+		{<br/>
+		&emsp; G4cout &lt;&lt; " Hodoscope[" &lt;&lt; fId &lt;&lt; "] " &lt;&lt; fTime/ns &lt;&lt; " (nsec)" &lt;&lt; G4endl;<br/>
+		}<br/>
+	</div>
+</codeblock>
 
 
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
 
-<h3><a name="ex2s2">Exercise 2 Step 2</a></h3>
+<h3>Exercise 2 Step 2</h3>
 
 Create and manipulate hodoscope hits.
-For this exercise you will modify <code>HodoscopeSD.cc</code> file.
-Some part of
-the code is already implemented, in particular the
+
+<br/><br/>
+
+For this exercise you will modify the <code>HodoscopeSD.cc</code> file.
+Some part of the code is already implemented, in particular the
 initialization of the hits collection, use this code as a reference
 for your future applications: it is important to understand the details of
-how the registering of
-hits with the Geant4 kernel works.<br/>
+how the registering of hits with the Geant4 kernel works.<br/>
+
+<br/>
+
 What you need to do for this exercise is to modify the method
 <code>ProcessHits</code> and implement the logic to extract time and
-position. This is the method that Genat4 kernel will call every time a
-particle passes through the volume associated with this SD. The
-<code>G4Step</code> object encodes the information regarding the
-simulation step in the geometry volume.<br/>
-<b>Hint 1:</b> Given a <code>G4Step</code> two points are defined
-(<code>G4StepPoint</code>) that delimit the step itself (pre- and post-).
-From each
-point you can retrieve which volume the step belongs to via the
-touchable history:<br/><br/>
-<TABLE border=1><TBODY><TR><TD><code>
-G4TouchableHistory* touchable = static_cast&lt;G4TouchableHistory*&gt;(
-stepPoint-&gt;GetTouchable() );<br/>
-G4int copyNumber = touchable-&gt;GetVolume()-&gt;GetCopyNo();
-</code></TD></TR></TBODY></TABLE><br/>
+position. This is the method that Geant4 kernel will call every time a
+particle passes through the volume associated with this SD.
 
-These two lines allows you to get the copy number of the volume
-touched by the step (in our case the copy number for the hodoscope is
-the tile number, see file <code>DetectorConstruction.cc</code>).<br/>
-<b>Hint 2:</b> There are two <code>G4StepPoint</code>
-defining a <code>G4Step</code>, which one of the two should you use,
-pre- or post- step point? Why? The answer to this question is one of
-the most trickiest part of Geant4 for a new user, be sure to
-understand the reason why the two points are not equivalent!<br/>
-<b>Hint 3:</b> We are simulating a scintillator detector that will
-trigger only if some energy has been deposited (i.e. via ionization),
-for example if a neutron passes through the detector (without making
-interactions) its passage should not be recorded. Check the energy
-deposited in the step, if zero do not do anything.<br/>
-<b>Hint 4:</b> More than one step can be done by the same particle in
-a single volume (why?), in addition secondaries produced in the volume
-will also make steps in the SD. This mean that for a given primary particle we
-can have more than one call to the <code>ProcessHits</code>.
-A realistic detector electronics will responds with a
-single measurement: to simulate this behavior every time a new step is
-processed we check if the hit for the hodoscope tile that fired already
-exists, if so we update the time information if the new hit happens
-earlier than the already recorded one.
 
+<br/>
+We can use the <code>G4Step</code> object: it encodes the information regarding the
+simulation step in the geometry volume.<br/><br/>
+
+<div class="info">
+	<strong>Hint 1</strong>: Given a <code>G4Step</code> two points are defined
+	(<code>G4StepPoint</code>) that delimit the step itself (pre- and post-).<br/><br/>
+	The following two lines allows you to get the copy number of the volume
+	touched by the step (in our case the copy number for the hodoscope is
+	the tile number, see file <code>DetectorConstruction.cc</code>).<br/><br/>
+	<codeblock>
+		G4TouchableHistory* touchable = static_cast&lt;G4TouchableHistory*&gt;( stepPoint-&gt;GetTouchable() );<br/>
+		G4int copyNumber = touchable-&gt;GetVolume()-&gt;GetCopyNo();
+	</codeblock>
+	<br/>
+	<strong>Hint 2</strong>: There are two <code>G4StepPoint</code>
+	defining a <code>G4Step</code>, which one of the two should you use,
+	pre- or post- step point? Why? The answer to this question is one of
+	the most trickiest part of Geant4 for a new user, be sure to
+	understand the reason why the two points are not equivalent!<br/>
+	<br/>
+	<strong>Hint 3</strong>: We are simulating a scintillator detector that will
+	trigger only if some energy has been deposited (i.e. via ionization),
+	for example if a neutron passes through the detector (without making
+	interactions) its passage should not be recorded. Check the energy
+	deposited in the step, if zero do not do anything.<br/>
+	<br/>
+	<strong>Hint 4</strong>: More than one step can be done by the same particle in
+	a single volume (why?), in addition secondaries produced in the volume
+	will also make steps in the SD. This mean that for a given primary particle we
+	can have more than one call to the <code>ProcessHits</code>.
+	A realistic detector electronics will responds with a
+	single measurement: to simulate this behavior every time a new step is
+	processed we check if the hit for the hodoscope tile that fired already
+	exists, if so we update the time information if the new hit happens
+	earlier than the already recorded one.
+
+
+</div>
+
+<br/>
 
 
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-  <TR><TD>HodoscopeSD.cc file:</TD></TR>
-  <TR><TD><code>
-<br/>&nbsp;G4bool HodoscopeSD::ProcessHits(G4Step* step, G4TouchableHistory*)
-<br/>&nbsp;{
-<font color="#ff0000"><br/>&nbsp;&nbsp;&nbsp;    G4double edep = step-&gt;GetTotalEnergyDeposit();
-<br/>&nbsp;&nbsp;&nbsp;    if (edep==0.) return true;
-<br/>&nbsp;
-<br/>&nbsp;&nbsp;&nbsp;    G4StepPoint* preStepPoint = step-&gt;GetPreStepPoint();
-<br/>&nbsp;
-<br/>&nbsp;&nbsp;&nbsp;    G4TouchableHistory* touchable = (G4TouchableHistory*)(preStepPoint-&gt;GetTouchable());
-<br/>&nbsp;&nbsp;&nbsp;    G4int copyNo = touchable-&gt;GetVolume()-&gt;GetCopyNo();
-<br/>&nbsp;&nbsp;&nbsp;    G4double hitTime = preStepPoint-&gt;GetGlobalTime();
-<br/>&nbsp;
-<br/>&nbsp;&nbsp;&nbsp;    // check if this finger already has a hit
-<br/>&nbsp;&nbsp;&nbsp;    G4int ix = -1;
-<br/>&nbsp;&nbsp;&nbsp;    for (size_t i=0;i&lt;fHitsCollection-&gt;entries();i++)
-<br/>&nbsp;&nbsp;&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        if ((*fHitsCollection)[i]-&gt;GetID()==copyNo)
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        {
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           ix = i;
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;            break;
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        }
-<br/>&nbsp;&nbsp;&nbsp;   }
-<br/>&nbsp;
-<br/>&nbsp;&nbsp;&nbsp;    if (ix&gt;=0) // if it has, then take the earlier time
-<br/>&nbsp;&nbsp;&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        if ((*fHitsCollection)[ix]-&gt;GetTime()&gt;hitTime)
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        { (*fHitsCollection)[ix]-&gt;SetTime(hitTime); }
-<br/>&nbsp;&nbsp;&nbsp;    }
-<br/>&nbsp;&nbsp;&nbsp;    else // if not, create a new hit and set it to the collection
-<br/>&nbsp;&nbsp;&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        HodoscopeHit* hit = new HodoscopeHit(copyNo,hitTime);
-<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        fHitsCollection-&gt;insert(hit);
-<br/>&nbsp;&nbsp;&nbsp;    }
-</font><br/>&nbsp;&nbsp;&nbsp;    return true;
-<br/>&nbsp;}
-</code></td/></tr>
-</TBODY></TABLE>
+<codeblock>
+	<div class="filename"> File: HodoscopeSD.cc</div>
+	<br/>
+	G4bool HodoscopeSD::ProcessHits(G4Step* step, G4TouchableHistory*)<br/>
+	{<br/>
+	<div class="tbmodified">
+		G4double edep = step-&gt;GetTotalEnergyDeposit();<br/>
+		if (edep==0.) return true;<br/>
+		<br/>
+		G4StepPoint* preStepPoint = step-&gt;GetPreStepPoint();<br/>
+		<br/>
+		G4TouchableHistory* touchable = (G4TouchableHistory*)(preStepPoint-&gt;GetTouchable());<br/>
+		G4int copyNo = touchable-&gt;GetVolume()-&gt;GetCopyNo();<br/>
+		G4double hitTime = preStepPoint-&gt;GetGlobalTime();<br/>
+		<br/>
+		// check if this finger already has a hit<br/>
+		G4int ix = -1;<br/>
+		for (size_t i=0;i&lt;fHitsCollection-&gt;entries();i++)<br/>
+		{<br/>
+		&emsp; if ((*fHitsCollection)[i]-&gt;GetID()==copyNo)<br/>
+		&emsp; {<br/>
+		&emsp; &emsp; ix = i;<br/>
+		&emsp; &emsp; break;<br/>
+		&emsp; }<br/>
+		}<br/>
+		<br/>
+		if (ix&gt;=0) // if it has, then take the earlier time<br/>
+		{<br/>
+		&emsp; if ((*fHitsCollection)[ix]-&gt;GetTime()&gt;hitTime)<br/>
+		&emsp; { (*fHitsCollection)[ix]-&gt;SetTime(hitTime); }<br/>
+		}<br/>
+		else // if not, create a new hit and set it to the collection<br/>
+		{<br/>
+		&emsp; HodoscopeHit* hit = new HodoscopeHit(copyNo,hitTime);<br/>
+		&emsp; fHitsCollection-&gt;insert(hit);<br/>
+		}<br/>
+	</div>
+	<br/>
+	return true;<br/>
+
+</codeblock>
 
 
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
 
-
-<h3><a name="ex2s3">Exercise 2 Step 3</a></h3>
+<h3>Exercise 2 Step 3</h3>
 
 Construct the SD and attach it to the correct logical volume.
+
+<br/><br/>
+
+
 We can now create an instance of the HodoscopeSD and attach it
 to the correct logical volume. Add a separate instance of the SD to
-each arm hodoscope. Give the names "/hodoscope1" and "/hodoscope2" to
+each arm hodoscope.
+
+<br/><br/>
+
+Give the names <code>/hodoscope1</code> and <code>/hodoscope2</code> to
 these SDs. The same class is used for two logical volumes, the
-two instances are recognized by Geant4 only via their names.<br/>
+two instances are recognized by Geant4 only via their names.<br/><br/>
+
+
 We are going to modify the method
 <code>ConstructSDandField</code> in the DetectorCostruction class.
 If you are already a user of older version of Geant4
 (up to version 9.6) this is one of the new
 main features introduced in version 10.0 to be compatible with multi-threading.
- To reduce memory consumption geometry is
+To reduce memory consumption geometry is
 shared among threads, but sensitive-detectors are not.
 
 
-
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-  <TR><TD>DetectorConstruction.cc file:</TD></TR>
-  <TR><TD><code>
-&nbsp;void DetectorConstruction::ConstructSDandField()
-<br/>&nbsp;{
-<font color="#ff0000"><br/>&nbsp;    // sensitive detectors -----------------------------------------------------
-<br/>&nbsp;    G4SDManager* SDman = G4SDManager::GetSDMpointer();
-<br/>&nbsp;    G4String SDname;
-<br/>&nbsp;
-<br/>&nbsp;    G4VSensitiveDetector* hodoscope1 = new HodoscopeSD(SDname="/hodoscope1");
-<br/>&nbsp;    SDman-&gt;AddNewDetector(hodoscope1);
-<br/>&nbsp;    fHodoscope1Logical-&gt;SetSensitiveDetector(hodoscope1);
-<br/>&nbsp;
-<br/>&nbsp;    G4VSensitiveDetector* hodoscope2 = new HodoscopeSD(SDname="/hodoscope2");
-<br/>&nbsp;    SDman-&gt;AddNewDetector(hodoscope2);
-<br/>&nbsp;    fHodoscope2Logical-&gt;SetSensitiveDetector(hodoscope2);
-<br/></font>&nbsp;
-<br/>&nbsp;    // magnetic field ----------------------------------------------------------
-<br/>&nbsp;    fMagneticField = new MagneticField();
-<br/>&nbsp;    fFieldMgr = new G4FieldManager();
-<br/>&nbsp;    fFieldMgr-&gt;SetDetectorField(fMagneticField);
-<br/>&nbsp;    fFieldMgr-&gt;CreateChordFinder(fMagneticField);
-<br/>&nbsp;    G4bool forceToAllDaughters = true;
-<br/>&nbsp;    fMagneticLogical-&gt;SetFieldManager(fFieldMgr, forceToAllDaughters);
-<br/>&nbsp;
-<br/>&nbsp;}
-    </code></td/></tr>
-</TBODY></TABLE>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	&nbsp;void DetectorConstruction::ConstructSDandField()<br/>
+	{<br/>
+	<div class="tbmodified">
+		&emsp; // sensitive detectors -----------------------------------------------------<br/>
+		&emsp; G4SDManager* SDman = G4SDManager::GetSDMpointer();<br/>
+		&emsp; G4String SDname;<br/>
+		&emsp; <br/>
+		&emsp; G4VSensitiveDetector* hodoscope1 = new HodoscopeSD(SDname="/hodoscope1");<br/>
+		&emsp; SDman-&gt;AddNewDetector(hodoscope1);<br/>
+		&emsp; fHodoscope1Logical-&gt;SetSensitiveDetector(hodoscope1);<br/>
+		<br/>
+		&emsp; G4VSensitiveDetector* hodoscope2 = new HodoscopeSD(SDname="/hodoscope2");<br/>
+		&emsp; SDman-&gt;AddNewDetector(hodoscope2);<br/>
+		&emsp; fHodoscope2Logical-&gt;SetSensitiveDetector(hodoscope2);<br/>
+	</div>
+	<br/>
+	&emsp; // magnetic field ---------------------------------------------------------- <br/>
+	&emsp; fMagneticField = new MagneticField(); <br/>
+	&emsp; fFieldMgr = new G4FieldManager(); <br/>
+	&emsp; fFieldMgr-&gt;SetDetectorField(fMagneticField); <br/>
+	&emsp; fFieldMgr-&gt;CreateChordFinder(fMagneticField); <br/>
+	&emsp; G4bool forceToAllDaughters = true; <br/>
+	&emsp; fMagneticLogical-&gt;SetFieldManager(fFieldMgr, forceToAllDaughters); <br/>
+	}
+</codeblock>
+
 
 

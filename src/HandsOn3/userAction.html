@@ -1,72 +1,112 @@
-
 <h2><a class="content" id=ho3_userActions1>User Actions I</a></h2>
 
 In this exercise we modify one of the user-actions to print on
-screen the information collected from hodoscopes at the end of each event.<br/>
+screen the information collected from hodoscopes at the end of each event.<br/><br/>
+
+
 User actions allow to interact with the simulation to retrieve and
 control the simulation results at specific points during the simulation of a run.
-Different user action provides
-specific interfaces to control the different aspects of the simulation. For
-example, the <code>G4UserEventAction</code> class provides interfaces
-to interact with Geant4 at the beginning and at the end of each
-event. <code>G4UserRunAction</code> allows for the creation of a user-custom
-<code>G4Run</code> object and it executes user-code at the beginning and at the
-end of a run (this will be covered in the <a
-href="../HandsOn4/index.html">Hands On
-4</a>). <code>G4VUserPrimaryGeneratorAction</code> controls the
-creation of primaries, <code>G4UserSteppingAction</code> allows to
-retrieve information at each step (indipendentely of sensitive detectors), <code>G4UserTrackingAction</code>
-allows for interaction with each <code>G4Track</code> and finally
-<code>G4UserStackingAction</code> allows to control the <i>urgency</i> of
-each new <code>G4Track</code> (advanced).
 
-<b>Note for users of older versions of Geant4:</b>
-Multi-threading requires user actions to be thread-private (differently
-from initialization classes that are shared among threads). A new user initialization class is available in
-version 10: <code>G4VUserActionInitialization</code> this provides a
-method <code>Build()</code> in which all user actions are instantiated
-(this method is called by each worker thread). A second method
-<code>BuildForMaster</code> is called by the master thread. Among all
-user actions the <code>G4UserRunAction</code> is the only one that can
-also be instantiated for the master
-thread, this is to allow for <a
-href="http://software.intel.com/en-us/blogs/2009/07/23/parallel-pattern-7-reduce">reduction</a>
-of results from worker threads to master thread
-(e.g. sum the partial results of each thread into a <i>global</i>
-result). This will be covered in the <a
-href="../HandsOn4/index.html">Hands On 4</a>.
+<br/><br/>
+
+Different user action provides specific interfaces to control the different aspects
+of the simulation.
 
 
+<br/><br/>
 
-<h3><a name="ex3">Exercise 3</a></h3>
+<div class="info">
+	<code>G4UserEventAction</code>: provides interfaces
+	to interact with Geant4 at the beginning and at the end of each
+	event.
+	<br/><br/>
+	<code>G4UserRunAction</code> allows for the creation of a user-custom
+	<code>G4Run</code> object and it executes user-code at the beginning and at the
+	end of a run (this will be covered in Hands On4).
+
+	<br/><br/>
+	<code>G4VUserPrimaryGeneratorAction</code> controls the
+	creation of primaries.
+	<br/><br/>
+
+	<code>G4UserSteppingAction</code> allows to
+	retrieve information at each step (independently of sensitive detectors).
+	<br/><br/>
+
+	<code>G4UserTrackingAction</code>
+	allows for interaction with each <code>G4Track</code>.
+	<br/><br/>
+
+
+	<code>G4UserStackingAction</code> allows to control the <i>urgency</i> of
+	each new <code>G4Track</code> (advanced).
+</div>
+
+<br/><br/>
+
+<div class="warning">
+	<strong>Note for users of older versions of Geant4:</strong>
+	Multi-threading requires user actions to be thread-private
+	(differently from initialization classes that are shared among threads).
+	<br/><br/>
+	A new user initialization class is available in version 10:
+	<code>G4VUserActionInitialization</code>. It provides a
+	method <code>Build()</code> method in which all user actions are instantiated
+	(this method is called by each worker thread).
+	<br/><br/>A second method
+	<code>BuildForMaster</code> is called by the master thread.
+
+	<br/><br/>
+	Among all user actions the <code>G4UserRunAction</code> is the only one that can
+	also be instantiated for the master thread, this is to allow for
+	<a href="http://software.intel.com/en-us/blogs/2009/07/23/parallel-pattern-7-reduce">reduction</a>
+	of results from worker threads to master thread
+	(e.g. sum the partial results of each thread into a <i>global</i>
+	result). <br/>This will be covered in Hands On 4
+</div>
+
+<br/>
+
+<h3 class="content" id=ho3_ex3><br/></h3>
+
+<h3>Exercise 3</h3>
 
 Using a <code>G4UserEventAction</code> print on screen the number
 of hits and the time registered in the hodoscopes.
 
-For this exercise you will need to modify in file <code>EventAction.cc</code>
-the method <code>EndOfEventAction</code>, this method is called by
-Geant4 at the end of the simulation of each event. The pointer to the
-current <code>G4Event</code> is passed to the user-code. From this
+<br/><br/>
+
+For this exercise you will need to modify, in <code>EventAction.cc</code>,
+the method <code>EndOfEventAction</code>, called by
+Geant4 at the end of the simulation of each event.
+In this method the pointer to the current <code>G4Event</code> is passed to the user-code. From this
 object you will retrieve the hits collections for the two
-hodoscopes and dump to screen the collected information.<br/>
+hodoscopes and dump to screen the collected information.<br/><br/>
+
 Part of the <Code>EventAction</code> code is already implemented.<br/>
-In particular take a moment to study the method
+Take a moment to study the method
 <code>BeginOfEventAction</code>: in this method we retrieve the IDs of
 the two collections. Note the <code>if</code> statement that allows
 for an efficient search of the IDs, given the collection names, only
 once. Searching with strings is a time consuming operation, this
 method allows for reducing the CPU time, if many collections are
 created this is an important optimization to consider.
+<br/><br/>
 
-<b>Important:</b> The code assumes you have called the two SDs:
-"/hodoscope1" and "/hodoscope2" and that they create a hit collection
-called "hodosopeColl". Change these if you have modified the names.
+<div class="danger">
+	<strong>Important:</strong> The code assumes you have called the two SDs:
+	<code>/hodoscope1</code> and <code>/hodoscope2</code> and that they create a hit collection
+	called <code>hodosopeColl</code>. Change these accordingly if you have modified the names.
+</div>
 
-
+<br/><br/>
 
 The <code>EventAction</code> is instantiated in the
 <code>ActionInitialization</code> class. Take a look at it and see how
 the <code>EventAction</code> is created.<br/>
+
+<br/><br/>
+
 The solution shows how to introduce some run-time checks of the
 effective existence of the hits. While this is not necessary in this
 simple code, this is a good code practice:
@@ -74,98 +114,106 @@ in large applications the presence of hits collections may be
 decided at run time depending on the job configuration.
 
 
-
 <h4>Solution</h4>
-<TABLE border=1><TBODY>
-  <TR><TD>EventAction.cc file:</TD></TR>
-  <TR><TD><code>
-<br/>&nbsp;void EventAction::EndOfEventAction(const G4Event* event)
-<br/>&nbsp;{
-<br/>&nbsp;    // =============================================
-<br/>&nbsp;    // Exercise 3
-<br/>&nbsp;    // Print on screen the hits of the hodoscope
-<br/>&nbsp;    // Step 1: Get the hits collection of this event
-<br/><font color="#ff0000">&nbsp;    G4HCofThisEvent* hce = event-&gt;GetHCofThisEvent();
-<br/>&nbsp;    if (!hce)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        G4ExceptionDescription msg;
-<br/>&nbsp;&nbsp;&nbsp;        msg &lt;&lt; "No hits collection of this event found.\n";
-<br/>&nbsp;&nbsp;&nbsp;        G4Exception("EventAction::EndOfEventAction()","Code001", JustWarning, msg);
-<br/>&nbsp;&nbsp;&nbsp;        return;
-<br/>&nbsp;    }
-<br/></font>&nbsp;    // Step 2: Using the memorised IDs get the collections
-<br/>&nbsp;    // corresponding to the two hodoscopes
-<br/>&nbsp;    // Get hits collections
-<br/><font color="#ff0000">&nbsp;    HodoscopeHitsCollection* hHC1 = static_cast&lt;HodoscopeHitsCollection*&gt;(hce-&gt;GetHC(fHHC1ID));
-<br/>&nbsp;    HodoscopeHitsCollection* hHC2 = static_cast&lt;HodoscopeHitsCollection*&gt;(hce-&gt;GetHC(fHHC2ID));
-<br/>&nbsp;    if ( (!hHC1) || (!hHC2)  )
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        G4ExceptionDescription msg;
-<br/>&nbsp;&nbsp;&nbsp;        msg &lt;&lt; "Some of hits collections of this event not found.\n";
-<br/>&nbsp;&nbsp;&nbsp;        G4Exception("EventAction::EndOfEventAction()","Code001", JustWarning, msg);
-<br/>&nbsp;&nbsp;&nbsp;        return;
-<br/>&nbsp;    }
-<br/></font>&nbsp;    //
-<br/>&nbsp;    // Print diagnostics
-<br/>&nbsp;    //
-<br/>&nbsp;    G4int printModulo = G4RunManager::GetRunManager()-&gt;GetPrintProgress();
-<br/>&nbsp;    if ( printModulo==0 || event-&gt;GetEventID() % printModulo != 0) return;
-<br/>&nbsp;
-<br/>&nbsp;    G4PrimaryParticle* primary = event-&gt;GetPrimaryVertex(0)-&gt;GetPrimary(0);
-<br/>&nbsp;    G4cout &lt;&lt; G4endl
-<br/>&nbsp;&nbsp;&nbsp;           &lt;&lt; "&gt;&gt;&gt; Event " &lt;&lt; event-&gt;GetEventID() &lt;&lt; " &gt;&gt;&gt; Simulation truth : "
-<br/>&nbsp;&nbsp;&nbsp;           &lt;&lt; primary-&gt;GetG4code()-&gt;GetParticleName()
-<br/>&nbsp;&nbsp;&nbsp;           &lt;&lt; " " &lt;&lt; primary-&gt;GetMomentum() &lt;&lt; G4endl;
-<br/>&nbsp;
-<br/>&nbsp;    // Step 3: Loop on the two collections and dump on screen hits
-<br/>&nbsp;    // Hodoscope 1
-<br/><font color="#ff0000">&nbsp;    G4int n_hit = hHC1-&gt;entries();
-<br/>&nbsp;    G4cout &lt;&lt; "Hodoscope 1 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;
-<br/>&nbsp;    for (G4int i=0;i&lt;n_hit;i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        HodoscopeHit* hit = (*hHC1)[i];
-<br/>&nbsp;&nbsp;&nbsp;        hit-&gt;Print();
-<br/>&nbsp;    }
-<br/>&nbsp;    // Hodoscope 2
-<br/>&nbsp;    n_hit = hHC2-&gt;entries();
-<br/>&nbsp;    G4cout &lt;&lt; "Hodoscope 2 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;
-<br/>&nbsp;    for (G4int i=0;i&lt;n_hit;i++)
-<br/>&nbsp;    {
-<br/>&nbsp;&nbsp;&nbsp;        HodoscopeHit* hit = (*hHC2)[i];
-<br/>&nbsp;&nbsp;&nbsp;        hit-&gt;Print();
-<br/>&nbsp;    }
-<br/></font>&nbsp;}
- </code></td/></tr>
-</TBODY></TABLE>
+<codeblock>
+	<div class="filename"> File: EventAction.cc</div>
+	<br/>
 
+	void EventAction::EndOfEventAction(const G4Event* event)
+	{
+	// =============================================<br/>
+	// Exercise 3<br/>
+	// Print on screen the hits of the hodoscope<br/>
+	// Step 1: Get the hits collection of this event<br/>
+	<br/>
+	<div class="tbmodified">
+		G4HCofThisEvent* hce = event->GetHCofThisEvent();<br/>
+		if (!hce)<br/>
+		{<br/>
+		&emsp;G4ExceptionDescription msg;<br/>
+		&emsp;msg &lt;&lt; "No hits collection of this event found.\n";<br/>
+		&emsp;G4Exception("EventAction::EndOfEventAction()",<br/>
+		&emsp;&emsp; "Code001", JustWarning, msg);<br/>
+		&emsp;return;<br/>
+		}<br/>
+	</div>
+	<br/>
+	// Step 2: Using the memorised IDs get the collections<br/>
+	// corresponding to the two hodoscopes<br/>
+	// Get hits collections<br/>
+	<div class="tbmodified">
+		<br/>
+		HodoscopeHitsCollection* hHC1 = static_cast
+		&lt;HodoscopeHitsCollection*&gt;(hce->GetHC(fHHC1ID));<br/>
+		<br/>
+		HodoscopeHitsCollection* hHC2= static_cast
+		&lt;HodoscopeHitsCollection*&gt;(hce->GetHC(fHHC2ID));<br/>
+		<br/>
+		if ( (!hHC1) || (!hHC2) )<br/>
+		{<br/>
+		&emsp;G4ExceptionDescription msg;<br/>
+		&emsp;msg &lt;&lt; "Some of hits collections of this event not found.\n";<br/>
+		&emsp; G4Exception("EventAction::EndOfEventAction()", "Code001", JustWarning, msg);<br/>
+		&emsp; return;<br/>
+		}<br/>
+	</div>
+	<br/>
+	<br/>
+	// Step 3: Loop on the two collections and dump on screen hits<br/>
+	// Hodoscope 1<br/>
+	<div class="tbmodified">
+		G4int n_hit = hHC1->entries();<br/>
+		G4cout &lt;&lt; "Hodoscope 1 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;<br/>
+		for (G4int i=0;i&lt;n_hit ;i++)
+		<br/>
+		{<br/>
+		&emsp; HodoscopeHit* hit = (*hHC1)[i];<br/>
+		&emsp; hit->Print();<br/>
+		}<br/>
+	</div>
+	<br/>
+	// Hodoscope 2<br/>
+	<div class="tbmodified">
+		n_hit = hHC2->entries();<br/>
+		G4cout &lt;&lt; "Hodoscope 2 has " &lt;&lt; n_hit &lt;&lt; " hits." << G4endl;<br/>
+		for (G4int i=0;i&lt;n_hit ;i++)
+		<br/>
+		{<br/>
+		&emsp; HodoscopeHit* hit = (*hHC2)[i];<br/>
+		&emsp; hit->Print();<br/>
+		}<br/>
+	</div>
+</codeblock>
 
+<br/><br/>
 
-With successful execution (try, e.g., <code>/run/beamOn 100</code>), you should see printout like this (actual numbers should vary):<br/>
-<TABLE border=1><TBODY>
-  <TR><TD><code>
-G4WT0&gt;<br/>
-G4WT0&gt; &gt;&gt;&gt; Event 96 &gt;&gt;&gt; Simulation truth : proton (-16.232228069311,0,994.22834019976)<br/>
-G4WT0&gt; Hodoscope 1 has 1 hits.<br/>
-G4WT0&gt;   Hodoscope[7] 6.8585277990143 (nsec)<br/>
-G4WT0&gt; Hodoscope 2 has 1 hits.<br/>
-G4WT0&gt;   Hodoscope[8] 59.288664870039 (nsec)<br/>
-G4WT0&gt; --&gt; Event 97 starts with initial seeds (47098457,35307784).<br/>
-G4WT0&gt;<br/>
-G4WT0&gt; &gt;&gt;&gt; Event 97 &gt;&gt;&gt; Simulation truth : proton (-5.5136395233946,0,990.67454918706)<br/>
-G4WT0&gt; Hodoscope 1 has 1 hits.<br/>
-G4WT0&gt;   Hodoscope[7] 6.8697647503318 (nsec)<br/>
-G4WT0&gt; Hodoscope 2 has 1 hits.<br/>
-G4WT0&gt;   Hodoscope[8] 59.535676954411 (nsec)<br/>
-G4WT0&gt; Thread-local run terminated.<br/>
-G4WT0&gt; Run Summary<br/>
-G4WT0&gt;   Number of events processed : 49<br/>
-G4WT0&gt;   User=0.360000s Real=0.184613s Sys=0.000000s [Cpu=195.0%]<br/>
- Run terminated.<br/>
-Run Summary<br/>
-  Number of events processed : 100<br/>
-  User=0.360000s Real=0.185584s Sys=0.010000s [Cpu=199.4%]<br/>
- </code></td/></tr>
-</TBODY></TABLE>
+With successful execution (try, e.g., <code>/run/beamOn 100</code>), you should see printout like this (actual numbers may vary):<br/>
+
+<br/><br/>
+
+<div class="success">
+	G4WT0&gt;<br/>
+	G4WT0&gt; &gt;&gt;&gt; Event 96 &gt;&gt;&gt; Simulation truth : proton (-16.232228069311,0,994.22834019976)<br/>
+	G4WT0&gt; Hodoscope 1 has 1 hits.<br/>
+	G4WT0&gt; Hodoscope[7] 6.8585277990143 (nsec)<br/>
+	G4WT0&gt; Hodoscope 2 has 1 hits.<br/>
+	G4WT0&gt; Hodoscope[8] 59.288664870039 (nsec)<br/>
+	G4WT0&gt; --&gt; Event 97 starts with initial seeds (47098457,35307784).<br/>
+	G4WT0&gt;<br/>
+	G4WT0&gt; &gt;&gt;&gt; Event 97 &gt;&gt;&gt; Simulation truth : proton (-5.5136395233946,0,990.67454918706)<br/>
+	G4WT0&gt; Hodoscope 1 has 1 hits.<br/>
+	G4WT0&gt; Hodoscope[7] 6.8697647503318 (nsec)<br/>
+	G4WT0&gt; Hodoscope 2 has 1 hits.<br/>
+	G4WT0&gt; Hodoscope[8] 59.535676954411 (nsec)<br/>
+	G4WT0&gt; Thread-local run terminated.<br/>
+	G4WT0&gt; Run Summary<br/>
+	G4WT0&gt; Number of events processed : 49<br/>
+	G4WT0&gt; User=0.360000s Real=0.184613s Sys=0.000000s [Cpu=195.0%]<br/>
+	Run terminated.<br/>
+	Run Summary<br/>
+	Number of events processed : 100<br/>
+	User=0.360000s Real=0.185584s Sys=0.010000s [Cpu=199.4%]<br/>
+</div>
 
 
 
