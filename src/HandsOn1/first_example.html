@@ -1,5 +1,6 @@
 <h2><a class="content" id=ho1_example>Compiling the first example</a></h2>
 
+<h4>Setting the Environment</h4>
 
 Every time you want to compile or run an application using Geant4,
 <b>remember</b> to set up run-time environment variables.
@@ -10,13 +11,21 @@ shell type, geant4.sh for bash family while geant4.csh for tcsh family.<br/><br/
 Also <b>remember</b> <code>&lt;tutorial&gt;</code> is the working directory and <code>&lt;geant4&gt;</code> is the directory where Geant4 is installed.<br/>
 You must replace this string with the appropriate directory path in your disk space.<br/><br/>
 
-
 <codeblock>
 	$ source <code>&lt;geant4&gt;</code>/install/bin/geant4.[c]sh<br/>
 	$ printenv | grep GEANT4
 </codeblock>
-<br/>
-<hr/>
+
+<br/><br/>
+
+<div class="info">
+	<strong>Note:</strong> This is not needed when using docker,
+	as the environment is already setup, and <code>&lt;geant4&gt;</code>
+	is <code>$G4INSTALL/source</code>.
+</div>
+
+
+<br/><hr/>
 
 <h3><a class="content" id="ex1a">Exercise 1</a></h3>
 
@@ -36,7 +45,6 @@ use Geant4 from the location where it is installed.<br/><br/>
 	$ cd HandsOn1<br/>
 	$ cp -r <code>&lt;geant4&gt;</code>/examples/basic/B1 .<br/>
 	$ cd B1<br/>
-	$ ls<br/>
 	$ cmake .<br/>
 	$ make -j <i>2</i> -f Makefile<br/>
 	... some lines of output ...<br/>

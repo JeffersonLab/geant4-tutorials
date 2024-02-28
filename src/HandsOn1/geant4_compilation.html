@@ -3,18 +3,12 @@
 <h4>Dependencies</h4>
 
 With its basic installation options Geant4 Version ###G4VERSION does not
-have external dependencies, but to configure the compilation and installation
-process <a href="http://www.cmake.org">cmake</a> is needed.<br/>
+have external dependencies, except a recent version of <a href="http://www.cmake.org">cmake</a><sup><a id="fn-1" href="#1">1</a></sup>
+.<br/>
 
-The role of cmake is to automatically create
-<i>Makefiles</i> (or project files for IDEs) based on
-options that can be specified based on your own environments.<br/><br/>
 
-We will show how to use cmake via command line options, but a
-menu-based version of cmake exists (type <i>ccmake</i> instead of
-<i>cmake</i>) and for some platforms also a GUI is available
-(<i>cmake-gui</i>). Geant4 Version ###G4VERSION requires cmake version at least ###MINCMAKEVERSION.<br/>
 
+<br/>
 Geant4 version ###G4VERSION contains <a href="https://en.wikipedia.org/wiki/C%2B%2B11">C++11</a>
 code, this means that the compiler needs to support this standard.
 With recent versions of Linux this is the default,
@@ -22,6 +16,17 @@ but you may need to manually install and setup a compiler in some cases.<br/>
 Refer to the <a href="http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/InstallationGuide/html/index.html">Geant4 installation guide</a>
 for additional information, including the list of supported compilers.
 
+<p class="footnote"><small>
+<sup><a id="1" href="#fn-1">1</a></sup>
+The role of cmake is to automatically create
+<i>Makefiles</i> (or project files for IDEs) based on
+options that can be specified based on your own environments.<br/>
+
+We will show how to use cmake via command line options, but a
+menu-based version of cmake exists (type <i>ccmake</i> instead of
+<i>cmake</i>) and for some platforms also a GUI is available
+(<i>cmake-gui</i>). Geant4 Version ###G4VERSION requires cmake version at least ###MINCMAKEVERSION.<br/>
+</small></p>
 
 <h4>Visualization and GUI</h4>
 
@@ -29,9 +34,7 @@ We will also describe how to
 setup and use the interactive graphical user interface (GUI) based on
 <a href="https://qt.io">Qt</a>.<br/>
 
-We use Qt version ###QTVERSION.<br/>
-
-Many Linux distributions already have a pre-installed version of Qt. It is relatively easy to
+We use Qt version ###QTVERSION. Many Linux distributions already have a pre-installed version of Qt. It is relatively easy to
 manually install Qt on a Linux or Mac system, but we will not cover
 this step in this tutorial. <br/>
 
@@ -62,7 +65,19 @@ After downloading and un-packing Geant4 tarball
 (<code>geant4-v###G4VERSION.tar.gz</code>) in an empty working
 directory, you also need to
 create <i>build</i> and <i>install</i> directories where the compilation of Geant4 is
-performed, and resulted Geant4 libraries and related scripts are installed, respectively: cmake uses <a href="https://gitlab.kitware.com/cmake/community/-/wikis/FAQ">out of source builds</a>.
+performed, and resulted Geant4 libraries and related scripts are installed,
+respectively: cmake uses <a href="https://gitlab.kitware.com/cmake/community/-/wikis/FAQ">out of source builds</a>.
+
+<br/><br/>
+
+<codeblock>
+	$ cd &lt;tutorial&gt<br/>
+	$ wget http://cern.ch/geant4-data/releases/geant4-v###G4VERSION.tar.gz<br/>
+	$ tar zxpf geant4-v###G4VERSION.tar.gz<br/>
+	$ mkdir build install<br/>
+	$ ls<br/>
+	build geant4-v###G4VERSION geant4-v###G4VERSION.tar.gz install<br/>
+</codeblock>
 
 
 <h4>Step 1: Configuration</h4>
@@ -73,15 +88,11 @@ alternative compiler (in an easy way).<br/><br/>
 Let's configure Geant4:<br/><br/>
 
 <codeblock>
-	$ cd &lt;tutorial&gt<br/>
-	$ wget http://cern.ch/geant4-data/releases/geant4-v###G4VERSION.tar.gz<br/>
-	$ tar zxpf geant4-v###G4VERSION.tar.gz<br/>
-	$ mkdir build install<br/>
-	$ ls<br/>
-	build geant4-vgeant4-v###G4VERSION geant4-v###G4VERSION.tar.gz install<br/>
 	$ cd build<br/>
 	$ cmake -DCMAKE_INSTALL_PREFIX=../install -DGEANT4_INSTALL_DATA=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_OPENGL_X11=ON ../geant4-v###G4VERSION<br/>
 </codeblock>
+<br/>
+
 <br/>
 
 <div class="info">
@@ -106,6 +117,7 @@ Let's configure Geant4:<br/><br/>
 	</ul>
 </div>
 
+<br/>
 
 If everything goes as expected <Code>cmake</code> will work
 few seconds on the configuration. The last lines should read:<br/><br/>
@@ -162,13 +174,14 @@ few seconds on the configuration. The last lines should read:<br/><br/>
 	</ul>
 </div>
 
+<br/>
+
 <h4>Step 2: Compilation</h4>
 Compile Geant4, on a multi-core system with <i>N</i> cores you can
-substantially speedup compilation.<br/><br/>
+substantially speedup compilation. In the build directory:<br/><br/>
 
 <codeblock>
-	$ cd &lt;tutorial&gt;/build<br/>
-	$ make -j <i>N</i> #or gmake -j <i>2</i><br/>
+	$ make -j <i>N</i> #or gmake -j <i>N</i><br/>
 	$ make install<br/>
 </codeblock>
 
@@ -178,11 +191,16 @@ substantially speedup compilation.<br/><br/>
 	<strong>Notes:</strong>
 	<ul>
 		<li>
-			If not sure how many cores you have use <code>N=2</code>.
+			If not sure how many cores you have, try one of the following commands:
+			<codeblock>
+				$ cat /proc/cpuinfo | grep processor | wc -l<br/>
+				$ getconf _NPROCESSORS_ONLN
+			</codeblock>
+			If still unsure, use <code>-j 2</code>.
 		</li>
 		<li>
 			You can have a verbose compilation (for example to see the exact
-			compilation options) using <code>make VERBOSE=1 -j <i>2</i></code>.
+			compilation options) using <code>make VERBOSE=1 -j <i>N</i></code>.
 		</li>
 
 	</ul>

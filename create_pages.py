@@ -33,7 +33,6 @@ with open(versions_file, "r") as file:
 			versions_map[key] = value
 			print(" > ", key, ":", value)
 
-
 # Get the current directory
 current_dir = os.getcwd()
 
@@ -42,7 +41,6 @@ deploy_dir = os.path.join(current_dir, "tutorial")
 if os.path.exists(deploy_dir):
 	shutil.rmtree(deploy_dir)
 os.makedirs(deploy_dir)
-
 
 # Get the content of header.html and footer.html
 header_file = os.path.join(current_dir, "header.html")
@@ -54,16 +52,15 @@ with open(footer_file, "r") as file:
 
 # Get the list of subdirectories in the subdirectory 'src'
 src = os.path.join(current_dir, "src")
-sub_dirs = [d for d in os.listdir(src) if d.startswith("HandsOn") ]
+sub_dirs = [d for d in os.listdir(src) if d.startswith("HandsOn")]
 print("\n > Subdirectories to be published: ", sub_dirs)
 
 # move the main.* to the deploy directory
-shutil.copy("main.css",       deploy_dir)
-shutil.copy("main.js",        deploy_dir)
+shutil.copy("main.css", deploy_dir)
+shutil.copy("main.js", deploy_dir)
 shutil.copy("src/index.html", deploy_dir)
+shutil.copy("src/index_devel.html", deploy_dir)
 print("\n > Coontent of tutorial directory: ", os.listdir(deploy_dir))
-
-
 
 # Add the header and footer to the content of index.html in each subdirectory
 for subdir in sub_dirs:
@@ -76,13 +73,14 @@ for subdir in sub_dirs:
 	src_dir = os.path.join(src, subdir)
 
 	#  Copy PNG, GIF, root macros and python files
-	image_files = [file for file in os.listdir(src_dir) if file.endswith('.png') or file.endswith('.gif') or file.endswith('.C') or file.endswith('.py')]
+	image_files = [file for file in os.listdir(src_dir) if
+	               file.endswith('.png') or file.endswith('.gif') or file.endswith(
+		               '.C') or file.endswith('.py')]
 	for file in image_files:
 		source_path = os.path.join(src_dir, file)
 		destination_path = os.path.join(deploy_subdir, file)
 		shutil.copy(source_path, destination_path)
 	print(f"   > Copied {image_files} to {deploy_subdir}")
-
 
 	index_file = os.path.join(current_dir, deploy_subdir, "index.html")
 	with open(index_file, "w") as file:
@@ -137,6 +135,5 @@ if os.path.exists(ho_materials):
 		tar_command += " tar czf " + "../tutorial/" + dir_to_be_zipped + ".tar.gz " + dir_to_be_zipped + ";"
 		tar_command += " cd " + current_dir
 		os.system(tar_command)
-
 
 print("\n > Done!\n")
