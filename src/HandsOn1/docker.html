@@ -8,18 +8,18 @@ Docker is available for Linux, Windows and MacOS. You can find the installation 
 for your OS <a href="https://docs.docker.com/install/">here</a>.<br/><br/>
 
 We have a Docker image with Geant4 ###G4VERSION installed.
-You can pull it by running the following command:<br/><br/>
+You can pull it by running the following command (note, you only need to pull once):<br/><br/>
 
 <codeblock>
 	$ docker pull ###DOCKERIMAGEFEDORA
 </codeblock>
-<br/>
 
-Note, you only need to pull once.
-<br/><br/>
-Create a directory on your local machine to share with the container (we'll use <code>~/mywork</code> as an example):
 <br/><br/>
 
+A productive way to use this image is to create a directory on your local machine
+to share with the container (we'll use <code>~/mywork</code> as an example). This way you can edit your work
+on your local machine and run it in the container.
+<br/><br/>
 
 <codeblock>
 	$ mkdir ~/mywork
@@ -27,7 +27,8 @@ Create a directory on your local machine to share with the container (we'll use 
 
 <br/>
 
-Run the image in batch mode or interactively, mounting <code>~/mywork</code> and making it available as <code>/usr/local/mywork</code>:
+Run the image in batch mode or interactively, mounting <code>~/mywork</code> and making it available as <code>/usr/local/mywork</code>.
+Here is how:
 
 <br/>
 
