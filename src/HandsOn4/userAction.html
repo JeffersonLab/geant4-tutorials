@@ -208,7 +208,7 @@ worker thread has its own instance of class <code>G4Run</code>.
 <br/><br/>
 
 Events are distributed and you end the simulation with many run
-objects (one per worker thread). Geant4 provides a way to merge these
+objects (one per worker task/thread). Geant4 provides a way to merge these
 sub-runs into a single <i>global</i> one. This is done implementing a
 <code>Merge</code> method in the <code>Run</code> class.
 Geant4 kernel works in a way that the worker
