@@ -105,8 +105,8 @@ the hit content.<br/><br/>
 	Allocating an objcet on the heap is a (relatively) CPU-intensive operation,
 	thus the handling of hits may cause some
 	performance degradation in a complex application.<br/>
-	To mitigate this we use an ad-hoc <b><i>allocator</i></b> that allows for an efficient re-use of memory and
-	avoid many calls to new/delete.<br/>
+	To mitigate this we use an ad-hoc <b><i>allocator</i></b> named <code>G4Allocator</code> that allows for an efficient re-use of memory and
+	avoid many granular instantiations and deletions of the same kind.<br/>
 	The first time a hit is created a memory <b><i>pool</i></b> is created that can hold
 	many hits (like in an array). Each time a hit is created
 	with overwritten new operator we first look in this pool for an available
@@ -118,9 +118,11 @@ the hit content.<br/><br/>
 	An additional complication is that in multi-threading
 	environments special attention is needed for the use of allocators. 
 	An object in a worker thread instantiated with this allocator must be deleted by the same thread. 
-	The master thread (and otheri worker threads) may refer the contents of such object, but cannot delete it.<br/>
-	We recognize this is an advanced topic that requires some
-	more advanced knowledge of C++. But keep these code as they are so that you won't get bad surprise when you extend 
+	The master thread (and otheri worker threads) may refer the contents of such object, but cannot delete it.<br/><br/>
+	<code>G4Allocator</code> must be used for each individual concrete class. It must not be used for a base class from which
+	several derived classes with different data members could be instantiated.
+	We recognize this is a topic that requires some
+	advanced knowledge of C++. But keep these code as they are so that you won't get bad surprise when you extend 
 	our exercise code in the future.
 </div>
 
