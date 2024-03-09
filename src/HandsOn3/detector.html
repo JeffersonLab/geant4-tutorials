@@ -100,29 +100,28 @@ the hit content.<br/><br/>
 	emptied. You should remove the empty implementation and
 	implement the correct methods.<br/><br/>
 	<strong>Note on <code>new</code> and <code>delete</code></strong>:<br/><br/>
-	Hits can put some pressure on CPU, because, for each event, many hits may be created
+	Instantiation and deletion of hit objects can put some pressure on CPU, because, for each event, many hits may be created
 	and deleted at the end of the event. <br/>
-	Allocating on the heap is a (relatively) CPU-intensive operation,
+	Allocating an objcet on the heap is a (relatively) CPU-intensive operation,
 	thus the handling of hits may cause some
 	performance degradation in a complex application.<br/>
-	To mitigate this we use an ad-hoc <b><i>allocator</i></b> that allows for an efficient re-use memory and
+	To mitigate this we use an ad-hoc <b><i>allocator</i></b> that allows for an efficient re-use of memory and
 	avoid many calls to new/delete.<br/>
 	The first time a hit is created a memory <b><i>pool</i></b> is created that can hold
-	(like in an array) many hits. Each time a hit is created
-	with new operator we first look in this pool for an available
+	many hits (like in an array). Each time a hit is created
+	with overwritten new operator we first look in this pool for an available
 	<b><i>pre-allocated memory location</i></b>. If an empty slot is available, we
-	re-use it, otherwise we grow the pool to contain more
+	re-use it, otherwise we grow the pool to accommodate more
 	hits.<br/><br/>
 	With this technique we reduce substantially the new/delete cycles needed
 	for the simulation.<br/><br/>
 	An additional complication is that in multi-threading
-	environments special attention is needed for the use of allocators.<br/>
+	environments special attention is needed for the use of allocators. 
+	An object in a worker thread instantiated with this allocator must be deleted by the same thread. 
+	The master thread (and otheri worker threads) may refer the contents of such object, but cannot delete it.<br/>
 	We recognize this is an advanced topic that requires some
-	more advanced knowledge of C++. If you do not feel
-	comfortable with this discussion, you can remove from the HodoscopeHit.hh file
-	the lines defining the new and delete operators, the application will
-	work perfectly and since the hits are very simple and the simulation
-	program is not too complex you will not see any CPU penalty.
+	more advanced knowledge of C++. But keep these code as they are so that you won't get bad surprise when you extend 
+	our exercise code in the future.
 </div>
 
 <br/>
@@ -187,8 +186,8 @@ from several steps instead of creating a new hit at each step).
 <codeblock>
 	<div class="filename"> File: HodoscopeHit.cc</div>
 	<br/>
-	G4ThreadLocal G4Allocator&lt;HodoscopeHit&gt;* HodoscopeHitAllocator;<br/>
 	<div class="tbmodified">
+		G4ThreadLocal G4Allocator&lt;HodoscopeHit&gt;* HodoscopeHitAllocator;<br/><br/>
 		HodoscopeHit::HodoscopeHit(G4int i,G4double t)<br/>
 		: G4VHit(), fId(i), fTime(t)<br/>
 		{}<br/>

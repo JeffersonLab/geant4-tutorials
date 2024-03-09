@@ -44,7 +44,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4ThreadLocal G4Allocator<HodoscopeHit>* HodoscopeHitAllocator;
+//HodoscopeHitAllocator
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

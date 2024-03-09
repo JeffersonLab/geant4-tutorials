@@ -13,8 +13,6 @@ In this hands on you will learn:
 	</li>
 </ul>
 
-<strong>Note:</strong> We do not use Qt GUI for HandsOn2.<br/><br/>
-
 <br/><hr/><br/>
 
 <div class="success">
@@ -55,19 +53,26 @@ The following should appear:<br/><br/>
 <img src="start.png" width=###IMAGES_WIDTH/> <br/><br/>
 
 The default behavior of the application when started without command
-line arguments is to start the (G)UI (if enabled).
-You should find <code>Idle&gt;</code> prompt on your terminal screen.
+line arguments is to start the (G)UI (if enabled).<br />
+<ul>
+	<li>If you use Qt-based GUI, you can type your command in the <code>Session:</code> field at the right-bottom of the window.
+You may also pick a command from the left side menu. </li>
+	<li>If you do not use Qt but use OpenGL visualization, 
+you should find <code>Idle&gt;</code> prompt on your terminal screen. 
+Try <code>ls</code>, <code>help</code> and <code>help <i>&lt;UI_command&gt;</i></code> to get help.</li>
+</ul>
 Familiarize with the Geant4 UI.<br/>
 
 
 <h3>Exercise 0.a:</h3>
 
-<b>Question 1</b>: Try <code>ls</code>, <code>help</code> and <code>help <i>&lt;UI_command&gt;</i></code>.<br/>
-<b>Question 2</b>: Run 10 events.
+<b>Question 1</b>: Run 10 events.
 <br/><br/>
 <codeblock>
-	Idle&gt; /run/beamOn 10<br/>
-	Idle&gt; exit
+	<div class="UIcommand">
+	/run/beamOn 10<br/>
+	exit
+	</div>
 </codeblock>
 
 

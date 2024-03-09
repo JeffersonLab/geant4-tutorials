@@ -16,27 +16,26 @@ of the simulation.
 <br/><br/>
 
 <div class="info">
-	<code>G4UserEventAction</code>: provides interfaces
-	to interact with Geant4 at the beginning and at the end of each
-	event.
-	<br/><br/>
 	<code>G4UserRunAction</code> allows for the creation of a user-custom
 	<code>G4Run</code> object and it executes user-code at the beginning and at the
 	end of a run (this will be covered in Hands On4).
-
 	<br/><br/>
+
+	<code>G4UserEventAction</code>: gives access to <code>G4Event</code>
+	at the beginning and at the end of each event.
+	We use this action class in this exercise.
+	<br/><br/>
+
 	<code>G4VUserPrimaryGeneratorAction</code> controls the
-	creation of primaries.
-	<br/><br/>
-
-	<code>G4UserSteppingAction</code> allows to
-	retrieve information at each step (independently of sensitive detectors).
+	creation of primaries. This is a mandatory class to implement.
 	<br/><br/>
 
 	<code>G4UserTrackingAction</code>
-	allows for interaction with each <code>G4Track</code>.
+	gives access to <code>G4Track</code> at the beginning and at the end of each track.
 	<br/><br/>
 
+	<code>G4UserSteppingAction</code> gives an access to each <code>G4Step</code>.
+	<br/><br/>
 
 	<code>G4UserStackingAction</code> allows to control the <i>urgency</i> of
 	each new <code>G4Track</code> (advanced).
@@ -45,13 +44,12 @@ of the simulation.
 <br/><br/>
 
 <div class="warning">
-	<strong>Note for users of older versions of Geant4:</strong>
+	<strong>Note for users of multi-threaded mode of Geant4:</strong>
 	Multi-threading requires user actions to be thread-private
 	(differently from initialization classes that are shared among threads).
 	<br/><br/>
-	A new user initialization class is available in version 10:
-	<code>G4VUserActionInitialization</code>. It provides a
-	method <code>Build()</code> method in which all user actions are instantiated
+	<code>G4VUserActionInitialization</code> is the user class to provide a
+	method <code>Build()</code> in which all user actions are instantiated
 	(this method is called by each worker thread).
 	<br/><br/>A second method
 	<code>BuildForMaster</code> is called by the master thread.
@@ -62,7 +60,7 @@ of the simulation.
 	<a href="http://software.intel.com/en-us/blogs/2009/07/23/parallel-pattern-7-reduce">reduction</a>
 	of results from worker threads to master thread
 	(e.g. sum the partial results of each thread into a <i>global</i>
-	result). <br/>This will be covered in Hands On 4
+	result). <br/>This will be covered in Hands On 4.
 </div>
 
 <br/>
@@ -94,7 +92,7 @@ created this is an important optimization to consider.
 <br/><br/>
 
 <div class="danger">
-	<strong>Important:</strong> The code assumes you have called the two SDs:
+	<strong>Important:</strong> The code assumes you have named the two SDs as
 	<code>/hodoscope1</code> and <code>/hodoscope2</code> and that they create a hit collection
 	called <code>hodosopeColl</code>. Change these accordingly if you have modified the names.
 </div>
