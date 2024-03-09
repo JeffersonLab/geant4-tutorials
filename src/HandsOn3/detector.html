@@ -109,21 +109,21 @@ the hit content.<br/><br/>
 	avoid many granular instantiations and deletions of the same kind.<br/>
 	The first time a hit is created a memory <b><i>pool</i></b> is created that can hold
 	many hits (like in an array). Each time a hit is created
-	with overwritten new operator we first look in this pool for an available
+	with this overwritten new operator we first look in this pool for an available
 	<b><i>pre-allocated memory location</i></b>. If an empty slot is available, we
-	re-use it, otherwise we grow the pool to accommodate more
+	re-use it, otherwise we expand the pool to accommodate more
 	hits.<br/><br/>
 	With this technique we reduce substantially the new/delete cycles needed
 	for the simulation.<br/><br/>
 	An additional complication is that in multi-threading
 	environments special attention is needed for the use of allocators. 
 	An object in a worker thread instantiated with this allocator must be deleted by the same thread. 
-	The master thread (and otheri worker threads) may refer the contents of such object, but cannot delete it.<br/><br/>
+	The master thread (and other worker threads) may access such an object and get/set its contents, but cannot delete the object.<br/><br/>
 	<code>G4Allocator</code> must be used for each individual concrete class. It must not be used for a base class from which
 	several derived classes with different data members could be instantiated.
 	We recognize this is a topic that requires some
 	advanced knowledge of C++. But keep these code as they are so that you won't get bad surprise when you extend 
-	our exercise code in the future.
+	the exercise code in the future.
 </div>
 
 <br/>
