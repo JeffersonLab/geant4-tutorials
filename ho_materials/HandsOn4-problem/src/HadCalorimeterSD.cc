@@ -77,8 +77,7 @@ G4bool HadCalorimeterSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     G4double edep = step->GetTotalEnergyDeposit();
     if (edep==0.) return true;
     
-    G4TouchableHistory* touchable
-      = (G4TouchableHistory*)(step->GetPreStepPoint()->GetTouchable());
+    G4TouchableHistory* touchable = step->GetPreStepPoint()->GetTouchable();
 
     G4VPhysicalVolume* cellPhysical = touchable->GetVolume(2);
     G4int rowNo = cellPhysical->GetCopyNo();

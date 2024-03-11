@@ -89,8 +89,7 @@ G4bool HodoscopeSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     
     G4StepPoint* preStepPoint = step->GetPreStepPoint();
 
-    G4TouchableHistory* touchable
-      = (G4TouchableHistory*)(preStepPoint->GetTouchable());
+    G4TouchableHistory* touchable = preStepPoint->GetTouchable();
     G4int copyNo = touchable->GetVolume()->GetCopyNo();
     G4double hitTime = preStepPoint->GetGlobalTime();
     
