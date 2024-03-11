@@ -55,7 +55,7 @@ int main(int argc,char** argv)
     auto* runManager = G4RunManagerFactory::CreateRunManager();
     
     // =============================================
-    // Exercise 3a
+    // Exercise 3.a
     // Activate UI-command base scorer.
     // Add here the lines to activate command line
     // based scorer.

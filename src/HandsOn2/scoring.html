@@ -69,8 +69,8 @@ Dump the scored quantities to files and verify the content.<br/>
 <br/>
 
 <div class="info">
-	<strong>Hint: </strong> use the <code>help</code> command to understand the
-	format of command line scoring UI commands.
+	<strong>Hint: </strong> Familialize UI commands for command-based scorier. 
+        If you use Qt GUI, check the left-side help window. If you do not use Qt, use the <code>help</code> command.
 </div>
 
 <br/><br/>
@@ -211,6 +211,15 @@ This macro should be executed after<code>scoring.mac</code>:<br/><br/>
 		/control/loop drawSlice.mac iColumn 0 10 3<br/>
 	</div>
 </codeblock>
+
+<codeblock>
+        <div class="filename"> File: drawSlice.mac</div>
+        <br/>
+        <div class="info">
+                /score/drawColumn boxMesh_1 nOfStepGamma 0 {iColumn}<br/>
+        </div>
+</codeblock>
+
 
 <br/><br/>
 

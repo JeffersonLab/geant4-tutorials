@@ -165,7 +165,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     
     
     // =============================================
-    // Exercise 2a,b
+    // Exercise 2.a, 2.b
     // Create a box of CsI, Pb or Scintillator
     // (for nist materials remember to use NIST name, e.g. G4_Pb)
     // to absorb particles.
@@ -236,7 +236,7 @@ void DetectorConstruction::ConstructMaterials()
     
     // CsI
     // =============================================
-    // Exercise 1a
+    // Exercise 1.a
     //    Create material Cesium Iodide.
     //  Chemical formula CsI.
     // Some properties:
@@ -247,9 +247,11 @@ void DetectorConstruction::ConstructMaterials()
     
     // Lead
     // =============================================
-    // Exercise 1b
+    // Exercise 1.b
     //    Create material Lead from Nist Manager.
-    // Note that it is actually a mixture of several isotopes.
+    // =============================================
+    
+    // Additional note : it is actually a mixture of several isotopes.
     // If you want to build it by hand starting from isotopes you
     // can:
     //    G4Isotope* iso1= new G4Isotope( ... )
@@ -258,22 +260,19 @@ void DetectorConstruction::ConstructMaterials()
     //    elem->AddIsotope( iso1 );
     //    elem->AddIsotope( iso2 );
     //    ...
-    // =============================================
-    
-    
     // Important: Never use a real gas with 0 density as materials.
     //            Physics processes requires density>0 and may give wrong
     //            results if they encounter 0 density material.
     //            Instead use one of the following methods if you need
     //            "vacuum" (e.g. a beam pipe internal)
-    // Vacuum "Galactic"
-    // nistManager->FindOrBuildMaterial("G4_Galactic");
-
-    // Vacuum "Air with low density"
-    // G4Material* air = G4Material::GetMaterial("G4_AIR");
-    // G4double density = 1.0e-5*air->GetDensity();
-    // nistManager
-    //   ->BuildMaterialWithNewDensity("Air_lowDensity", "G4_AIR", density);
+    //              Vacuum "Galactic"
+    //              nistManager->FindOrBuildMaterial("G4_Galactic");
+    //            or
+    //              Vacuum "Air with low density"
+    //              G4Material* air = G4Material::GetMaterial("G4_AIR");
+    //              G4double density = 1.0e-5*air->GetDensity();
+    //              nistManager
+    //                ->BuildMaterialWithNewDensity("Air_lowDensity", "G4_AIR", density);
 
     G4cout << G4endl << "The materials defined are : " << G4endl << G4endl;
     G4cout << *(G4Material::GetMaterialTable()) << G4endl;
