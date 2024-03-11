@@ -186,4 +186,10 @@ table td {
   padding-left: 35px;
 }
 
+.lecture {
+  background-color: #f2ccf2;
+  border-left: 6px solid #ff00ff;
+  padding: 20px;
+}
+
 /*# sourceMappingURL=main.css.map */
