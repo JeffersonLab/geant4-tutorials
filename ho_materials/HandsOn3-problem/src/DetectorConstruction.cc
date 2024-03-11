@@ -65,8 +65,8 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4ThreadLocal MagneticField* DetectorConstruction::fMagneticField = 0;
-G4ThreadLocal G4FieldManager* DetectorConstruction::fFieldMgr = 0;
+G4ThreadLocal MagneticField* DetectorConstruction::fMagneticField = nullptr;
+G4ThreadLocal G4FieldManager* DetectorConstruction::fFieldMgr = nullptr;
     
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

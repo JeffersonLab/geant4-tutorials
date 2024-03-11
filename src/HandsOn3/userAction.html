@@ -4,45 +4,33 @@
         <strong>Related lectures:</strong> Kernel 1, Scoring 2
 </div><br/>
 
-In this exercise we modify one of the user-actions to print on
+In this exercise we modify ,code>G4UserEventAction</code>, one of the user-action classes, to print on
 screen the information collected from hodoscopes at the end of each event.<br/><br/>
 
-
-User actions allow to interact with the simulation to retrieve and
-control the simulation results at specific points during the simulation of a run.
-
-<br/><br/>
-
-Different user action provides specific interfaces to control the different aspects
-of the simulation.
-
-
-<br/><br/>
-
 <div class="info">
-	<code>G4UserRunAction</code> allows for the creation of a user-custom
+	Different user action provides specific interfaces to control the different aspects
+	of the simulation.
+
+	<ul>
+	<li><code>G4UserRunAction</code> allows the creation of a user-custom
 	<code>G4Run</code> object and it executes user-code at the beginning and at the
-	end of a run (this will be covered in Hands On4).
-	<br/><br/>
+	end of a run (this will be covered in Hands On4).</li>
 
-	<code>G4UserEventAction</code>: gives access to <code>G4Event</code>
+	<li><code>G4UserEventAction</code> gives access to <code>G4Event</code>
 	at the beginning and at the end of each event.
-	We use this action class in this exercise.
-	<br/><br/>
+	We use this action class in this exercise.</li>
 
-	<code>G4VUserPrimaryGeneratorAction</code> controls the
-	creation of primaries. This is a mandatory class to implement.
-	<br/><br/>
+	<li><code>G4VUserPrimaryGeneratorAction</code> controls the
+	creation of primaries. This is a mandatory class to implement.</li>
 
-	<code>G4UserTrackingAction</code>
-	gives access to <code>G4Track</code> at the beginning and at the end of each track.
-	<br/><br/>
+	<li><code>G4UserTrackingAction</code>
+	gives access to <code>G4Track</code> at the beginning and at the end of each track.</li>
 
-	<code>G4UserSteppingAction</code> gives an access to each <code>G4Step</code>.
-	<br/><br/>
+	<li><code>G4UserSteppingAction</code> gives access to each <code>G4Step</code>.</li>
 
-	<code>G4UserStackingAction</code> allows to control the <i>urgency</i> of
-	each new <code>G4Track</code> (advanced).
+	<li><code>G4UserStackingAction</code> allows to control the <i>urgency</i> of
+	each new <code>G4Track</code> (advanced).</li>
+	</ul>
 </div>
 
 <br/><br/>
@@ -51,20 +39,19 @@ of the simulation.
 	<strong>Note for users of multi-threaded mode of Geant4:</strong>
 	Multi-threading requires user actions to be thread-private
 	(differently from initialization classes that are shared among threads).
+	That means, such user action classes must be instantiated for each worker thread.
 	<br/><br/>
 	<code>G4VUserActionInitialization</code> is the user class to provide a
-	method <code>Build()</code> in which all user actions are instantiated
+	method <code>Build()</code> where all user actions are instantiated
 	(this method is called by each worker thread).
 	<br/><br/>A second method
 	<code>BuildForMaster</code> is called by the master thread.
-
-	<br/><br/>
 	Among all user actions the <code>G4UserRunAction</code> is the only one that can
 	also be instantiated for the master thread, this is to allow for
 	<a href="http://software.intel.com/en-us/blogs/2009/07/23/parallel-pattern-7-reduce">reduction</a>
 	of results from worker threads to master thread
 	(e.g. sum the partial results of each thread into a <i>global</i>
-	result). <br/>This will be covered in Hands On 4.
+	result). This will be covered in Hands On 4.
 </div>
 
 <br/>
@@ -96,7 +83,7 @@ created this is an important optimization to consider.
 <br/><br/>
 
 <div class="danger">
-	<strong>Important:</strong> The code assumes you have named the two SDs as
+	<strong>Important:</strong> The code assumes that, in your <code>HodoscopeSD</code> class, you have named the two SDs as
 	<code>/hodoscope1</code> and <code>/hodoscope2</code> and that they create a hit collection
 	called <code>hodosopeColl</code>. Change these accordingly if you have modified the names.
 </div>
@@ -121,8 +108,8 @@ decided at run time depending on the job configuration.
 	<div class="filename"> File: EventAction.cc</div>
 	<br/>
 
-	void EventAction::EndOfEventAction(const G4Event* event)
-	{
+	void EventAction::EndOfEventAction(const G4Event* event)<br/>
+	{<br/>
 	// =============================================<br/>
 	// Exercise 3<br/>
 	// Print on screen the hits of the hodoscope<br/>

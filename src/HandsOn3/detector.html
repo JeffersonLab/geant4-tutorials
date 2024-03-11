@@ -8,31 +8,26 @@ In this exercise we will cover basic aspects of retrieving
 physics quantities from the simulation kernel.<br/><br/>
 
 The basic simulation output is called
-<code>hit</code> (a user-defined class inheriting from <code>G4VHit</code>):<br/><br/>
-
-<div class="info">
-	<strong>hit</strong>: an energy deposit in space and time.
-</div>
-
-<br/>
-
-Typically we are not interested in hits in all detector elements, but instead we want to
+<code>hit</code> (a user-defined class derived from <code>G4VHit</code>).
+Typically we are not interested in every step in entire detector volumes, but instead we want to
 retrieve information only for the detector components we are interested in (e.g. the scintillator tiles
-in the hadronic calorimeter, and not the lead absorber)
-For those, we want to simulate the detector read-out .
-
-<br/><br/>
-
+in the hadronic calorimeter, and not the lead absorber).
 In Geant4 this is achieved with the concepts of <code>hits</code> and
 <code>sensitive detectors</code> (SD): you can attach a SD (a user class
 inheriting from <code>G4VSensitiveDetector</code>) to a logical
-volume, in this way Geant4 will call your user-code when a particle is
-tracked in this specific volume.
+volume, in this way Geant4 will call your detector code when a particle is
+making a step in this specific volume.
 
 <br/><br/>
 
-Information can be retrieved from the
-<code>G4Step</code> (e.g. energy deposited along the step) and a new hit is created (or an
+<div class="info">
+	<strong>hit</strong> is a container of information you want to retrieve (e.g. energy deposit in space and time).
+</div>
+
+<br/><br/>
+
+Information (e.g. energy deposited along the step) can be retrieved from the
+<code>G4Step</code> and a new hit could be created (or an
 existing hit is updated). <br/>
 
 Geant4 will keep track of all hits created
@@ -73,17 +68,17 @@ quantities:
 
 <ul>
 	<li>an integer value, representing the index of the hodoscope tile
-		that fired;
+		that is fired;
 	</li>
 	<li>a double value, representing the time in which the
-		hodoscope tile fired.
+		hodoscope tile is fired.
 	</li>
 </ul>
 
 
 <div class="info">
 	<strong>Reminder</strong>: a hodoscope is a simple set of
-	scintillators that measure the time in which a charged particle
+	scintillator fingers that measure the time in which a charged particle
 	passes through it. It can be used to performed time-of-flight
 	measurement and coarse-granularity position measurements.
 </div>
@@ -100,23 +95,20 @@ Implement/modify the <code>Print</code> method to dump
 the hit content.<br/><br/>
 
 <div class="warning">
-	The operators <code>new</code> and <code>delete</code> have been
-	emptied. You should remove the empty implementation and
-	implement the correct methods.<br/><br/>
+	The operators <code>new</code> and <code>delete</code> must be overwritten. <br/><br/>
 	<strong>Note on <code>new</code> and <code>delete</code></strong>:<br/><br/>
-	Instantiation and deletion of hit objects can put some pressure on CPU, because, for each event, many hits may be created
-	and deleted at the end of the event. <br/>
-	Allocating an objcet on the heap is a (relatively) CPU-intensive operation,
-	thus the handling of hits may cause some
+	Frequest instantiation and deletion of objects can put some pressure on CPU. Allocating an objcet on the heap and releasing it are (relatively) CPU-intensive operations.<br/>
+        In our case, for each event, many hits may be created
+	and deleted at the end of each event. Thus the handling of hits may cause some
 	performance degradation in a complex application.<br/>
 	To mitigate this we use an ad-hoc <b><i>allocator</i></b> named <code>G4Allocator</code> that allows for an efficient re-use of memory and
-	avoid many granular instantiations and deletions of the same kind.<br/>
-	The first time a hit is created a memory <b><i>pool</i></b> is created that can hold
+	avoid many granular instantiations and deletions of objects of the same kind.<br/>
+	The first time a hit is created, a memory <b><i>pool</i></b> is created that can hold
 	many hits (like in an array). Each time a hit is created
-	with this overwritten new operator we first look in this pool for an available
+	with this overwritten <code>new</code> operator we first look in this pool for an available
 	<b><i>pre-allocated memory location</i></b>. If an empty slot is available, we
 	re-use it, otherwise we expand the pool to accommodate more
-	hits.<br/><br/>
+	hits. Each time a hit is deleted with this overwritten <code>delete</code>, this memory space is not freed but kept for future re-use.<br/><br/>
 	With this technique we reduce substantially the new/delete cycles needed
 	for the simulation.<br/><br/>
 	An additional complication is that in multi-threading
@@ -177,7 +169,7 @@ from several steps instead of creating a new hit at each step).
 		<br/>
 		inline void* HodoscopeHit::operator new(size_t) <br/>{<br/>
 		&emsp; if (!HodoscopeHitAllocator)<br/>
-		&emsp;&emsp; HodoscopeHitAllocator = new G4Allocator&lt;HodoscopeHit&gt;<br/>
+		&emsp;&emsp; HodoscopeHitAllocator = new G4Allocator&lt;HodoscopeHit&gt;;<br/>
 		&emsp; return (void*)HodoscopeHitAllocator-&gt;MallocSingle();<br/>
 		}<br/>
 		<br/>
@@ -193,7 +185,7 @@ from several steps instead of creating a new hit at each step).
 	<div class="filename"> File: HodoscopeHit.cc</div>
 	<br/>
 	<div class="tbmodified">
-		G4ThreadLocal G4Allocator&lt;HodoscopeHit&gt;* HodoscopeHitAllocator;<br/><br/>
+		G4ThreadLocal G4Allocator&lt;HodoscopeHit&gt;* HodoscopeHitAllocator = nullptr;<br/><br/>
 		HodoscopeHit::HodoscopeHit(G4int i,G4double t)<br/>
 		: G4VHit(), fId(i), fTime(t)<br/>
 		{}<br/>
@@ -231,33 +223,21 @@ particle passes through the volume associated with this SD.
 
 
 <br/>
-We can use the <code>G4Step</code> object: it encodes the information regarding the
-simulation step in the geometry volume.<br/><br/>
+We use information stored in the <code>G4Step</code> object: it encodes the information regarding the
+simulated step in the geometry volume.<br/><br/>
 
 <div class="info">
-	<strong>Hint 1</strong>: Given a <code>G4Step</code> two points are defined
-	(<code>G4StepPoint</code>) that delimit the step itself (pre- and post-).<br/><br/>
-	The following two lines allows you to get the copy number of the volume
-	touched by the step (in our case the copy number for the hodoscope is
-	the tile number, see file <code>DetectorConstruction.cc</code>).<br/><br/>
-	<codeblock>
-		G4TouchableHistory* touchable = static_cast&lt;G4TouchableHistory*&gt;( stepPoint-&gt;GetTouchable() );<br/>
-		G4int copyNumber = touchable-&gt;GetVolume()-&gt;GetCopyNo();
-	</codeblock>
+	<strong>Hint 1</strong>: <code>G4Step</code> has two 
+	(<code>G4StepPoint</code>) objects that delimit the step (pre-step and post-step).
+        Information of the volume should be taken from "pre-step point".<br/>
 	<br/>
-	<strong>Hint 2</strong>: There are two <code>G4StepPoint</code>
-	defining a <code>G4Step</code>, which one of the two should you use,
-	pre- or post- step point? Why? The answer to this question is one of
-	the most trickiest part of Geant4 for a new user, be sure to
-	understand the reason why the two points are not equivalent!<br/>
-	<br/>
-	<strong>Hint 3</strong>: We are simulating a scintillator detector that will
+	<strong>Hint 2</strong>: We are simulating a scintillator detector that will
 	trigger only if some energy has been deposited (i.e. via ionization),
 	for example if a neutron passes through the detector (without making
 	interactions) its passage should not be recorded. Check the energy
-	deposited in the step, if zero do not do anything.<br/>
+	deposited in the step, if zero do nothing.<br/>
 	<br/>
-	<strong>Hint 4</strong>: More than one step can be done by the same particle in
+	<strong>Hint 3</strong>: More than one step can be done by the same particle in
 	a single volume (why?), in addition secondaries produced in the volume
 	will also make steps in the SD. This mean that for a given primary particle we
 	can have more than one call to the <code>ProcessHits</code>.
@@ -285,7 +265,7 @@ simulation step in the geometry volume.<br/><br/>
 		<br/>
 		G4StepPoint* preStepPoint = step-&gt;GetPreStepPoint();<br/>
 		<br/>
-		G4TouchableHistory* touchable = (G4TouchableHistory*)(preStepPoint-&gt;GetTouchable());<br/>
+		G4TouchableHistory* touchable = preStepPoint-&gt;GetTouchable();<br/>
 		G4int copyNo = touchable-&gt;GetVolume()-&gt;GetCopyNo();<br/>
 		G4double hitTime = preStepPoint-&gt;GetGlobalTime();<br/>
 		<br/>
