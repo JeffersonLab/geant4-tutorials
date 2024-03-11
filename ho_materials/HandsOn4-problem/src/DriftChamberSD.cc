@@ -71,7 +71,7 @@ G4bool DriftChamberSD::ProcessHits(G4Step* step, G4TouchableHistory*)
     
     G4StepPoint* preStepPoint = step->GetPreStepPoint();
 
-    G4TouchableHistory* touchable = step->GetPreStepPoint()->GetTouchable();
+    const G4TouchableHistory* touchable = step->GetPreStepPoint()->GetTouchable();
     G4VPhysicalVolume* motherPhysical = touchable->GetVolume(1); // mother
     G4int copyNo = motherPhysical->GetCopyNo();
 

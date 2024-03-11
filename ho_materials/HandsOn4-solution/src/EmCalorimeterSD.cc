@@ -76,7 +76,7 @@ G4bool EmCalorimeterSD::ProcessHits(G4Step*step, G4TouchableHistory*)
     G4double edep = step->GetTotalEnergyDeposit();
     if (edep==0.) return true;
     
-    G4TouchableHistory* touchable = step->GetPreStepPoint()->GetTouchable();
+    const G4TouchableHistory* touchable = step->GetPreStepPoint()->GetTouchable();
     G4VPhysicalVolume* physical = touchable->GetVolume();
     G4int copyNo = physical->GetCopyNo();
     
