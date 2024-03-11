@@ -265,7 +265,7 @@ simulated step in the geometry volume.<br/><br/>
 		<br/>
 		G4StepPoint* preStepPoint = step-&gt;GetPreStepPoint();<br/>
 		<br/>
-		G4TouchableHistory* touchable = preStepPoint-&gt;GetTouchable();<br/>
+		const G4TouchableHistory* touchable = preStepPoint-&gt;GetTouchable();<br/>
 		G4int copyNo = touchable-&gt;GetVolume()-&gt;GetCopyNo();<br/>
 		G4double hitTime = preStepPoint-&gt;GetGlobalTime();<br/>
 		<br/>
