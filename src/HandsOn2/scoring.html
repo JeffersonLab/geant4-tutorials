@@ -1,12 +1,12 @@
 <h2><a class="content" id=ho2_scoring>Command line based scoring</a></h2>
 
 <div class="lecture">
-        <strong>Related lecture:</strong> Scoring 1, User interface 1
+	<strong>Related lecture:</strong> Scoring 1, User interface 1
 </div><br/>
 
 
 In this exercise we will collect simulation information using
-command line scoring. <br/>br/>
+command line scoring. <br/><br/>
 
 A scoring mesh will be defined on top of the
 volume created in Exercise 2.a, and different quantities will be recorded. <br/><br/>
@@ -69,8 +69,8 @@ Dump the scored quantities to files and verify the content.<br/>
 <br/>
 
 <div class="info">
-	<strong>Hint: </strong> Familialize UI commands for command-based scorier. 
-        If you use Qt GUI, check the left-side help window. If you do not use Qt, use the <code>help</code> command.
+	<strong>Hint: </strong> Familialize UI commands for command-based scorier.
+	If you use Qt GUI, check the left-side help window. If you do not use Qt, use the <code>help</code> command.
 </div>
 
 <br/><br/>
@@ -177,11 +177,11 @@ commands.<br/>
 This macro should be executed after<code>scoring.mac</code>:<br/><br/>
 
 <codeblock>
-	$ ./G4tut <br />
-        <div class="UIcommand">
-	/control/execute scoring.mac <br />
-	/control/execute draw.mac 
-        </div>
+	$ ./G4tut <br/>
+	<div class="UIcommand">
+		/control/execute scoring.mac <br/>
+		/control/execute draw.mac
+	</div>
 </codeblock>
 
 
@@ -213,11 +213,11 @@ This macro should be executed after<code>scoring.mac</code>:<br/><br/>
 </codeblock>
 
 <codeblock>
-        <div class="filename"> File: drawSlice.mac</div>
-        <br/>
-        <div class="info">
-                /score/drawColumn boxMesh_1 nOfStepGamma 0 {iColumn}<br/>
-        </div>
+	<div class="filename"> File: drawSlice.mac</div>
+	<br/>
+	<div class="info">
+		/score/drawColumn boxMesh_1 nOfStepGamma 0 {iColumn}<br/>
+	</div>
 </codeblock>
 
 
