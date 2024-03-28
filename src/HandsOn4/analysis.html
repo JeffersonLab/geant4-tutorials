@@ -305,6 +305,9 @@ You can access filled hits at the end of each event in
 <h4>Solution</h4>
 <codeblock>
 	<div class="filename"> File: EventAction.cc</div>
+		<div class="tbmodified">
+			#include "G4AnalysisManager.hh"
+		</div>	
 	<br/>
 	void EventAction::EndOfEventAction(const G4Event* event)<br/>
 	{<br/>
