@@ -160,7 +160,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
     // Dc1Hits
     analysisManager->FillNtupleIColumn(0, dHC1->entries());
     // Dc2Hits
-    analysisManager->FillNtupleIColumn(1, dHC1->entries());
+    analysisManager->FillNtupleIColumn(1, dHC2->entries());
     
     // ECEnergy
     G4int totalEmHit = 0;
