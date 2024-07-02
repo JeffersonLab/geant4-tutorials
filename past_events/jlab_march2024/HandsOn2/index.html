@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en" xmlns>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="../main.css">
+	<title>Geant4 Tutorial HandsOn2</title>
+</head>
+
+<body>
+<br/>
+<br/>
+<br/>
+
+
+<div id="topnav" class="topnav">
+	<a href="../index.html">Tutorial Home</a>
+	<a href="#ho2_intro">Introduction</a>
+	<a href="#ho2_conv">Conventions</a>
+	<a href="#ho2_material">Defining materials</a>
+	<a href="#ho2_geom">First geometry</a>
+	<a href="#ho2_scoring">Command-line scoring</a>
+</div>
+
+
+<hr/><h2><a class="content" id=ho2_intro></a></h2>
+<br/><br/><br/><br/><h1>Hands on 2: a simple setup</h1>
+
+In this hands on you will learn:
+<ul>
+	<li>How to define materials</li>
+	<li>How to define a very simple geometry</li>
+	<li>How to use command line scoring to record, store and display
+		simulation results
+	</li>
+</ul>
+
+<br/><hr/><br/>
+
+<div class="success">
+	<strong>Material:</strong> <br/><br/>
+	The problem code for this hands-on session
+	can be downloaded <a href="../HandsOn2-problem.tar.gz">here</a>.<br/>
+	For your reference, the complete solution
+	is also available <a href="../HandsOn2-solution.tar.gz">here</a>.<br/>
+	Copy the tar ball to your local area.<br/><br/>
+</div>
+
+<br/>
+<br/>
+
+<codeblock>
+	$ cd &lt;tutorial&gt; #change to your working directory<br/>
+	$ tar xzf HandsOn2-problem.tar.gz<br/>
+	$ cd HandsOn2-problem<br/>
+	$ ls #Take a look at the files<br/>
+</codeblock>
+<br/>
+
+
+The name of the executable is <code>G4tut</code>.<br/><br/>
+Configure with <code>cmake</code> the Hands-on code, build it and run it:<br/><br/>
+
+<codeblock>
+	$ cmake .<br/>
+	$ make -j 2 -f Makefile<br/>
+	$ ./G4tut
+</codeblock>
+<br/>
+
+
+
+
+The following should appear:<br/><br/>
+<img src="start.png" width=900/> <br/><br/>
+
+The default behavior of the application when started without command
+line arguments is to start the (G)UI (if enabled).<br />
+<ul>
+	<li>If you use Qt-based GUI, you can type your command in the <code>Session:</code> field at the right-bottom of the window.
+You may also pick a command from the left side menu. </li>
+	<li>If you do not use Qt but use OpenGL visualization, 
+you should find <code>Idle&gt;</code> prompt on your terminal screen. 
+Try <code>ls</code>, <code>help</code> and <code>help <i>&lt;UI_command&gt;</i></code> to get help.</li>
+</ul>
+Familiarize with the Geant4 UI.<br/>
+
+
+<h3>Exercise 0.a:</h3>
+
+<b>Question 1</b>: Run 10 events.
+<br/><br/>
+<codeblock>
+	<div class="UIcommand">
+	/run/beamOn 10<br/>
+	exit
+	</div>
+</codeblock>
+
+
+<h3>Exercise 0.b:</h3>
+
+Now run the application with a macro file as command line argument:<br/><br/>
+<codeblock>
+	$ ./G4tut run1.mac
+</codeblock>
+<br/><br/>
+
+Check the content of the macro file <code>run1.mac</code>,
+start the application again interactively and using the help system
+check the syntax of the few commands used in the macro file.<br/>
+Note: Other macro files in the <code>HandsOn2-problem</code> directory do not work until you finish all the exercises.
+
+
+<br/><hr/><h2><a class="content" id=ho2_conv>Conventions</a></h2>
+
+
+<div class="danger">
+	<strong>Important note</strong>
+	Throughout this tutorial, where to edit the code is clearly marked in the corresponding file.
+	Open the specified file and search a comment line that matches to the exercise name.
+	That is the place you should add your code. <br/>
+</div>
+<br/><br/>
+This is what it will look like:
+
+<br/><br/>
+<codeblock>
+	<div class="filename"> File: Filename</div>
+	<br/>
+	//============================<br/>
+	// Exercise <b>X.Y</b><br/><br/>
+	<div class="tbmodified">
+		new code to be added / modified will apper in red
+	</div>
+</codeblock>
+
+<br/><br/>
+<br/><hr/><h2><a class="content" id=ho2_material>Defining Materials</a></h2>
+
+<h3>Exercise 1.a:</h3>
+
+<div class="lecture">
+        <strong>Related lectures:</strong> Material definition, Geometry 1
+</div><br/>
+
+
+In this example, we have a specific method <code>DetectorConstruction::ConstructMaterials()</code> w
+here all materials that are used in the application are built. <br/>
+Such method is not mandatory, but it may help to organize your code.<br/>
+Create a <b>CsI</b> (<a href="http://en.wikipedia.org/wiki/Caesium_iodide">Cesium Iodide</a>)
+material starting from the elements Iodine and Cesium.
+Some of its properties:
+<ul>
+	<li>For Cs: Z=55 , Aeff=132.9*g/mol</li>
+	<li>For I : Z=53 , Aeff=126.9*g/mol</li>
+	<li>Density of crystal of CsI is: rho=4.51*g/cm^3</li>
+</ul>
+
+After adding the needed code, re-compile (no need to do the cmake step again)
+and start the application once more. <br/>
+
+Note that at the moment we have created the material (and so Geant4
+kernel knows about it), but it is not yet used in any geometry element.<br/>
+
+
+Observe Geant4 output, at the beginning of the
+application the list of materials will be shown, starting from the
+line <code>The materials defined are : </code>. <br/>
+
+At the end of the method <code>DetectorConstruction::ConstructMaterials()</code>
+there is a line that prints on screen the complete list of defined materials.
+Note the paragraph relative to CsI and its properties.<br/>
+
+The UI command: <code>/material/g4/printMaterial CsI</code> can
+be issued at run-time to print the details of CsI. Check the other UI commands
+available in the <code>/material</code> directory.<br/><br/>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	<div class="tbmodified">
+		G4Element* el_i = new G4Element("Iodine","I", 53,126.9*g/mole);<br/>
+		G4Element* el_cs = new G4Element("Cesium","Cs",55,132.9*g/mole);<br/>
+		G4Material* mat_csi = new G4Material("CsI",4.51*g/cm3,2);<br/>
+		mat_csi-&gt;AddElement(el_i,1);<br/>
+		mat_csi-&gt;AddElement(el_cs,1);<br/>
+	</div>
+</codeblock>
+
+
+<h3>Exercise 1.b:</h3>
+
+Use NIST database to create Lead material.
+
+<b>Hint:</b> You can use UI command
+<code>/material/nist/listMaterials</code> to dump on screen the list of all
+<a href="http://geant4-userdoc.web.cern.ch/geant4-userdoc/UsersGuides/ForApplicationDeveloper/html/Appendix/materialNames.html">Gean4-NIST compounds materials.</a><br/>
+
+Search for the name relative to lead.<br/>
+Build again the application and run it again. Note that now the list
+of materials includes lead element with all isotopes with natural abundances.<br/>
+<b>Hint:</b> You can always use the command <code>/material/g4/printMaterial &lt;name&gt;</code> to print interactively the information on a specific material of your interest.
+</P>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	<div class="tbmodified">
+		nistManager-&gt;FindOrBuildMaterial("G4_Pb");<br/>
+	</div>
+</codeblock>
+
+
+<br/><hr/><h2><a class="content" id=ho2_geom>A very simple geometry</a></h2>
+
+<div class="lecture">
+        <strong>Related lectures:</strong> Material definition, Geometry 1
+</div><br/>
+
+
+In this example we will create a first geometry element. The goal of
+this exercise is to show how to define a shape, a logical volume and a placement.
+
+<h3>Exercise 2.a</h3>
+
+
+Add a box of <b>CsI</b> to the setup.
+
+The box has full dimensions (X times Y times Z): <code>300x60x100 cm</code>, with <b>CsI</b> as material.<br/>
+
+Place the box inside the logical volume <code>second arm</code>.
+It should be placed at the very back of this mother volume.<br/>
+At the end of the tutorials this simple box will become a calorimeter.<br/>
+
+Re-compile and check that you obtain the correct behavior:<br/><br/>
+<img src="complete.png" width=900/> <br/>
+</P>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	<div class="tbmodified">
+		G4Material* material = G4Material::GetMaterial("CsI");<br/>
+		G4VSolid* hadCalorimeterSolid = new G4Box("HadCalorimeterBox",1.5*m,30.*cm,50.*cm);<br/>
+		G4LogicalVolume* hadCalorimeterLogical = new G4LogicalVolume(hadCalorimeterSolid,material,"HadCalorimeterLogical");<br/>
+		new G4PVPlacement(0,G4ThreeVector(0.,0.,3.*m),hadCalorimeterLogical,"HadCalorimeterPhysical",secondArmLogical,false,0,checkOverlaps);<br/>
+	</div>
+</codeblock>
+
+<br/><br/>
+
+<h3>Exercise 2.b</h3>
+
+
+Change material of the box and observe effect on physics
+simulation.<br/><br/>
+
+Modify the material of the box: instead of <code>CsI</code>, use the
+material <code>scintillator</code>. <br/><br/>
+
+Simulate a single electron. Note how the material affects the shower dimensions:<br/><br/>
+<table>
+	<tbody>
+	<tr>
+		<td><img src="CsI.png" width=450/></td>
+		<td><img src="sci.png" width=450/></td>
+	</tr>
+	</tbody>
+</table>
+<br/><br/>
+
+The material is already created in the <code>ConstructMaterials</code> method, it has
+a long name becasue it is a particular type of plastic. You need just to retrieve it
+by name when using it in the <code>G4LogicalVolume</code>.
+
+
+<br/><hr/><h2><a class="content" id=ho2_scoring>Command line based scoring</a></h2>
+
+<div class="lecture">
+	<strong>Related lecture:</strong> Scoring 1, User interface 1
+</div><br/>
+
+
+In this exercise we will collect simulation information using
+command line scoring. <br/><br/>
+
+A scoring mesh will be defined on top of the
+volume created in Exercise 2.a, and different quantities will be recorded. <br/><br/>
+
+We will also show how to display and save in a text file. <br/><br/>
+
+
+<h3>Exercise 3.a</h3>
+
+
+Enable command line scoring: <br/>
+
+Instantiate a scoring manager in the <code>main()</code> function.
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: tutorial.cc</div>
+	<br/>
+	// Activate UI-command base scorer<br/>
+	<div class="tbmodified">
+		G4ScoringManager * scManager = G4ScoringManager::GetScoringManager();<br/>
+		scManager-&gt;SetVerboseLevel(1);<br/>
+	</div>
+</codeblock>
+
+<br/><br/>
+<div class="warning">
+	<strong>Warning:</strong> You might have a compilation error in <i>tutorial.cc</i>. Read the error message and identify what you need to add to ammend the error.
+</div>
+
+<br/><br/>
+
+<h3>Exercise 3.b</h3>
+
+
+Score some quantities: energy deposit, number of steps.
+<br/><br/>
+
+Using only UI commands create a scoring box mesh that is placed on top of the
+calorimeter <code>box</code>.
+
+<br/><br/>
+The mesh should have the same dimension as the
+calorimeter and have (X times Y times Z) <code>30x6x10</code> voxels.
+
+
+<br/><br/>
+Score the following
+quantities:
+<ul>
+	<li>Energy deposits</li>
+	<li>Number of steps for gammas</li>
+	<li>Number of steps for e-</li>
+	<li>Number of steps for e+</li>
+</ul>
+
+Dump the scored quantities to files and verify the content.<br/>
+
+<br/>
+
+<div class="info">
+	<strong>Hint: </strong> Familialize UI commands for command-based scorier.
+	If you use Qt GUI, check the left-side help window. If you do not use Qt, use the <code>help</code> command.
+</div>
+
+<br/><br/>
+
+Starting from the content of the file <code>scoring.mac</code> reproduce in an
+interactive session the various steps used to score the quantities.<br/>
+Some of the UI commands used here depends on the UI commands used before.<br/>
+
+For example the commands used to define a particle filter are used in combination
+with the preceding command defining the quantity to score. <br/><br/>
+
+The command <code>/score/close</code> signals that all scoring volumes and associated quantities
+are now completed and configured.
+<br/><br/>
+
+There are two separate concepts to grasp when scoring:
+<ul>
+	<li><b>The scoring mesh</b>: the shape, dimension and number of bins of the used <b>3D grid</b></li>
+	<li><b>The quantities to be scored</b>. You can have multiple quantities associated to a given
+		mesh, but you can also have multiple meshes in the same application even with
+		different geometries and possibily overlapping.
+	</li>
+</ul>
+
+
+<h4>Solution</h4>
+The macro <code>scoring.mac</code> shows all the UI commands needed
+in this exercise. It can be used directly by the <code>G4tut</code> executable to create the output file:<br/><br/>
+<codeblock>
+	$ ./G4tut scoring.mac
+</codeblock>
+
+<br/><br/>
+
+<div class="info">
+	<strong>Note:</strong> Reduce the number of simulated events (default
+	2000) if the simulation takes too long.
+</div>
+
+<br/><br/>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: scoring.mac</div>
+	<br/>
+	<div class="info">
+		/run/initialize<br/>
+		########################################<br/>
+		#<br/>
+		# define scoring mesh<br/>
+		#<br/>
+		/score/create/boxMesh boxMesh_1<br/>
+		#<br/>
+		#Create a mesh large as the box<br/>
+		/score/mesh/boxSize 150. 30. 50. cm<br/>
+		#Position it over the box<br/>
+		/score/mesh/translate/xyz 0 0 8 m<br/>
+		#mesh voxel size of 5cm<br/>
+		/score/mesh/nBin 30 6 10<br/>
+		# All these quantities are associated<br/>
+		# with the mesh with name "boxMesh_1"<br/>
+		/score/quantity/energyDeposit eDep<br/>
+		/score/quantity/nOfStep nOfStepGamma<br/>
+		/score/filter/particle gammaFilter gamma<br/>
+		/score/quantity/nOfStep nOfStepEMinus<br/>
+		/score/filter/particle eMinusFilter e-<br/>
+		/score/quantity/nOfStep nOfStepEPlus<br/>
+		/score/filter/particle ePlusFilter e+<br/>
+		#<br/>
+		/score/close<br/>
+		#<br/>
+		/run/verbose 1<br/>
+		/gun/particle e-<br/>
+		/run/beamOn 2000<br/>
+		########################################<br/>
+		#<br/>
+		# Dump scores to a file: tell G4 which<br/>
+		# mesh and which quantity should go in the output file<br/>
+		#<br/>
+		/score/dumpQuantityToFile boxMesh_1 nOfStepGamma nOfStepGamma.txt<br/>
+	</div>
+</codeblock>
+
+<br/><br/>
+
+<h3>Exercise 3.c</h3>
+
+
+Visualize scored quantities.
+
+<br/><br/>
+
+Using UI commands draw on the screen different scored
+quantities. For example the energy deposit looks like:<br/><br/>
+<img src="edep.png" width=900/>
+
+
+<h4>Solution</h4>
+The macro file <code>draw.mac</code> shows how to draw scored
+quantities, in also shows how to draw slices using loops in UI
+commands.<br/>
+
+This macro should be executed after<code>scoring.mac</code>:<br/><br/>
+
+<codeblock>
+	$ ./G4tut <br/>
+	<div class="UIcommand">
+		/control/execute scoring.mac <br/>
+		/control/execute draw.mac
+	</div>
+</codeblock>
+
+
+<br/><br/>
+
+
+<codeblock>
+	<div class="filename"> File: draw.mac</div>
+	<br/>
+	<div class="info">
+		########################################<br/>
+		#<br/>
+		# drawing projections<br/>
+		#<br/>
+		/score/drawProjection boxMesh_1 eDep<br/>
+		/score/drawProjection boxMesh_1 nOfStepGamma<br/>
+		/score/drawProjection boxMesh_1 nOfStepEMinus<br/>
+		/score/drawProjection boxMesh_1 nOfStepEPlus<br/>
+		#<br/>
+		########################################<br/>
+		#<br/>
+		# drawing slices<br/>
+		#<br/>
+		/vis/scene/create<br/>
+		/vis/sceneHandler/attach scene-1<br/>
+		/score/colorMap/setMinMax ! 0. 800.<br/>
+		/control/loop drawSlice.mac iColumn 0 10 3<br/>
+	</div>
+</codeblock>
+
+<codeblock>
+	<div class="filename"> File: drawSlice.mac</div>
+	<br/>
+	<div class="info">
+		/score/drawColumn boxMesh_1 nOfStepGamma 0 {iColumn}<br/>
+	</div>
+</codeblock>
+
+
+<br/><br/>
+
+
+The macro files perform several views at the same time
+(<code>/score/drawProjection</code> commands), try out the
+views one at the time in the command line.
+
+<br/><br/>
+
+<table>
+	<tr>
+		<td><img src="edep.png" width=450/></td>
+		<td><img src="slices.png" width=450/></td>
+	</tr>
+</table>
+
+
+<br/><hr/><br/>
+Created by:
+<a href="mailto:adotti@stanford.edu>">Andrea Dotti </a>
+, May 2018
+<br/>Updated by:
+<a href="mailto: asai@jlab.org">Makoto Asai</a> and
+<a href="mailto:ungaro@jlab.org>">Maurizio Ungaro</a>
+, February 2024<br/>
+<br/>
+<hr/>
+<br/>
+
+<script src="../main.js"></script>        <!-- Don't move this line to the top! It causes an error at Safari -->
+
+
+</body>
+</html>

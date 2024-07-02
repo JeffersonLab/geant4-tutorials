@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en" xmlns>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="../main.css">
+	<title>Geant4 Tutorial HandsOn4</title>
+</head>
+
+<body>
+<br/>
+<br/>
+<br/>
+
+
+<div id="topnav" class="topnav">
+	<a href="../index.html">Tutorial Home</a>
+	<a href="#ho4_intro">Introduction</a>
+	<a href="#ho4_runaction">User Actions II</a>
+	<a href="#ho4_ana">Analysis</a>
+</div>
+
+
+<hr/><h2><a class="content" id=ho4_intro></a></h2>
+
+<br/><br/><br/><br/><h1>Hands on 4: First physics measurements</h1>
+
+In this fourth hands-on you will learn:
+<ul>
+	<li>How to define a user run class to accumulate quantities from different
+		events.
+	</li>
+	<li>How to process this information to make a simple physics
+		measurement using <code>G4UserRunAction</code>.
+	</li>
+	<li>How to store physics results on output files with
+		<code>g4analysis</code> for post-processing analysis.
+	</li>
+	<li>How to modify physics list using constructors.</li>
+</ul>
+
+<br/>
+<hr/><br/>
+
+<div class="success">
+	<strong>Material:</strong> <br/><br/>
+	The problem code for this hands-on session
+	can be downloaded <a href="../HandsOn4-problem.tar.gz">here</a>.<br/>
+	For your reference, the complete solution
+	is also available <a href="../HandsOn4-solution.tar.gz">here</a>.<br/>
+	Copy the the tar ball to your local area.<br/><br/>
+</div>
+
+<br/>
+<hr/><br/>
+
+Un-tar the code, configure it with <code>cmake</code>, build it, and run it:<br/><br/>
+
+<codeblock>
+	$ cd &lt;tutorial&gt; #change to your working directory<br/>
+	$ tar xzf HandsOn4-problem.tar.gz<br/>
+	$ cd HandsOn4-problem<br/>
+	$ cmake .<br/>
+	$ make -j 2 -f Makefile<br/>
+	$ ./G4tut
+</codeblock>
+<br/>
+
+
+<div class="warning">
+	<strong>Note:</strong> Ignore compiler warning messages. They will disappear once you complete the exercise.
+</div>
+
+<br/>
+
+<div class="info">
+	The code of this tutorial is a modified version of Geant4 example B5. You can review almost all concepts from this tutorial in the example that can be found under:
+	&lt;geant4&gt;/examples/basic/B5.
+</div>
+
+<br/>
+
+The geometry is the same as the completion of the previous hands on.<br/>
+We will not modify the geometry anymore, but several sensitive
+detectors and hits classes have been added to the setup. <br/><br/>
+
+Take a moment to look at the classes whose filenames ends with strings
+<code>SD</code> and <code>Hit</code>. In particular it
+is important that you understand how the calorimeter hits work.
+
+In exercise number 2 you will calculate a very simple physics quantity (a
+partial shower shape) from the energy released in calorimeters.<br/><br/>
+
+<div class="info">
+	Geant4 does not provide/recommend specific utilities for the analysis operations
+	because these are strongly detector-specific. <br/
+	However we do provide a light-weight histogramming and ntuple facility.<br/>
+	These are compatible
+	with AIDA and ROOT output format and they do not require any library
+	installed on the system. They can also dump output in tabular form
+	in text files (CSV) to import data in (virtually) any analysis system
+	(pylab, R, Octave, Excel, Matlab,Mathematica, ...). <br/>
+	If you do not have an
+	AIDA-compliant tool nor ROOT installed, will not be
+	able to display histograms, but you will still be able to read data
+	written in CSV format.
+	<br/><br/>
+	For your interest here are some links:<br/>
+	<ul>
+		<li><a href="http://continuum.io/downloads">Anaconda Distribution:
+			Scientific Python Stack</a>
+		<li><a href="https://www.gnu.org/software/octave/">GNU Octave</a>
+			(open-source MATLAB-inspired)
+		</li>
+		<li><a href="http://www.r-project.org">R</a> (statistical analysis,
+			de-facto standard among statisticians)
+		</li>
+		<li><a href="http://root.cern.ch">ROOT</a> (HEP oriented)</li>
+		<li><a href="http://jas.freehep.org/jas3/">Java Analysis Studio 3</a>
+			(AIDA compliant tool with additional support for ROOT files, HEP orineted)
+		</li>
+		<li><a href="http://piti118.github.io/babar_python_tutorial/">Better
+			Analysis Workflow with [I]Python</a> (HEP oriented, python based, includes
+			reading from ROOT files TTrees, can be added on top of other scientific python stacks).
+		</li>
+		<li><a href="http://pandas.pydata.org/">Pandas</a> (Python Data Analysis Library)</li>
+	</ul>
+</div>
+
+
+
+
+<br/><hr/><h2><a class="content" id=ho4_runaction>User Actions II</a></h2>
+
+<div class="lecture">
+        <strong>Related lectures:</strong> Kernel 1, Kernel 2, Scoring 2
+</div><br/>
+
+In <a href="../HandsOn3/index.html#ho3_ex3">Exercise 3 of Hands On 3</a>
+you have printed on screen, for each simulated event, the hits
+collected in the hodoscope.
+
+<br/><br/>
+
+In this exercise we will show how to
+accumulate some information (the energy deposited in the calorimeters)
+over the entire run. We will also show how to <i>merge</i>
+(i.e. <i>reduce</i> or combine) the results in a multi-threaded application.
+
+<br/><br/>
+
+
+The goal of these two exercises is to calculate the average energy
+released in the electromagnetic and hadronic calorimeter and the
+average partial shower shape.
+<br/><br/>
+
+<div class="info">
+	A shower shape is a quantity that
+	describes the characteristic spatial dimensions of
+	particle showers in calorimeters. In this example we will calcualte
+	the fraction of energy released in the electromagnetic
+	calorimeter. An electron or gamma has the
+	<i>em fraction</i> very close to 1; a hadron will have a smaller
+	value of the em fraction.
+</div>
+
+<br/>
+
+<ul>
+	<li>
+		In Exercise 1 you will modify the application to accumulate the
+		energy released in calorimeters in each event. <br/>
+		You will modify 2 files: <code>Run.hh</code> and
+		<code>Run.cc</code>, implementing a user-defined <code>G4Run</code> class.<br/><br/>
+	</li>
+	<li>
+		In Exercise 2 you will modify the file
+		<code>RunAction.cc</code>, that implements the user defined
+		<code>G4UserRunAction</code> class, to retrieve the information
+		collected in the first exercise and dump on screen the results of your
+		data analysis: energy in calorimeters and shower shape.<br/>
+	</li>
+</ul>
+
+<br/>
+
+During the simulation of a run an instance of a <code>G4Run</code> exists
+and is managed by Geant4 kernel. User should extend this class to
+accumulate user data.
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 1 Step 1</h3>
+
+Create a user-defined run class.
+
+<br/><br/>
+
+Modify the file <code>Run.hh</code>, a class inheriting
+from <code>G4Run</code>: extend the class to contain the information
+to be stored (of types double):
+
+<ul>
+	<li>the total energy deposited in the two calorimeters</li>
+	<li>the accumulated shower shape</li>
+</ul>
+
+<br/>
+
+Since you will need to access hits
+collections from calorimeters, add two integer data members to keep
+track of the hits collection ids.<br/><br/>
+
+<div class="warning">
+	<strong>Question:</strong> what are the data members of the base class
+	<code>G4Run</code>?
+</div>
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: Run.hh</div>
+	<br/>
+	class Run : public G4Run {<br/>
+	public:<br/>
+	&emsp;Run();<br/>
+	&emsp;virtual ~Run() {};<br/>
+	&emsp;virtual void RecordEvent(const G4Event*);<br/>
+	&emsp;virtual void Merge(const G4Run*);<br/>
+	<div class="tbmodified">
+		&emsp;G4double GetEmEnergy() const { return em_ene; }<br/>
+		&emsp;G4double GetHadEnergy() const { return had_ene; }<br/>
+		&emsp;G4double GetShowerShape() const { return shower_shape; }<br/>
+		private:<br/>
+		&emsp;G4double em_ene; //accumulated energy in EM calo<br/>
+		&emsp;G4double had_ene;//accumulated energy in HAD calo<br/>
+		&emsp;G4double shower_shape;//accumulated shower shape (<br/>
+		&emsp;f=EM/(EM+HAD) )<br/>
+		&emsp;G4int ECHCID; //ID for EM hits collection<br/>
+		&emsp;G4int HCHCID; //ID for HAD hits collection<br/>
+	</div>
+</codeblock>
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 1 Step 2</h3>
+
+Accumulate physics quantities.
+
+<br/><br/>
+
+Modify in file <code>Run.cc</code> the method
+<code>RecordEvent</code>. This method is called by Geant4 kernel at
+the end of each event passing the pointer to the current event.
+<br/><br/>
+Retrieve here the hits collections of both calorimeters, loop on all hits and
+calculate the needed physics quantities. In the constructor of Run class
+initialize the class data members to an initial value (0 for energy
+and shape and -1 for ids).
+
+<br/><br/>
+
+<div class="info">
+	<strong>Hint:</strong> Note that the initial value of -1 for hits id allows
+	you to be efficient in searching the hits by collection: if id==-1 you
+	need to search the collections, if not you already did this opeartion
+	and you can skip the heavy search by string.
+</div>
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: Run.cc</div>
+	<br/>
+	<div class="tbmodified">
+		Run::Run(): G4Run(), em_ene(0), had_ene(0), shower_shape(0) , ECHCID(-1), HCHCID(-1) { } <br/>
+	</div>
+	void Run::RecordEvent(const G4Event* evt)<br/>
+	{<br/>
+	<div class="tbmodified">
+		// Forward call to base class<br/>
+		// This is important, can you tell why?<br/>
+		G4Run::RecordEvent(evt);<br/>
+		<br/>
+		if ( ECHCID == -1 || HCHCID == -1) {<br/>
+		&emsp; G4SDManager* sdManager = G4SDManager::GetSDMpointer();<br/>
+		&emsp; ECHCID = sdManager-&gt;GetCollectionID("EMcalorimeter/EMcalorimeterColl");<br/>
+		&emsp; HCHCID = sdManager-&gt;GetCollectionID("HadCalorimeter/HadCalorimeterColl");<br/>
+		}<br/>
+		G4HCofThisEvent* hce = evt-&gt;GetHCofThisEvent();<br/>
+		if (!hce) {<br/>
+		&emsp; G4ExceptionDescription msg;<br/>
+		&emsp; msg &lt;&lt; "No hits collection of this event found.\n";<br/>
+		&emsp; G4Exception("Run::RecordEvent()","Code001", JustWarning, msg);<br/>
+		&emsp; return;<br/>
+		}<br/>
+		const EmCalorimeterHitsCollection* emHC = static_cast&lt;const EmCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(ECHCID));<br/>
+		const HadCalorimeterHitsCollection* hadHC = static_cast&lt;const HadCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(HCHCID));<br/>
+		if ( !emHC || !hadHC )<br/>
+		{<br/>
+		&emsp; G4ExceptionDescription msg;<br/>
+		&emsp; msg &lt;&lt; "Some of hits collections of this event not found.\n";<br/>
+		&emsp; G4Exception("Run::RecordEvent()","Code001", JustWarning, msg);<br/>
+		&emsp; return;<br/>
+		}<br/>
+		G4double em = 0;<br/>
+		G4double had = 0;<br/>
+		for (size_t i=0;i&lt;emHC-&gt;GetSize();i++)<br/>
+		{<br/>
+		&emsp; EmCalorimeterHit* hit = (*emHC)[i];<br/>
+		&emsp; em += hit-&gt;GetEdep();<br/>
+		}<br/>
+		for (size_t i=0;i&lt;hadHC-&gt;GetSize();i++)<br/>
+		{<br/>
+		&emsp; HadCalorimeterHit* hit = (*hadHC)[i];<br/>
+		&emsp; had += hit-&gt;GetEdep();<br/>
+		}<br/>
+		had_ene += had;<br/>
+		em_ene += em;<br/>
+		if ( had+em &gt; 0 ) //Protect agains the case had+em=0<br/>
+		&emsp; shower_shape += ( em/(had+em) );<br/>
+		<br/>
+	</div>
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 1 Step 3</h3>
+
+Implement reduction for multi-threading.
+
+<br/><br/>
+
+This step is optional for application without multi-thread support.<br/>
+Why you need this? Remember in a multi-threaded application each
+worker thread has its own instance of class <code>G4Run</code>.
+
+<br/><br/>
+
+Events are distributed and you end the simulation with many run
+objects (one per worker task/thread). Geant4 provides a way to merge these
+sub-runs into a single <i>global</i> one. This is done implementing a
+<code>Merge</code> method in the <code>Run</code> class.
+Geant4 kernel works in a way that the worker
+threads will call the <code>Merge</code> method of the <b>master</b> run
+object passing a pointer to the <b>worker</b> run object.
+
+<br/><br/>
+
+
+The animation below explains what is happening under the hood.
+
+<br/><br/>
+
+<div class="success">
+	Geant4 kernel will take care of synchronizing the threads to avoid race conditions):<br/>
+</div>
+
+<br/><br/>
+
+
+<img src="merge.gif" width=900/>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: Run.cc</div>
+	<br/>
+	void Run::Merge(const G4Run* aRun)<br/>
+	{<br/>
+	<div class="tbmodified">
+		&emsp; const Run* localRun = static_cast&lt;const Run*&gt;(aRun);<br/>
+		&emsp; em_ene += localRun-&gt;GetEmEnergy();<br/>
+		&emsp; had_ene += localRun-&gt;GetHadEnergy();<br/>
+		&emsp; shower_shape += localRun-&gt;GetShowerShape();<br/>
+		&emsp; // Forward call to base-class<br/>
+		&emsp; // This is important, can you tell why?<br/>
+		&emsp; G4Run::Merge(localRun);<br/>
+	</div>
+	}
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 1 Step 4</h3>
+
+Create an instance of user-defined run class at each new run.
+
+<br/><br/>
+
+Now that you have extended <code>G4Run</code> you need to tell
+Geant4 kernel to use it instead of the default one. To do so you need
+to modify the method <code>RunAction::GenerateRun</code> and return an instance of
+<code>Run</code> instead of the default (this method is called by
+Geant4 at the beginning of each run). The method is already implemented in
+<code>RunAction.cc</code> file.
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+
+	<div class="tbmodified">
+		G4Run* RunAction::GenerateRun() {<br/>
+		return new Run;<br/>
+		}
+	</div>
+
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 2</h3>
+
+Calculate physics quantities and print them on screen.
+
+<br/><br/>
+
+Now that <code>Run</code> class has been modified to include user
+data we can print out the summary of our simple data analysis at the end of the
+run.
+
+<br/><br/>
+
+To do that we modify the method <code>EndOfRunAction</code> of
+the <code>RunAction</code> class (<code>RunAction.cc</code> file). <br/>
+
+Retrieve from the run object the information you need and calculate the average
+energy release in calorimeters and the shower shape.<br/>
+
+<br/><br/>
+
+<div class="info">
+	<strong>Hint 1:</strong> Note that Geant4 will pass you an object of type
+	<code>G4Run</code> (the base class). You need to make an appropriate cast to
+	access your data.<br/>
+	<strong>Hint 2:</strong> The total number of events is a data member of base
+	class <code>G4Run</code>. Check in online documentation how to get
+	it.<br/>
+	<strong>Hint 3:</strong> The quantity have been stored in Geant4 natural
+	units. A useful function <code>G4BestUnit</code> can be used to print
+	on screen a variable with a dimension. For example:<br/><br/>
+	<codeblock>
+		G4double someValue = 0.001*GeV;<br/>
+		G4cout&lt;&lt; G4BestUnit( someValue , "Energy" )&lt;&lt;G4endl; //Will print "1 MeV"
+	</codeblock>
+</div>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+	void RunAction::EndOfRunAction(const G4Run* run)<br/>
+	{<br/>
+	<div class="tbmodified">
+		&emsp;const Run* myrun = dynamic_cast&lt;const Run*&gt;(run);<br/>
+		&emsp;if ( myrun )<br/>
+		&emsp;{<br/>
+		&emsp;&emsp; G4int nEvents = myrun-&gt;GetNumberOfEvent();<br/>
+		&emsp;&emsp; if ( nEvents &lt; 1 )<br/>
+		&emsp;&emsp; {<br/>
+		&emsp;&emsp;&emsp; G4ExceptionDescription msg;<br/>
+		&emsp;&emsp;&emsp; msg &lt;&lt; "Run consists of 0 events";<br/>
+		&emsp;&emsp;&emsp; G4Exception("RunAction::EndOfRunAction()","Code001", JustWarning, msg);<br/>
+		&emsp;&emsp; }<br/>
+		&emsp;&emsp; G4double em_ene = myrun-&gt;GetEmEnergy();<br/>
+		&emsp;&emsp; G4double had_ene = myrun-&gt;GetHadEnergy();<br/>
+		&emsp;&emsp; G4double shower_shape = myrun-&gt;GetShowerShape();<br/>
+		&emsp;&emsp; G4int safety = ( nEvents &gt; 0 ? nEvents : 1);//To avoid divisions by zero<br/>
+		<br/>
+		&emsp;&emsp; G4cout&lt;&lt;"Run["&lt;&lt;myrun-&gt;GetRunID()&lt;&lt;"] With: "&lt;&lt;nEvents&lt;&lt;"Events\n"<br/>
+		&emsp;&emsp; &lt;&lt;" &lt;E_em&gt;="&lt;&lt;G4BestUnit(em_ene/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp; &lt;&lt;" &lt;E_had&gt;="&lt;&lt;G4BestUnit(had_ene/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp; &lt;&lt;" &lt;E&gt;="&lt;&lt;G4BestUnit((em_ene+had_ene)/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp; &lt;&lt;" &lt;ShowerShape&gt;="&lt;&lt;shower_shape/safety&lt;&lt;G4endl;<br/>
+		&emsp;} else {<br/>
+		&emsp;&emsp;G4ExceptionDescription msg;<br/>
+		&emsp;&emsp;msg &lt;&lt; "Run is not of correct type, skipping analysis";<br/>
+		&emsp;&emsp;G4Exception("RunAction::EndOfRunAction()","Code001", JustWarning, msg);<br/>
+		&emsp;}
+	</div>
+</codeblock>
+
+
+<br/><hr/><h2><a class="content" id=ho4_ana>Using g4analysis to store the results in a file</a></h2>
+
+<div class="lecture">
+        <strong>Related lectures:</strong> Kernel 2, Analysis
+</div><br/>
+
+
+In these exercises we will use <code>G4AnalysisManager</code> to
+store in ntuples and histograms the content of hits collections.
+
+<br/><br/>
+
+
+The goal of the g4analysis module is to provide
+light-weight support for simple storage of data.
+
+<br/><br/>
+
+We show below four different ways to visualize the histograms produced by g4analysis.
+
+<br/><br/>
+
+1. Using <strong>ROOT</strong> <br/><br/>
+You can use the provided <a href="plot.C">plot.C</a>
+to display the histograms produced by g4analysis by typing on a terminal:<br/>
+The plotting script relies on the histogram names and file to be the one
+produced by the solution of this exercise.
+<br/><br/>
+<codeblock>
+	root -l plot.C
+	root[0] #Type ".q" to exit root
+</codeblock>
+<img src="root-img.png" width=900/><br/>
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/><br/><br/>
+
+2. Using an <strong>AIDA-compliant tool</strong> <br/>
+example in JAS3:<br/><br/>
+<img src="aida-img.png" width=900/><br/>
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/><br/><br/>
+
+3. Using <strong>matlab/octave</strong><br/>
+You can plot the 1D histograms from this tutorial with the following commands:<br/><br/>
+<codeblock>
+	data=readcsv("Tutorial_h1_Chamber1.csv")<br/>
+	x=(1:50)<br/>
+	y=data(9:58,2)<br/>
+	plot(x,y)<br/>
+</codeblock>
+<br/><br/>
+<img src="octave.png" width=900/><br/>
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/><br/><br/>
+
+4. Using <strong>matplotlib</strong><br/>
+You can use the provided <a href="plot_histofiles.py">plot_histofiles.py</a>
+to display the CSV histograms produced by g4analysis .<br/>
+<br/><br/>
+<img src="matplotlib.png" width=900/><br/><br/>
+
+
+<div class="danger">
+	For this tutorial both the VM and the docker image have installed ROOT system (not matplotlib or
+	octave), so we use this as the default format.<br/>
+</div>
+
+
+<br/><br/>
+
+<div class="info">
+
+	<strong>Histogrames:</strong><br/><br/>
+	G4analysis Histograms are automatically merged from all worker threads, with the concept similar to what shown in HandsOn 3.<br/>
+	<ul>
+		<li>ROOT, XML: histograms are merged in a single file named <code>Tutorial.[root|xml]</code></li>
+		<li>CSV: histograms are written in separate files named <code>Tutorial_h{1,2}_{name}.csv</code></li>
+	</ul>
+	<br/>
+
+	<strong>Ntuples:</strong><br/><br/>
+	For ntuples it makes not much sense to do the automatic merging, because what you will do for analysis is to process one file
+	after the other.
+	<ul>
+		<li>ROOT: <code>TChain</code></li>
+		<li>AIDA: <code>ITupleFactory::createChained</code></li>
+		<li>CSV: <code>cat *_t*.csv &gt; merged.csv</code></li>
+	</ul>
+	<br/>
+
+	For ntuples the file name is: <code>Tutorial_t*.[root|xml]</code>, for CSV the name is: <code>Tutorial_nt_[ntupleName]_t*.csv</code>.
+
+</div>
+<br/><br/>
+
+<h3>Exercise 3 Step 1</h3>
+
+Define content of the output file(s).
+
+<br/><br/>
+
+Create output file(s) and define their content: four histograms and
+one nutple.
+<ul>
+	<li>First histogram: number of hits in first arm drift-chambers.</li>
+	<li>Second histogram: number of hits in second arm
+		drift-chambers.
+	</li>
+	<li>Third histogram: 2D histo containing X vs Y of all hits in
+		first arm drift chamber.
+	</li>
+	<li>Foruth histogram: 2D histo containing X vs Y of all hits in
+		second arm drift chamber.
+	</li>
+	<li>One ntuple containing the following data:
+		<ul>
+			<li>Integer column: number of hits in first drift chamber</li>
+			<li>Integer column: number of hits in second drift chamber</li>
+			<li>Double column: energy in electromagnetic
+				calorimeter
+			</li>
+			<li>Double column: energy in hadronic calorimeter</li>
+			<li>Double column: time on first hodscope (whatever time if
+				multiple hits)
+			</li>
+			<li>Double column: time on second hodosope (whatever time if
+				multiple hits)
+			</li>
+		</ul>
+	</li>
+</ul>
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+	RunAction::RunAction() : G4UserRunAction()<br/>
+	{<br/>
+	<div class="tbmodified">
+		&emsp;// Create analysis manager<br/>
+		&emsp;// Create analysis manager, set output format and file name<br/>
+		&emsp;auto analysisManager = G4AnalysisManager::Instance();<br/>
+		<br/>
+		&emsp;// Default settings<br/>
+		&emsp;analysisManager-&gt;SetDefaultFileType("root");<br/>
+		&emsp;G4cout &lt;&lt; "Using " &lt;&lt; analysisManager-&gt;GetType() &lt;&lt; G4endl;<br/>
+		&emsp;analysisManager-&gt;SetVerboseLevel(1);<br/>
+		&emsp;analysisManager-&gt;SetFileName("Tutorial");<br/>
+		<br/>
+		&emsp;// Book histograms, ntuple<br/>
+		&emsp;//<br/>
+		<br/>
+		&emsp;// Creating 1D histograms<br/>
+		&emsp;analysisManager-&gt;CreateH1("Chamber1","Drift Chamber 1 # Hits", 50, 0., 50); // h1 Id = 0<br/>
+		&emsp;analysisManager-&gt;CreateH1("Chamber2","Drift Chamber 2 # Hits", 50, 0., 50); // h1 Id = 1<br/>
+		<br/>
+		&emsp;// Creating 2D histograms<br/>
+		&emsp;analysisManager-&gt;CreateH2("Chamber1_XY","Drift Chamber 1 X vs Y",50, -1000., 1000, 50, -300., 300.); // h2 Id = 0<br/>
+		&emsp;analysisManager-&gt;CreateH2("Chamber2_XY","Drift Chamber 2 X vs Y",50, -1500., 1500, 50, -300., 300.); // h2 Id = 1<br/>
+		<br/>
+		&emsp;// Creating ntuple<br/>
+		&emsp;//<br/>
+		&emsp;analysisManager-&gt;CreateNtuple("Tutorial", "Hits");<br/>
+		&emsp;analysisManager-&gt;CreateNtupleIColumn("Dc1Hits"); // column Id = 0<br/>
+		&emsp;analysisManager-&gt;CreateNtupleIColumn("Dc2Hits"); // column Id = 1<br/>
+		&emsp;analysisManager-&gt;CreateNtupleDColumn("ECEnergy"); // column Id = 2<br/>
+		&emsp;analysisManager-&gt;CreateNtupleDColumn("HCEnergy"); // column Id = 3<br/>
+		&emsp;analysisManager-&gt;CreateNtupleDColumn("Time1"); // column Id = 4<br/>
+		&emsp;analysisManager-&gt;CreateNtupleDColumn("Time2"); // column Id = 5<br/>
+		&emsp;analysisManager-&gt;FinishNtuple(); //Do not forget this line!<br/>
+	</div>
+	}
+</codeblock>
+
+<br/><br/>
+
+<div class="warning">
+	<strong>Note:</strong> We book histograms and define the nutple in the constructor of the
+	<code>G4UserRunAction</code> class, however you should note that this
+	class is instantiated only once per job, even if multiple runs are
+	simulated. This means that you cannot change the content of the output
+	file between runs. If you think that you will do that, you can book
+	histograms and define columns in the ntuple in the
+	<code>BeginOfRunAction</code> method.
+</div>
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 3 Step 2</h3>
+
+Open the output file at each new run.
+
+<br/><br/>
+
+Defining an output file and its content is not enough, you need
+to explicitly open it. The best way to do so is to open it at the
+beginning of a new run. <br/>
+<br/>
+In more complex setups where you will perform
+more than one run per job, you can change the file
+name at each new run (e.g. via UI commands or append the run number to
+the file name), so you can produce one file output for each run.
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+	void RunAction::BeginOfRunAction(const G4Run* /*run*/)<br/>
+	{<br/>
+	&emsp;// Get analysis manager
+	<div class="tbmodified">
+		&emsp;// Create analysis manager<br/>
+		&emsp;G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+	</div>
+	&emsp;// Open an output file
+	&emsp;// The default file name is set in RunAction::RunAction(),
+	&emsp;// it can be overwritten in a macro
+	<div class="tbmodified">
+		&emsp;analysisManager-&gt;OpenFile();
+	</div>
+	}
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 3 Step 3</h3>
+
+Write out the file.
+
+<br/><br/>
+
+Output files must be explicitly written to disk and closed. It is a
+good idea to do that at the end of the run.
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+	void RunAction::EndOfRunAction(const G4Run* run)<br/>
+	{<br/>
+	<div class="tbmodified">
+		&emsp;const Run* myrun = dynamic_cast&lt;const Run*&gt;(run);<br/>
+		&emsp;if ( myrun )<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;G4int nEvents = myrun-&gt;GetNumberOfEvent();<br/>
+		&emsp;&emsp;if ( nEvents &lt; 1 )<br/>
+		&emsp;&emsp;{<br/>
+		&emsp;&emsp;&emsp;&emsp;G4ExceptionDescription msg;<br/>
+		&emsp;&emsp;&emsp;&emsp;msg &lt;&lt; "Run consists of 0 events";<br/>
+		&emsp;&emsp;&emsp;&emsp;G4Exception("RunAction::EndOfRunAction()", "Code001", JustWarning, msg);<br/>
+		&emsp;&emsp;&emsp;&emsp;nEvents=1;<br/>
+		&emsp;&emsp;}<br/>
+		&emsp;&emsp;G4double em_ene = myrun-&gt;GetEmEnergy();<br/>
+		&emsp;&emsp;G4double had_ene = myrun-&gt;GetHadEnergy();<br/>
+		&emsp;&emsp;G4double shower_shape = myrun-&gt;GetShowerShape();<br/>
+		&emsp;&emsp;G4int safety = ( nEvents &gt; 0 ? nEvents : 1);//To avoid divisions by zero<br/>
+		&emsp;&emsp;G4cout&lt;&lt;"Run["&lt;&lt;myrun-&gt;GetRunID()&lt;&lt;"] With: "&lt;&lt;nEvents&lt;&lt;"Events\n"<br/>
+		&emsp;&emsp;&lt;&lt;" &lt;E_em&gt;="&lt;&lt;G4BestUnit(em_ene/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp;&lt;&lt;" &lt;E_had&gt;="&lt;&lt;G4BestUnit(had_ene/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp;&lt;&lt;" &lt;E&gt;="&lt;&lt;G4BestUnit((em_ene+had_ene)/safety,"Energy")&lt;&lt;"\n"<br/>
+		&emsp;&emsp;&lt;&lt;" &lt;ShowerShape&gt;="&lt;&lt;shower_shape/safety&lt;&lt;G4endl;<br/>
+		&emsp;} else {<br/>
+		&emsp;&emsp;G4ExceptionDescription msg;<br/>
+		&emsp;&emsp;msg &lt;&lt; "Run is not of correct type, skypping analysis via RunAction";<br/>
+		&emsp;&emsp;G4Exception("RunAction::EndOfRunAction()","Code001", JustWarning, msg);<br/>
+		}
+	</div>
+
+	&emsp;//=================================<br/>
+	&emsp;// Exercise 3 Step 3:<br/>
+	&emsp;// Write and close output file<br/>
+	&emsp;// save histograms &amp; ntuple<br/>
+	&emsp;//<br/>
+	&emsp;G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();<br/>
+	&emsp;analysisManager-&gt;Write();<br/>
+	&emsp;analysisManager-&gt;CloseFile();<br/>
+	}
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 3 Step 4</h3>
+
+Fill histograms and ntuple with data.
+
+<br/><br/>
+
+At the end of each event you should retrieve informaiton from hits
+collection and fill the histograms and ntuple objects.
+You can access filled hits at the end of each event in
+<code>EventAction</code> class.
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: EventAction.cc</div>
+	<br/>
+	<br/>
+		<div class="tbmodified">
+			#include "G4AnalysisManager.hh"
+		</div>
+	<br/>
+	<br/>
+	void EventAction::EndOfEventAction(const G4Event* event)<br/>
+	{<br/>
+	&emsp;G4HCofThisEvent* hce = event-&gt;GetHCofThisEvent();<br/>
+	&emsp;if (!hce)<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;G4ExceptionDescription msg;<br/>
+	&emsp;&emsp;msg &lt;&lt; "No hits collection of this event found.\n";<br/>
+	&emsp;&emsp;G4Exception("EventAction::EndOfEventAction()","Code001", JustWarning, msg);<br/>
+	&emsp;&emsp;return;<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;// Get hits collections<br/>
+	&emsp;HodoscopeHitsCollection* hHC1 = static_cast&lt;HodoscopeHitsCollection*&gt;(hce-&gt;GetHC(fHHC1ID));<br/>
+	&emsp;HodoscopeHitsCollection* hHC2 = static_cast&lt;HodoscopeHitsCollection*&gt;(hce-&gt;GetHC(fHHC2ID));<br/>
+	&emsp;DriftChamberHitsCollection* dHC1 = static_cast&lt;DriftChamberHitsCollection*&gt;(hce-&gt;GetHC(fDHC1ID));<br/>
+	&emsp;DriftChamberHitsCollection* dHC2 = static_cast&lt;DriftChamberHitsCollection*&gt;(hce-&gt;GetHC(fDHC2ID));<br/>
+	&emsp;EmCalorimeterHitsCollection* ecHC = static_cast&lt;EmCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(fECHCID));<br/>
+	&emsp;HadCalorimeterHitsCollection* hcHC = static_cast&lt;HadCalorimeterHitsCollection*&gt;(hce-&gt;GetHC(fHCHCID));<br/>
+	<br/>
+	&emsp;if ( (!hHC1) || (!hHC2) || (!dHC1) || (!dHC2) || (!ecHC) || (!hcHC) )<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;G4ExceptionDescription msg;<br/>
+	&emsp;&emsp;msg &lt;&lt; "Some of hits collections of this event not found.\n";<br/>
+	&emsp;&emsp;G4Exception("EventAction::EndOfEventAction()","Code001", JustWarning, msg);<br/>
+	&emsp;&emsp;return;<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;//<br/>
+	&emsp;// Fill histograms &amp; ntuple<br/>
+	&emsp;//<br/>
+	&emsp;//=================================<br/>
+	&emsp;// Exercise 3 Step 4:<br/>
+	&emsp;// Fill histograms &amp; ntuple<br/>
+	<br/>
+	<div class="tbmodified">
+		&emsp;// Get analysis manager<br/>
+		&emsp;G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();<br/>
+		<br/>
+		&emsp;// Fill histograms<br/>
+		<br/>
+		&emsp;G4int n_hit = dHC1-&gt;entries();<br/>
+		&emsp;analysisManager-&gt;FillH1(0, n_hit);<br/>
+		<br/>
+		&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;DriftChamberHit* hit = (*dHC1)[i];<br/>
+		&emsp;&emsp;G4ThreeVector localPos = hit-&gt;GetLocalPos();<br/>
+		&emsp;&emsp;analysisManager-&gt;FillH2(0, localPos.x(), localPos.y());<br/>
+		&emsp;}<br/>
+		<br/>
+		&emsp;n_hit = dHC2-&gt;entries();<br/>
+		&emsp;analysisManager-&gt;FillH1(1, n_hit);<br/>
+		<br/>
+		&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;DriftChamberHit* hit = (*dHC2)[i];<br/>
+		&emsp;&emsp;G4ThreeVector localPos = hit-&gt;GetLocalPos();<br/>
+		&emsp;&emsp;analysisManager-&gt;FillH2(1, localPos.x(), localPos.y());<br/>
+		&emsp;}<br/>
+		<br/>
+		&emsp;// Fill ntuple<br/>
+		<br/>
+		&emsp;// Dc1Hits<br/>
+		&emsp;analysisManager-&gt;FillNtupleIColumn(0, dHC1-&gt;entries());<br/>
+		&emsp;// Dc2Hits<br/>
+		&emsp;analysisManager-&gt;FillNtupleIColumn(1, dHC2-&gt;entries());<br/>
+		<br/>
+		&emsp;// ECEnergy<br/>
+		&emsp;G4int totalEmHit = 0;<br/>
+		&emsp;G4double totalEmE = 0.;<br/>
+		&emsp;for (G4int i=0;i&lt;80;i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;EmCalorimeterHit* hit = (*ecHC)[i];<br/>
+		&emsp;&emsp;G4double eDep = hit-&gt;GetEdep();<br/>
+		&emsp;&emsp;if (eDep&gt;0.)<br/>
+		&emsp;&emsp;{<br/>
+		&emsp;&emsp;&emsp;totalEmHit++;<br/>
+		&emsp;&emsp;&emsp;totalEmE += eDep;<br/>
+		&emsp;&emsp;}<br/>
+		&emsp; }<br/>
+		&emsp;analysisManager-&gt;FillNtupleDColumn(2, totalEmE);<br/>
+		<br/>
+		&emsp;// HCEnergy<br/>
+		&emsp;G4int totalHadHit = 0;<br/>
+		&emsp;G4double totalHadE = 0.;<br/>
+		&emsp;for (G4int i=0;i&lt;20;i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;HadCalorimeterHit* hit = (*hcHC)[i];<br/>
+		&emsp;&emsp;G4double eDep = hit-&gt;GetEdep();<br/>
+		&emsp;&emsp;if (eDep&gt;0.)<br/>
+		&emsp;&emsp;{<br/>
+		&emsp;&emsp;&emsp;totalHadHit++;<br/>
+		&emsp;&emsp;&emsp;totalHadE += eDep;<br/>
+		&emsp;&emsp;}<br/>
+		&emsp;}<br/>
+		&emsp;analysisManager-&gt;FillNtupleDColumn(3, totalHadE);<br/>
+		<br/>
+		&emsp;// Time 1<br/>
+		&emsp;for (size_t i=0;i&lt;hHC1-&gt;entries();i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;analysisManager-&gt;FillNtupleDColumn(4,(*hHC1)[i]-&gt;GetTime());<br/>
+		&emsp;}<br/>
+		<br/>
+		&emsp;// Time 2<br/>
+		&emsp;for (size_t i=0;i&lt;hHC2-&gt;entries();i++)<br/>
+		&emsp;{<br/>
+		&emsp;&emsp;analysisManager-&gt;FillNtupleDColumn(5,(*hHC2)[i]-&gt;GetTime());<br/>
+		&emsp;}<br/>
+		<br/>
+		&emsp;analysisManager-&gt;AddNtupleRow();<br/>
+		<br/>
+	</div>
+	&emsp;//<br/>
+	&emsp;// Print diagnostics: UI command /run/printProgress can be used<br/>
+	&emsp;// to set frequency of how often info should be dumpled<br/>
+	<br/>
+	&emsp;G4int printModulo = G4RunManager::GetRunManager()-&gt;GetPrintProgress();<br/>
+	&emsp;if ( printModulo==0 || event-&gt;GetEventID() % printModulo != 0) return;<br/>
+	<br/>
+	&emsp;G4PrimaryParticle* primary = event-&gt;GetPrimaryVertex(0)-&gt;GetPrimary(0);<br/>
+	&emsp;G4cout &lt;&lt; G4endl<br/>
+	&emsp;&lt;&lt; "&gt;&gt;&gt; Event " &lt;&lt; event-&gt;GetEventID() &lt;&lt; " &gt;&gt;&gt; Simulation truth : "<br/>
+	&emsp;&lt;&lt; primary-&gt;GetG4code()-&gt;GetParticleName()<br/>
+	&emsp;&lt;&lt; " " &lt;&lt; primary-&gt;GetMomentum() &lt;&lt; G4endl;<br/>
+	<br/>
+	&emsp;// Hodoscope 1<br/>
+	&emsp;n_hit = hHC1-&gt;entries();<br/>
+	&emsp;G4cout &lt;&lt; "Hodoscope 1 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;<br/>
+	&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;HodoscopeHit* hit = (*hHC1)[i];<br/>
+	&emsp;&emsp;hit-&gt;Print();<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;// Hodoscope 2<br/>
+	&emsp;n_hit = hHC2-&gt;entries();<br/>
+	&emsp;G4cout &lt;&lt; "Hodoscope 2 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;<br/>
+	&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;HodoscopeHit* hit = (*hHC2)[i];<br/>
+	&emsp;&emsp;hit-&gt;Print();<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;// Drift chamber 1<br/>
+	&emsp;n_hit = dHC1-&gt;entries();<br/>
+	&emsp;G4cout &lt;&lt; "Drift Chamber 1 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;<br/>
+	&emsp;for (G4int i2=0;i2&lt;5;i2++)<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+	&emsp;&emsp;{<br/>
+	&emsp;&emsp;&emsp;DriftChamberHit* hit = (*dHC1)[i];<br/>
+	&emsp;&emsp;&emsp;if (hit-&gt;GetLayerID()==i2) hit-&gt;Print();<br/>
+	&emsp;&emsp;}<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;// Drift chamber 2<br/>
+	&emsp;n_hit = dHC2-&gt;entries();<br/>
+	&emsp;G4cout &lt;&lt; "Drift Chamber 2 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;<br/>
+	&emsp;for (G4int i2=0;i2&lt;5;i2++)<br/>
+	&emsp;{<br/>
+	&emsp;&emsp;for (G4int i=0;i&lt;n_hit;i++)<br/>
+	&emsp;&emsp;{<br/>
+	&emsp;&emsp;&emsp;DriftChamberHit* hit = (*dHC2)[i];<br/>
+	&emsp;&emsp;&emsp;if (hit-&gt;GetLayerID()==i2) hit-&gt;Print();<br/>
+	&emsp;&emsp;}<br/>
+	&emsp;}<br/>
+	<br/>
+	&emsp;// EM calorimeter<br/>
+	<div class="tbmodified">
+		&emsp; G4cout &lt;&lt; "EM Calorimeter has " &lt;&lt; totalEmHit &lt;&lt; " hits. Total Edep is "<br/>
+		&emsp; &lt;&lt; totalEmE/MeV &lt;&lt; " (MeV)" &lt;&lt; G4endl;<br/>
+	</div>
+	&emsp;// Had calorimeter<br/>
+	<div class="tbmodified">
+		&emsp; G4cout &lt;&lt; "Hadron Calorimeter has " &lt;&lt; totalHadHit &lt;&lt; " hits. Total Edep is "<br/>
+		&emsp; &lt;&lt; totalHadE/MeV &lt;&lt; " (MeV)" &lt;&lt; G4endl;<br/>
+	</div>
+	}
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 3 Step 5</h3>
+
+Select output file format.
+
+<br/><br/>
+
+You can select the output file format by changing the format name of <code>SetDefaultFileType()</code>.
+
+<br/><br/>
+
+<div class="info">
+	Currently <code>"csv", "hdf5", "root"</code> and <code>"xml"</code> are available.
+</div>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: RunAction.cc</div>
+	<br/>
+	RunAction::RunAction() : G4UserRunAction()<br/>
+	{<br/>
+	&emsp;// Create analysis manager<br/>
+	&emsp;// Create analysis manager, set output format and file name<br/>
+	&emsp;auto analysisManager = G4AnalysisManager::Instance();<br/>
+	<br/>
+	&emsp;// Default settings<br/>
+	<div class="tbmodified">
+		&emsp;analysisManager-&gt;SetDefaultFileType(root");<br/>
+	</div>
+	&emsp;G4cout &lt;&lt; "Using " &lt;&lt; analysisManager-&gt;GetType() &lt;&lt; G4endl;<br/>
+	&emsp;analysisManager-&gt;SetVerboseLevel(1);<br/>
+	&emsp;analysisManager-&gt;SetFileName("Tutorial");<br/>
+	}
+</codeblock>
+
+<br/><hr/><br/>
+Created by:
+<a href="mailto:adotti@stanford.edu>">Andrea Dotti </a>
+, May 2018
+<br/>Updated by:
+<a href="mailto: asai@jlab.org">Makoto Asai</a> and
+<a href="mailto:ungaro@jlab.org>">Maurizio Ungaro</a>
+, February 2024<br/>
+<br/>
+<hr/>
+<br/>
+
+<script src="../main.js"></script>        <!-- Don't move this line to the top! It causes an error at Safari -->
+
+
+</body>
+</html>

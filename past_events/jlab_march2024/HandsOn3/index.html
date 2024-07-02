@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en" xmlns>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="../main.css">
+	<title>Geant4 Tutorial HandsOn3</title>
+</head>
+
+<body>
+<br/>
+<br/>
+<br/>
+
+
+<div id="topnav" class="topnav">
+	<a href="../index.html">Tutorial Home</a>
+	<a href="#ho3_intro">Introduction</a>
+	<a href="#ho3_geometry">Building the Geometry</a>
+	<a href="#ho3_sd">Sensitive Detector and Hits</a>
+	<a href="#ho3_userActions1">User Actions I</a>
+</div>
+
+
+<hr/><h2><a class="content" id=ho3_intro></a></h2>
+<br/><br/><br/><br/><h1>Hands on 3: Build detector, retrieve simulation results</h1>
+
+In this third hands-on you will learn how to:
+<ul>
+  <li>Create a semi-realistic geometry</li>
+  <li>Collect simulation output from sensitive detectors in hits</li>
+  <li>Use the event user-action to dump event information from hits on screen</li>
+</ul>
+
+<br/><hr/><br/>
+
+<div class="success">
+	<strong>Material:</strong> <br/><br/>
+	The problem code for this hands-on session
+	can be downloaded <a href="../HandsOn3-problem.tar.gz">here</a>.<br/>
+	For your reference, the complete solution
+	is also available <a href="../HandsOn3-solution.tar.gz">here</a>.<br/>
+	Copy the the tar ball to your local area.<br/><br/>
+</div>
+
+<br/><hr/><br/>
+
+Un-tar the code, configure it with <code>cmake</code>, build it, and run it:<br/><br/>
+
+<codeblock>
+	$ cd &lt;tutorial&gt; #change to your working directory<br/>
+	$ tar xzf HandsOn3-problem.tar.gz<br/>
+	$ cd HandsOn3-problem<br/>
+	$ cmake .<br/>
+	$ make -j 2 -f Makefile<br/>
+	$ ./G4tut
+</codeblock>
+<br/>
+
+<div class="warning">
+	<strong>Note:</strong> Ignore compiler warning messages. They will disappear once you complete the exercise.
+</div>
+<br/>
+This geometry should be displayed:
+<br/><br/>
+
+<img src="initial.png" width=900/>
+<br/><br/>
+
+The geometry is same as Hands On 2, as we will start from here to build a two-arm spectrometer. <br/>
+The first arm is already defined, and in the first exercise you will build
+the second arm completed with a calorimeter.
+
+<br/><br/>
+
+The second arm can be rotated between runs and the magnetic-field value can also be changed at run time using
+user defined UI commands.<br/>
+At the end of this hands on the complete geometry will look like this:
+<br/><br/>
+
+<img src="final.png" width=900/>
+<br/><br/>
+
+The complete setup will include:
+<ul>
+  <li>Each arm with 5 drift-chamber planes to measure the
+  position of the passing particles (in green).</li>
+  <li>Each arm with a hodoscope made of scintillator plates to
+  measure the time-of-flight of the incoming particles (in red).</li>
+  <li>A central magnetic system to deflect the charged particles
+  (white cylinder).</li>
+  <li><b>Exercise:</b> An electromagnetic calorimeter composed of CsI crystals
+  (yellow in the picture).</li>
+  <li><b>Exercise:</b> An hadronic <i>sampling</i> calorimeter composed of Lead as
+  absorber and Scintillator as active material (blue).
+  </li>
+</ul>
+
+
+
+
+
+
+
+<br/><hr/><h2><a class="content" id=ho3_geometry>Building the geometry</a></h2>
+
+<div class="lecture">
+	<strong>Related lectures:</strong> Material definition, Geometry 1, Geometry 2
+</div><br/>
+
+There are 6 steps involved in this exercise to build the geometry.<br/>
+The application will compile and work correctly only when the first 5
+steps are completed (however it is a good idea to try to compile at
+each step to fix early trivial errors).<br/>
+
+The last step is optional because it has the goal
+to change visualization attributes (colors of geometry elements) and
+has no effect on simulation results.
+
+<br/><br/>
+
+Reminder on different ways to create a geometry setup:
+<ul>
+	<li>After creating solids and logical volumes you can place physical volumes
+		via <code>G4PVPlacement</code> (these have been already covered in <a
+				href="../HandsOn2/index.html#ho2_intro">Hands On 2</a>).
+	</li>
+	<li>You you can place multiple copies of the same logical volumes via
+		multiple placements.
+	</li>
+	<li>Or you can use of <code>G4PVParametrised</code> to place multiple copies
+		of the same volume with dimensions/position <i>parametrised</i>
+		by the <i>copy number</i>.
+	</li>
+	<li>You can also use replicas to <i>slice</i> a larger volume in smaller
+		pieces.
+	</li>
+</ul>
+
+
+Check the <code>DetectorConstruction.hh</code> file, since many
+variables you will need are already defined there.
+
+
+<h3>Exercise 1 Step 1</h3>
+
+Implement the second hodoscope.
+
+<br/><br/>
+
+The second hodoscope is composed of 25 planes of dimensions: <b>10x40x1 cm</b>.<br/>
+
+The hodoscopes tiles are composed of scintillator material. <br/><br/>
+
+<ul>
+	<li>Instantiate a single shape and a single logical volume.</li>
+	<li>Place 25 physical volume placements in the second arm <code>mother volume</code> (this mother volume is already created).
+		Each tile is positioned at Y=Z=0 with respect to the mother volume, while the X coordinates depends on the tile number.
+	</li>
+</ul>
+
+<div class="info">
+	<strong>Hint: </strong> Check what is done for the hodoscope of the first
+	arm. Remember dimensions passed to Geant4 solid classes are half dimensions.
+</div>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	// =============================================<br/>
+	// Exercise 1<br/>
+	// Complete the full geometry.<br/>
+	// Note that second arm, by default is rotated of<br/>
+	// 30 deg.<br/>
+	// Step 1: Add an hodoscope with dimensions (X,Y,Z):<br/>
+	// (10,40,1)cm made of scintillator.<br/>
+	// There are 25 planes placed at Y=Z=0 (w.r.t. mother volume)<br/>
+	// hodoscopes in second arm<br/>
+	<div class="tbmodified">
+		G4VSolid* hodoscope2Solid = new G4Box("hodoscope2Box",5.*cm,20.*cm,0.5*cm);<br/>
+		fHodoscope2Logical = new G4LogicalVolume(hodoscope2Solid,scintillator,"hodoscope2Logical");<br/>
+		for (G4int i=0;i&lt;25;i++) <br/>{<br/>
+		&nbsp;&nbsp;&nbsp; G4double x2 = (i-12)*10.*cm;<br/>
+		&nbsp;&nbsp;&nbsp; new G4PVPlacement(0,G4ThreeVector(x2,0.,0.),fHodoscope2Logical,"hodoscope2Physical",secondArmLogical,false,i,checkOverlaps);<br/>
+		}
+	</div>
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 1 Step 2</h3>
+
+Build the drift chambers.
+<br/><br/>
+The second arm contains 5 drift chambers made of argon gas with
+dimensions <b>300x60x2 cm</b>.<br/>
+
+These are equally spaced inside the second arm
+starting from -2.5 m to -0.5 m along the Z coordinate.
+
+<br/><br/>
+
+
+<div class="info">
+	<strong>Hint: </strong> Use same methods used for step 1
+</div>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	// Step 2: Add 5 drift chambers made of argon, with dimensions (X,Y,Z):<br/>
+	// (300,60,2)cm<br/>
+	// These are placed equidistant inside the second arm at distances from -2.5m<br/>
+	// to -0.5m<br/>
+	// drift chambers in second arm<br/>
+
+	<div class="tbmodified">
+		G4VSolid* chamber2Solid = new G4Box("chamber2Box",1.5*m,30.*cm,1.*cm);<br/>
+		G4LogicalVolume* chamber2Logical = new G4LogicalVolume(chamber2Solid,argonGas,"chamber2Logical");<br/>
+		for (G4int i=0;i&lt;5;i++) <br/>{<br/>
+		&nbsp;&nbsp;&nbsp; G4double z2 = (i-2)*0.5*m - 1.5*m;<br/>
+		&nbsp;&nbsp;&nbsp; new G4PVPlacement(0,G4ThreeVector(0.,0.,z2),chamber2Logical,"chamber2Physical",secondArmLogical,false,i,checkOverlaps);<br/>
+		}
+	</div>
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 1 Step 3</h3>
+
+Add a virtual wire plane in the drift chambers.
+
+<br/><br/>
+
+Add a plane of wires in the drift chambers.
+<br/><br/>
+
+To simplify our problem we do not describe the single wires, instead we add a
+new argon-filled volume of dimensions <b>300x60x0.02</b> cm
+in the center of each of the five drift chambers.
+
+<br/><br/>
+
+This exercise is technically simple (a single placement), however it
+illustrates a very useful concept: we create a single instance of this
+volume and we place it once inside the mother logical volume (the
+drift chamber logical volume), since the mother volume is repeated
+five times, each chamber gets its own wire plane.
+
+<br/><br/>
+We are reducing the number of class instances needed for the description
+of our geometry (and thus reducing the memory footprint of our
+application, beside making the code more compact and readable).
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	// Step 3: Add a virtual wire plane of (300,60,0.02)cm<br/>
+	// at (0,0,0) in the drift chamber<br/>
+	// virtual wire plane<br/>
+	<div class="tbmodified">
+		G4VSolid* wirePlane2Solid = new G4Box("wirePlane2Box",1.5*m,30.*cm,0.1*mm);<br/>
+		fWirePlane2Logical = new G4LogicalVolume(wirePlane2Solid,argonGas,"wirePlane2Logical");<br/>
+		new G4PVPlacement(0,G4ThreeVector(0.,0.,0.),fWirePlane2Logical, "wirePlane2Physical",chamber2Logical,false,0,checkOverlaps);<br/>
+	</div>
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 1 Step 4</h3>
+
+Build an electromagnetic calorimeter.
+
+<br/><br/>
+
+An electromagnetic calorimeter has the goal to measure the energy
+of absorbed particles. <br/>
+
+Its dimensions are such that an electron or gamma of the typical beam energy is fully absorbed,
+while hadrons (such as protons), only leave a fraction of their
+energy in an electromagnetic calorimeter (because it is <i>too short</i>).
+
+<br/><br/>
+
+In our example we implement a homogeneous calorimeter made of a matrix of CsI
+crystals (a charged particles emits light when interacting with this
+material, the quantity of light produced is proportional to the
+energy lost by the particle).
+
+<br/><br/>
+
+<ul>
+	<li>
+		Build a 300x60x30 cm CsI calorimeter. The calorimeter is made of a
+		matrix of <b>15x15x30 cm</b> crystals. Instead of using placements we show
+		how to use <code>parametrised</code> solids. The idea is that the position of the
+		placement is a function of the crystal number. The parametrization
+		class is already available for you in
+		<code>CellParametrisation</code>.
+	</li>
+
+	<li>
+		Check the method
+		<code>CellParameterisation::ComputeTransformation(...)</code> to
+		understand how the calorimeter cells are implemented.
+	</li>
+	<li>
+		The calorimeter should be placed at 2 m downstream along Z in the second arm
+		mother volume.
+	</li>
+</ul>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	// Step 4: Build CsI EM-calorimeter of (300,60,30)cm<br/>
+	// placed at (0,0,2)m in the second arm.<br/>
+	// The calorimeter is made of 80 cells,<br/>
+	// parametrised according to CellParametrisation<br/>
+	// G4VPVParameterisation concrete instance.<br/>
+	// This class parametrize the position of each cell depending<br/>
+	// on its copy number.<br/>
+	// The cells have dimensions 15x15x30 cm.<br/>
+	// (you could use placements or replicas, but here<br/>
+	// we show how to use parametrisations to build geometry)<br/>
+	// CsI calorimeter<br/>
+	<div class="tbmodified">
+		G4VSolid* emCalorimeterSolid = new G4Box("EMcalorimeterBox",1.5*m,30.*cm,15.*cm);<br/>
+		G4LogicalVolume* emCalorimeterLogical = new G4LogicalVolume(emCalorimeterSolid,csI,"EMcalorimeterLogical");<br/>
+		new G4PVPlacement(0,G4ThreeVector(0.,0.,2.*m),emCalorimeterLogical,"EMcalorimeterPhysical",secondArmLogical,false,0,checkOverlaps);<br/>
+	</div>
+	// EMcalorimeter cells<br/>
+	<div class="tbmodified">
+		G4VSolid* cellSolid = new G4Box("cellBox",7.5*cm,7.5*cm,15.*cm);<br/>
+		fCellLogical = new G4LogicalVolume(cellSolid,csI,"cellLogical");<br/>
+		G4VPVParameterisation* cellParam = new CellParameterisation();<br/>
+		new G4PVParameterised("cellPhysical",fCellLogical,emCalorimeterLogical,kXAxis,80,cellParam);<br/>
+	</div>
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 1 Step 5</h3>
+
+Implement the hadronic calorimeter
+<br/><br/>
+
+This is a <b>sampling</b> calorimeter made of lead as absorber material
+(used for its high density) interleaved with plates of scintillator
+(the active material). <br>
+
+It is called sampling because only a fraction of
+the energy lost by the particles is measured (the one lost in the active material),
+proportional to the total energy
+loss and hence to the impinging particle energy (you may be aware of
+the problem of non-compensation, but we will not discuss it
+here).
+
+<br/><br/>
+
+Implement the calorimeter using replicas to slice a larger volume into
+smaller units. <br/>
+
+<ul>
+	<li>Each cell has 20 layers of 4 cm thick lead plate and 1 cm
+		thick scintillator plate.
+	</li>
+	<li>The size of the plate is 30 cm square</li>
+	<li>The calorimeter has 10 towers of 2 cells each
+	</li>
+</ul>
+
+
+<div class="info">
+
+	Below is a schematic drawing of the calorimeter. <br/>
+	From left to right:
+	<ul>
+		<li>the full calorimeter with a single tower</li>
+		<li>a single tower is divided in two cells</li>
+		<li>the third picture shows a single cell with a single layer;</li>
+		<li>finally a single layer with the active scintillator tile.</li>
+	</ul>
+	The beam is perpendicular to the screen.<br/>
+</div>
+
+
+<img src="replica.png" width=900/><br/>
+
+<ul>
+	<li>
+		The whole Hadronic calorimeter box is made of lead. The size is 3 m in
+		width, 60 cm in height, and 1 m in depth. It should be placed 3 m
+		downstream inside the second arm.
+	</li>
+	<li>
+		Replica is defined along one Cartesian axis, define
+		a tower of 30 cm width. It is also made of lead.
+		The height and depth of this column are equal to
+		the full calorimeter dimensions.
+	</li>
+	<li>
+		A cell made of lead has half height of a tower.
+	</li>
+	<li>
+		Each layer in a cell is 5 cm thick. It is made of lead as well.
+	</li>
+	<li>
+		Finally a scintillator tile should be placed inside each layer.
+	</li>
+</ul>
+
+You can now test the setup. <br/><br/>
+Use UI commands <code>/tutorial/detector/armAngle</code>,
+<code>/tutorial/field/value</code> to move the second arm and set the
+magnetic field.<br/><br/>
+
+The methods <code>DefineCommands</code> gives an example on how
+to define application specific commands (this is an advanced topic not
+discussed in this Hands-On). Use the
+<code>help</code> UI command to get help on commands.<br/><br/>
+
+<div class="warning">
+	Note that the geometry can be changed only between
+	runs. <br/>
+</div>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	// Step 5: Add a "sandwich" hadronic calorimeter of dimensions:<br/>
+	// (300,60,100)cm.<br/>
+	// The calorimeter absorber is made of lead. It is divided in<br/>
+	// towers of (30,60,100)cm. Use replica along X-axis<br/>
+	// for towers.<br/>
+	// A tower is composed of cells, "stacked" along Y-axis<br/>
+	// Each cell has dimension (30,30,100)cm.<br/>
+	// A cells has "layers" along Z-axis. Each layer has dimensions<br/>
+	// (30,30,5)cm. Also in this case use replicas.<br/>
+	// Finally in each layer there is a tile of scintillator material<br/>
+	// of dimensions (30,30,1)cm<br/>
+	// hadron calorimeter<br/>
+	<div class="tbmodified">
+		G4VSolid* hadCalorimeterSolid = new G4Box("HadCalorimeterBox",1.5*m,30.*cm,50.*cm);<br/>
+		G4LogicalVolume* hadCalorimeterLogical = new G4LogicalVolume(hadCalorimeterSolid,lead,"HadCalorimeterLogical");<br/>
+		new G4PVPlacement(0,G4ThreeVector(0.,0.,3.*m),hadCalorimeterLogical,"HadCalorimeterPhysical",secondArmLogical,false,0,checkOverlaps);<br/>
+	</div>
+	// hadron calorimeter column<br/>
+	<div class="tbmodified">
+		G4VSolid* HadCalColumnSolid = new G4Box("HadCalColumnBox",15.*cm,30.*cm,50.*cm);<br/>
+		G4LogicalVolume* HadCalColumnLogical = new G4LogicalVolume(HadCalColumnSolid,lead,"HadCalColumnLogical");<br/>
+		new G4PVReplica("HadCalColumnPhysical",HadCalColumnLogical,hadCalorimeterLogical,kXAxis,10,30.*cm);<br/>
+	</div>
+	// hadron calorimeter cell<br/>
+	<div class="tbmodified">
+		G4VSolid* HadCalCellSolid = new G4Box("HadCalCellBox",15.*cm,15.*cm,50.*cm);<br/>
+		G4LogicalVolume* HadCalCellLogical = new G4LogicalVolume(HadCalCellSolid,lead,"HadCalCellLogical");<br/>
+		new G4PVReplica("HadCalCellPhysical",HadCalCellLogical,HadCalColumnLogical,kYAxis,2,30.*cm);<br/>
+	</div>
+	// hadron calorimeter layers<br/>
+	<div class="tbmodified">
+		G4VSolid* HadCalLayerSolid = new G4Box("HadCalLayerBox",15.*cm,15.*cm,2.5*cm);<br/>
+		G4LogicalVolume* HadCalLayerLogical = new G4LogicalVolume(HadCalLayerSolid,lead,"HadCalLayerLogical");<br/>
+		new G4PVReplica("HadCalLayerPhysical",HadCalLayerLogical,HadCalCellLogical,kZAxis,20,5.*cm);<br/>
+	</div>
+	// scintillator plates<br/>
+	<div class="tbmodified">
+		G4VSolid* HadCalScintiSolid = new G4Box("HadCalScintiBox",15.*cm,15.*cm,0.5*cm);<br/>
+		fHadCalScintiLogical = new G4LogicalVolume(HadCalScintiSolid,scintillator,"HadCalScintiLogical");<br/>
+		new G4PVPlacement(0,G4ThreeVector(0.,0.,2.*cm),fHadCalScintiLogical,"HadCalScintiPhysical",HadCalLayerLogical,false,0,checkOverlaps);<br/>
+	</div>
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 1 Step 6 (Optional)</h3>
+
+Provide visualization attributes for the second arm volumes.
+
+<br/><br/>
+
+<div class="info">
+	Note that hadronic calorimeter sub-structure is by default made invisible to reduce
+	visual clutter. This is helpful to hide the geometry details less important
+	to the simulation.
+</div>
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	// Step 6: uncomment visualization attributes of the newly created volumes.<br/>
+	// You may need to review the names of the logical volumes<br/>
+	// visualization attributes ------------------------------------------------<br/>
+	G4VisAttributes* visAttributes = new G4VisAttributes(G4Colour(1.0,1.0,1.0));<br/>
+	visAttributes->SetVisibility(false);<br/>
+	worldLogical->SetVisAttributes(visAttributes);<br/>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.9,0.9,0.9)); // LightGray<br/>
+	fMagneticLogical->SetVisAttributes(visAttributes);<br/>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(1.0,1.0,1.0));<br/>
+	visAttributes->SetVisibility(false);<br/>
+	firstArmLogical->SetVisAttributes(visAttributes);<br/>
+	secondArmLogical->SetVisAttributes(visAttributes);<br/>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.8888,0.0,0.0));<br/>
+	fHodoscope1Logical->SetVisAttributes(visAttributes);<br/>
+	<div class="tbmodified">
+
+		fHodoscope2Logical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.0,1.0,0.0));<br/>
+	chamber1Logical->SetVisAttributes(visAttributes);<br/>
+	<div class="tbmodified">
+		chamber2Logical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.0,0.8888,0.0));<br/>
+	visAttributes->SetVisibility(false);<br/>
+	fWirePlane1Logical->SetVisAttributes(visAttributes);<br/>
+	<div class="tbmodified">
+		fWirePlane2Logical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.8888,0.8888,0.0));<br/>
+	visAttributes->SetVisibility(false);<br/>
+	<div class="tbmodified">
+		emCalorimeterLogical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.9,0.9,0.0));<br/>
+	<div class="tbmodified">
+		fCellLogical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.0, 0.0, 0.9));<br/>
+	<div class="tbmodified">
+		hadCalorimeterLogical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+	<br/>
+	visAttributes = new G4VisAttributes(G4Colour(0.0, 0.0, 0.9));<br/>
+	visAttributes->SetVisibility(false);<br/>
+	<div class="tbmodified">
+		HadCalColumnLogical->SetVisAttributes(visAttributes);<br/>
+		HadCalCellLogical->SetVisAttributes(visAttributes);<br/>
+		HadCalLayerLogical->SetVisAttributes(visAttributes);<br/>
+		fHadCalScintiLogical->SetVisAttributes(visAttributes);<br/>
+	</div>
+	fVisAttributes.push_back(visAttributes);<br/>
+</codeblock>
+
+
+<br/><hr/><h2><a class="content" id=ho3_sd>Sensitive Detectors and Hits</a></h2>
+
+<div class="lecture">
+        <strong>Related lectures:</strong> Kernel 1, Scoring 2
+</div><br/>
+
+In this exercise we will cover basic aspects of retrieving
+physics quantities from the simulation kernel.<br/><br/>
+
+The basic simulation output is called
+<code>hit</code> (a user-defined class derived from <code>G4VHit</code>).
+Typically we are not interested in every step in entire detector volumes, but instead we want to
+retrieve information only for the detector components we are interested in (e.g. the scintillator tiles
+in the hadronic calorimeter, and not the lead absorber).
+In Geant4 this is achieved with the concepts of <code>hits</code> and
+<code>sensitive detectors</code> (SD): you can attach a SD (a user class
+inheriting from <code>G4VSensitiveDetector</code>) to a logical
+volume, in this way Geant4 will call your detector code when a particle is
+making a step in this specific volume.
+
+<br/><br/>
+
+<div class="info">
+	<strong>hit</strong> is a container of information you want to retrieve (e.g. energy deposit in space and time).
+</div>
+
+<br/><br/>
+
+Information (e.g. energy deposited along the step) can be retrieved from the
+<code>G4Step</code> and a new hit could be created (or an
+existing hit is updated). <br/>
+
+Geant4 will keep track of all hits created
+in the application. These can be retrieved at the end of the event for further
+post-processing and writing to output.<br/><br/>
+
+
+We will show how to measure a quantity, for each event,
+from the hodoscopes. The goal is to measure at what time and in which hodoscope
+tile there was a hit.<br/>
+The exercise is divided in three parts, and you will have to modify
+four files:
+<ul>
+	<li><code>HodoscopeHit.hh</code> and <code>HodoscopeHit.cc</code> files
+		implement the hit class for the hodoscope.
+	</li>
+	<li><code>HodoscopeSD.cc</code> implements the hodoscope sensitive
+		detector.
+	</li>
+	<li><code>DetectorConstruction.cc</code> instantiates the sensitive detector
+		and attaches it to the correct logical volume.
+	</li>
+</ul>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 2 Step 1</h3>
+
+Create a concrete hit class.
+
+<br/><br/>
+
+In this exercise the concrete hit class represents a data container for only two
+quantities:
+
+<ul>
+	<li>an integer value, representing the index of the hodoscope tile
+		that is fired;
+	</li>
+	<li>a double value, representing the time in which the
+		hodoscope tile is fired.
+	</li>
+</ul>
+
+
+<div class="info">
+	<strong>Reminder</strong>: a hodoscope is a simple set of
+	scintillator fingers that measure the time in which a charged particle
+	passes through it. It can be used to performed time-of-flight
+	measurement and coarse-granularity position measurements.
+</div>
+
+<br/>
+
+
+You will need to modify the <code>HodoscopeHit</code> class. The class skeleton is
+already prepared, you should add two data members that identify which hodoscope
+tile has fired and register the time of the hit.<br/><br/>
+
+
+Implement/modify the <code>Print</code> method to dump
+the hit content.<br/><br/>
+
+<div class="warning">
+	The operators <code>new</code> and <code>delete</code> must be overwritten. <br/><br/>
+	<strong>Note on <code>new</code> and <code>delete</code></strong>:<br/><br/>
+	Frequest instantiation and deletion of objects can put some pressure on CPU. Allocating an objcet on the heap and releasing it are (relatively) CPU-intensive operations.<br/>
+        In our case, for each event, many hits may be created
+	and deleted at the end of each event. Thus the handling of hits may cause some
+	performance degradation in a complex application.<br/>
+	To mitigate this we use an ad-hoc <b><i>allocator</i></b> named <code>G4Allocator</code> that allows for an efficient re-use of memory and
+	avoid many granular instantiations and deletions of objects of the same kind.<br/>
+	The first time a hit is created, a memory <b><i>pool</i></b> is created that can hold
+	many hits (like in an array). Each time a hit is created
+	with this overwritten <code>new</code> operator we first look in this pool for an available
+	<b><i>pre-allocated memory location</i></b>. If an empty slot is available, we
+	re-use it, otherwise we expand the pool to accommodate more
+	hits. Each time a hit is deleted with this overwritten <code>delete</code>, this memory space is not freed but kept for future re-use.<br/><br/>
+	With this technique we reduce substantially the new/delete cycles needed
+	for the simulation.<br/><br/>
+	An additional complication is that in multi-threading
+	environments special attention is needed for the use of allocators. 
+	An object in a worker thread instantiated with this allocator must be deleted by the same thread. 
+	The master thread (and other worker threads) may access such an object and get/set its contents, but cannot delete the object.<br/><br/>
+	<code>G4Allocator</code> must be used for each individual concrete class. It must not be used for a base class from which
+	several derived classes with different data members could be instantiated.
+	We recognize this is a topic that requires some
+	advanced knowledge of C++. But keep these code as they are so that you won't get bad surprise when you extend 
+	the exercise code in the future.
+</div>
+
+<br/>
+
+
+This exercise implements a single sensitive detector and one hit
+type. In Hands On 4 additional
+sensitive detectors are used with hits in the drift chambers and in
+the calorimeters. You can study that code to see additional types
+of hits (calorimeter hits are of some interest since <i>accumulate</i> energy
+from several steps instead of creating a new hit at each step).
+
+<h4>Solution</h4>
+
+<codeblock>
+	<div class="filename"> File: HodoscopeHit.hh</div>
+	<br/>
+
+	class HodoscopeHit : public G4VHit<br/>
+	<br/>{<br/>
+	public:<br/>
+	&emsp;HodoscopeHit(G4int i,G4double t) ;<br/>
+	&emsp;virtual ~HodoscopeHit() {}<br/>
+	<br/>
+	&emsp;inline void *operator new(size_t) ;<br/>
+	&emsp;inline void operator delete(void*aHit);<br/>
+	<br/>
+
+	<div class="tbmodified">
+		void Print();<br/>
+		<br/>
+		G4int GetID() const { return fId; }<br/>
+		<br/>
+		void SetTime(G4double val) { fTime = val; }<br/>
+		G4double GetTime() const { return fTime; }<br/>
+		<br/>
+		private:<br/>
+		&emsp;G4int fId;<br/>
+		&emsp;G4double fTime;<br/>
+	</div>
+	};<br/><br/>
+	<br/>
+	typedef G4THitsCollection&lt;HodoscopeHit&gt; HodoscopeHitsCollection; <br/>
+	<br/>
+	<div class="tbmodified">
+		extern G4ThreadLocal G4Allocator&lt;HodoscopeHit&gt;* HodoscopeHitAllocator;<br/>
+		<br/>
+		inline void* HodoscopeHit::operator new(size_t) <br/>{<br/>
+		&emsp; if (!HodoscopeHitAllocator)<br/>
+		&emsp;&emsp; HodoscopeHitAllocator = new G4Allocator&lt;HodoscopeHit&gt;;<br/>
+		&emsp; return (void*)HodoscopeHitAllocator-&gt;MallocSingle();<br/>
+		}<br/>
+		<br/>
+		inline void HodoscopeHit::operator delete(void*aHit) <br/>{<br/>
+		&emsp; HodoscopeHitAllocator-&gt;FreeSingle((HodoscopeHit*) aHit);<br/>
+		}<br/>
+	</div>
+</codeblock>
+
+<br/><br/>
+
+<codeblock>
+	<div class="filename"> File: HodoscopeHit.cc</div>
+	<br/>
+	<div class="tbmodified">
+		G4ThreadLocal G4Allocator&lt;HodoscopeHit&gt;* HodoscopeHitAllocator = nullptr;<br/><br/>
+		HodoscopeHit::HodoscopeHit(G4int i,G4double t)<br/>
+		: G4VHit(), fId(i), fTime(t)<br/>
+		{}<br/>
+		<br/>
+		void HodoscopeHit::Print()<br/>
+		{<br/>
+		&emsp; G4cout &lt;&lt; " Hodoscope[" &lt;&lt; fId &lt;&lt; "] " &lt;&lt; fTime/ns &lt;&lt; " (nsec)" &lt;&lt; G4endl;<br/>
+		}<br/>
+	</div>
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 2 Step 2</h3>
+
+Create and manipulate hodoscope hits.
+
+<br/><br/>
+
+For this exercise you will modify the <code>HodoscopeSD.cc</code> file.
+Some part of the code is already implemented, in particular the
+initialization of the hits collection, use this code as a reference
+for your future applications: it is important to understand the details of
+how the registering of hits with the Geant4 kernel works.<br/>
+
+<br/>
+
+What you need to do for this exercise is to modify the method
+<code>ProcessHits</code> and implement the logic to extract time and
+position. This is the method that Geant4 kernel will call every time a
+particle passes through the volume associated with this SD.
+
+
+<br/>
+We use information stored in the <code>G4Step</code> object: it encodes the information regarding the
+simulated step in the geometry volume.<br/><br/>
+
+<div class="info">
+	<strong>Hint 1</strong>: <code>G4Step</code> has two 
+	(<code>G4StepPoint</code>) objects that delimit the step (pre-step and post-step).
+        Information of the volume should be taken from "pre-step point".<br/>
+	<br/>
+	<strong>Hint 2</strong>: We are simulating a scintillator detector that will
+	trigger only if some energy has been deposited (i.e. via ionization),
+	for example if a neutron passes through the detector (without making
+	interactions) its passage should not be recorded. Check the energy
+	deposited in the step, if zero do nothing.<br/>
+	<br/>
+	<strong>Hint 3</strong>: More than one step can be done by the same particle in
+	a single volume (why?), in addition secondaries produced in the volume
+	will also make steps in the SD. This mean that for a given primary particle we
+	can have more than one call to the <code>ProcessHits</code>.
+	A realistic detector electronics will responds with a
+	single measurement: to simulate this behavior every time a new step is
+	processed we check if the hit for the hodoscope tile that fired already
+	exists, if so we update the time information if the new hit happens
+	earlier than the already recorded one.
+
+
+</div>
+
+<br/>
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: HodoscopeSD.cc</div>
+	<br/>
+	G4bool HodoscopeSD::ProcessHits(G4Step* step, G4TouchableHistory*)<br/>
+	{<br/>
+	<div class="tbmodified">
+		G4double edep = step-&gt;GetTotalEnergyDeposit();<br/>
+		if (edep==0.) return true;<br/>
+		<br/>
+		G4StepPoint* preStepPoint = step-&gt;GetPreStepPoint();<br/>
+		<br/>
+		const G4TouchableHistory* touchable = preStepPoint-&gt;GetTouchable();<br/>
+		G4int copyNo = touchable-&gt;GetVolume()-&gt;GetCopyNo();<br/>
+		G4double hitTime = preStepPoint-&gt;GetGlobalTime();<br/>
+		<br/>
+		// check if this finger already has a hit<br/>
+		G4int ix = -1;<br/>
+		for (size_t i=0;i&lt;fHitsCollection-&gt;entries();i++)<br/>
+		{<br/>
+		&emsp; if ((*fHitsCollection)[i]-&gt;GetID()==copyNo)<br/>
+		&emsp; {<br/>
+		&emsp; &emsp; ix = i;<br/>
+		&emsp; &emsp; break;<br/>
+		&emsp; }<br/>
+		}<br/>
+		<br/>
+		if (ix&gt;=0) // if it has, then take the earlier time<br/>
+		{<br/>
+		&emsp; if ((*fHitsCollection)[ix]-&gt;GetTime()&gt;hitTime)<br/>
+		&emsp; { (*fHitsCollection)[ix]-&gt;SetTime(hitTime); }<br/>
+		}<br/>
+		else // if not, create a new hit and set it to the collection<br/>
+		{<br/>
+		&emsp; HodoscopeHit* hit = new HodoscopeHit(copyNo,hitTime);<br/>
+		&emsp; fHitsCollection-&gt;insert(hit);<br/>
+		}<br/>
+	</div>
+	<br/>
+	return true;<br/>
+
+</codeblock>
+
+
+<br/><br/>
+<hr style="border-style: dotted; border-width: 1px;"/>
+<br/>
+
+<h3>Exercise 2 Step 3</h3>
+
+Construct the SD and attach it to the correct logical volume.
+
+<br/><br/>
+
+
+We can now create an instance of the HodoscopeSD and attach it
+to the correct logical volume. Add a separate instance of the SD to
+each arm hodoscope.
+
+<br/><br/>
+
+Give the names <code>/hodoscope1</code> and <code>/hodoscope2</code> to
+these SDs. The same class is used for two logical volumes, the
+two instances are recognized by Geant4 only via their names.<br/><br/>
+
+
+We are going to modify the method
+<code>ConstructSDandField</code> in the DetectorCostruction class.
+If you are already a user of older version of Geant4
+(up to version 9.6) this is one of the new
+main features introduced in version 10.0 to be compatible with multi-threading.
+To reduce memory consumption geometry is
+shared among threads, but sensitive-detectors are not.
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: DetectorConstruction.cc</div>
+	<br/>
+	&nbsp;void DetectorConstruction::ConstructSDandField()<br/>
+	{<br/>
+	<div class="tbmodified">
+		&emsp; // sensitive detectors -----------------------------------------------------<br/>
+		&emsp; G4SDManager* SDman = G4SDManager::GetSDMpointer();<br/>
+		&emsp; G4String SDname;<br/>
+		&emsp; <br/>
+		&emsp; G4VSensitiveDetector* hodoscope1 = new HodoscopeSD(SDname="/hodoscope1");<br/>
+		&emsp; SDman-&gt;AddNewDetector(hodoscope1);<br/>
+		&emsp; fHodoscope1Logical-&gt;SetSensitiveDetector(hodoscope1);<br/>
+		<br/>
+		&emsp; G4VSensitiveDetector* hodoscope2 = new HodoscopeSD(SDname="/hodoscope2");<br/>
+		&emsp; SDman-&gt;AddNewDetector(hodoscope2);<br/>
+		&emsp; fHodoscope2Logical-&gt;SetSensitiveDetector(hodoscope2);<br/>
+	</div>
+	<br/>
+	&emsp; // magnetic field ---------------------------------------------------------- <br/>
+	&emsp; fMagneticField = new MagneticField(); <br/>
+	&emsp; fFieldMgr = new G4FieldManager(); <br/>
+	&emsp; fFieldMgr-&gt;SetDetectorField(fMagneticField); <br/>
+	&emsp; fFieldMgr-&gt;CreateChordFinder(fMagneticField); <br/>
+	&emsp; G4bool forceToAllDaughters = true; <br/>
+	&emsp; fMagneticLogical-&gt;SetFieldManager(fFieldMgr, forceToAllDaughters); <br/>
+	}
+</codeblock>
+
+
+
+<br/><hr/><h2><a class="content" id=ho3_userActions1>User Actions I</a></h2>
+
+<div class="lecture">
+        <strong>Related lectures:</strong> Kernel 1, Scoring 2
+</div><br/>
+
+In this exercise we modify ,code>G4UserEventAction</code>, one of the user-action classes, to print on
+screen the information collected from hodoscopes at the end of each event.<br/><br/>
+
+<div class="info">
+	Different user action provides specific interfaces to control the different aspects
+	of the simulation.
+
+	<ul>
+	<li><code>G4UserRunAction</code> allows the creation of a user-custom
+	<code>G4Run</code> object and it executes user-code at the beginning and at the
+	end of a run (this will be covered in Hands On4).</li>
+
+	<li><code>G4UserEventAction</code> gives access to <code>G4Event</code>
+	at the beginning and at the end of each event.
+	We use this action class in this exercise.</li>
+
+	<li><code>G4VUserPrimaryGeneratorAction</code> controls the
+	creation of primaries. This is a mandatory class to implement.</li>
+
+	<li><code>G4UserTrackingAction</code>
+	gives access to <code>G4Track</code> at the beginning and at the end of each track.</li>
+
+	<li><code>G4UserSteppingAction</code> gives access to each <code>G4Step</code>.</li>
+
+	<li><code>G4UserStackingAction</code> allows to control the <i>urgency</i> of
+	each new <code>G4Track</code> (advanced).</li>
+	</ul>
+</div>
+
+<br/><br/>
+
+<div class="warning">
+	<strong>Note for users of multi-threaded mode of Geant4:</strong>
+	Multi-threading requires user actions to be thread-private
+	(differently from initialization classes that are shared among threads).
+	That means, such user action classes must be instantiated for each worker thread.
+	<br/><br/>
+	<code>G4VUserActionInitialization</code> is the user class to provide a
+	method <code>Build()</code> where all user actions are instantiated
+	(this method is called by each worker thread).
+	<br/><br/>A second method
+	<code>BuildForMaster</code> is called by the master thread.
+	Among all user actions the <code>G4UserRunAction</code> is the only one that can
+	also be instantiated for the master thread, this is to allow for
+	<a href="http://software.intel.com/en-us/blogs/2009/07/23/parallel-pattern-7-reduce">reduction</a>
+	of results from worker threads to master thread
+	(e.g. sum the partial results of each thread into a <i>global</i>
+	result). This will be covered in Hands On 4.
+</div>
+
+<br/>
+
+<h3 class="content" id=ho3_ex3><br/></h3>
+
+<h3>Exercise 3</h3>
+
+Using a <code>G4UserEventAction</code> print on screen the number
+of hits and the time registered in the hodoscopes.
+
+<br/><br/>
+
+For this exercise you will need to modify, in <code>EventAction.cc</code>,
+the method <code>EndOfEventAction</code>, called by
+Geant4 at the end of the simulation of each event.
+In this method the pointer to the current <code>G4Event</code> is passed to the user-code. From this
+object you will retrieve the hits collections for the two
+hodoscopes and dump to screen the collected information.<br/><br/>
+
+Part of the <Code>EventAction</code> code is already implemented.<br/>
+Take a moment to study the method
+<code>BeginOfEventAction</code>: in this method we retrieve the IDs of
+the two collections. Note the <code>if</code> statement that allows
+for an efficient search of the IDs, given the collection names, only
+once. Searching with strings is a time consuming operation, this
+method allows for reducing the CPU time, if many collections are
+created this is an important optimization to consider.
+<br/><br/>
+
+<div class="danger">
+	<strong>Important:</strong> The code assumes that, in your <code>HodoscopeSD</code> class, you have named the two SDs as
+	<code>/hodoscope1</code> and <code>/hodoscope2</code> and that they create a hit collection
+	called <code>hodosopeColl</code>. Change these accordingly if you have modified the names.
+</div>
+
+<br/><br/>
+
+The <code>EventAction</code> is instantiated in the
+<code>ActionInitialization</code> class. Take a look at it and see how
+the <code>EventAction</code> is created.<br/>
+
+<br/><br/>
+
+The solution shows how to introduce some run-time checks of the
+effective existence of the hits. While this is not necessary in this
+simple code, this is a good code practice:
+in large applications the presence of hits collections may be
+decided at run time depending on the job configuration.
+
+
+<h4>Solution</h4>
+<codeblock>
+	<div class="filename"> File: EventAction.cc</div>
+	<br/>
+
+	void EventAction::EndOfEventAction(const G4Event* event)<br/>
+	{<br/>
+	// =============================================<br/>
+	// Exercise 3<br/>
+	// Print on screen the hits of the hodoscope<br/>
+	// Step 1: Get the hits collection of this event<br/>
+	<br/>
+	<div class="tbmodified">
+		G4HCofThisEvent* hce = event->GetHCofThisEvent();<br/>
+		if (!hce)<br/>
+		{<br/>
+		&emsp;G4ExceptionDescription msg;<br/>
+		&emsp;msg &lt;&lt; "No hits collection of this event found.\n";<br/>
+		&emsp;G4Exception("EventAction::EndOfEventAction()",<br/>
+		&emsp;&emsp; "Code001", JustWarning, msg);<br/>
+		&emsp;return;<br/>
+		}<br/>
+	</div>
+	<br/>
+	// Step 2: Using the memorised IDs get the collections<br/>
+	// corresponding to the two hodoscopes<br/>
+	// Get hits collections<br/>
+	<div class="tbmodified">
+		<br/>
+		HodoscopeHitsCollection* hHC1 = static_cast
+		&lt;HodoscopeHitsCollection*&gt;(hce->GetHC(fHHC1ID));<br/>
+		<br/>
+		HodoscopeHitsCollection* hHC2= static_cast
+		&lt;HodoscopeHitsCollection*&gt;(hce->GetHC(fHHC2ID));<br/>
+		<br/>
+		if ( (!hHC1) || (!hHC2) )<br/>
+		{<br/>
+		&emsp;G4ExceptionDescription msg;<br/>
+		&emsp;msg &lt;&lt; "Some of hits collections of this event not found.\n";<br/>
+		&emsp; G4Exception("EventAction::EndOfEventAction()", "Code001", JustWarning, msg);<br/>
+		&emsp; return;<br/>
+		}<br/>
+	</div>
+	<br/>
+	<br/>
+	// Step 3: Loop on the two collections and dump on screen hits<br/>
+	// Hodoscope 1<br/>
+	<div class="tbmodified">
+		G4int n_hit = hHC1->entries();<br/>
+		G4cout &lt;&lt; "Hodoscope 1 has " &lt;&lt; n_hit &lt;&lt; " hits." &lt;&lt; G4endl;<br/>
+		for (G4int i=0;i&lt;n_hit ;i++)
+		<br/>
+		{<br/>
+		&emsp; HodoscopeHit* hit = (*hHC1)[i];<br/>
+		&emsp; hit->Print();<br/>
+		}<br/>
+	</div>
+	<br/>
+	// Hodoscope 2<br/>
+	<div class="tbmodified">
+		n_hit = hHC2->entries();<br/>
+		G4cout &lt;&lt; "Hodoscope 2 has " &lt;&lt; n_hit &lt;&lt; " hits." << G4endl;<br/>
+		for (G4int i=0;i&lt;n_hit ;i++)
+		<br/>
+		{<br/>
+		&emsp; HodoscopeHit* hit = (*hHC2)[i];<br/>
+		&emsp; hit->Print();<br/>
+		}<br/>
+	</div>
+</codeblock>
+
+<br/><br/>
+
+With successful execution (try, e.g., <code>/run/beamOn 100</code>), you should see printout like this (actual numbers may vary):<br/>
+
+<br/><br/>
+
+<div class="success">
+	G4WT0&gt;<br/>
+	G4WT0&gt; &gt;&gt;&gt; Event 96 &gt;&gt;&gt; Simulation truth : proton (-16.232228069311,0,994.22834019976)<br/>
+	G4WT0&gt; Hodoscope 1 has 1 hits.<br/>
+	G4WT0&gt; Hodoscope[7] 6.8585277990143 (nsec)<br/>
+	G4WT0&gt; Hodoscope 2 has 1 hits.<br/>
+	G4WT0&gt; Hodoscope[8] 59.288664870039 (nsec)<br/>
+	G4WT0&gt; --&gt; Event 97 starts with initial seeds (47098457,35307784).<br/>
+	G4WT0&gt;<br/>
+	G4WT0&gt; &gt;&gt;&gt; Event 97 &gt;&gt;&gt; Simulation truth : proton (-5.5136395233946,0,990.67454918706)<br/>
+	G4WT0&gt; Hodoscope 1 has 1 hits.<br/>
+	G4WT0&gt; Hodoscope[7] 6.8697647503318 (nsec)<br/>
+	G4WT0&gt; Hodoscope 2 has 1 hits.<br/>
+	G4WT0&gt; Hodoscope[8] 59.535676954411 (nsec)<br/>
+	G4WT0&gt; Thread-local run terminated.<br/>
+	G4WT0&gt; Run Summary<br/>
+	G4WT0&gt; Number of events processed : 49<br/>
+	G4WT0&gt; User=0.360000s Real=0.184613s Sys=0.000000s [Cpu=195.0%]<br/>
+	Run terminated.<br/>
+	Run Summary<br/>
+	Number of events processed : 100<br/>
+	User=0.360000s Real=0.185584s Sys=0.010000s [Cpu=199.4%]<br/>
+</div>
+
+
+
+<br/><hr/><br/>
+Created by:
+<a href="mailto:adotti@stanford.edu>">Andrea Dotti </a>
+, May 2018
+<br/>Updated by:
+<a href="mailto: asai@jlab.org">Makoto Asai</a> and
+<a href="mailto:ungaro@jlab.org>">Maurizio Ungaro</a>
+, February 2024<br/>
+<br/>
+<hr/>
+<br/>
+
+<script src="../main.js"></script>        <!-- Don't move this line to the top! It causes an error at Safari -->
+
+
+</body>
+</html>

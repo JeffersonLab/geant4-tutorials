@@ -136,4 +136,9 @@ if os.path.exists(ho_materials):
 		tar_command += " cd " + current_dir
 		os.system(tar_command)
 
+# copy past_events directoru to tutorial
+past_events = os.path.join(current_dir, "past_events")
+if os.path.exists(past_events):
+	shutil.copytree(past_events, os.path.join(deploy_dir, "past_events"))
+
 print("\n > Done!\n")
