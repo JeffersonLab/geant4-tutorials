@@ -19,9 +19,14 @@ You must replace this string with the appropriate directory path in your disk sp
 <br/><br/>
 
 <div class="info">
-	<strong>Note:</strong> This is not needed when using docker,
-	as the environment is already setup, and <code>&lt;geant4&gt;</code>
-	is <code>$G4INSTALL/source</code>.
+	<strong>Note:</strong> When using docker, run `bash` or `zsh` or `tcsh`. This will load,
+	the environment, and <code>&lt;geant4&gt;</code> is <code>$G4INSTALL/source</code>.
+	You will see this log:
+	<codeblock>
+sh-5.2# bash
+Loading geant4/11.2.2
+  Loading requirement: .clhep/2.4.7.1 .xercesc/3.2.5 .qt/system
+	</codeblock>	
 </div>
 
 
