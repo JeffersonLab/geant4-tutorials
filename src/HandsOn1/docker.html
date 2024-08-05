@@ -12,7 +12,7 @@ We have the fdollowing  docker image with Geant4 ###G4VERSION installed:
 <ul>
 	<li>###DOCKERIMAGEFEDORA</li>
 	<li>###DOCKERIMAGEUBUNTU</li>
-	<li>######DOCKERIMAGEALMA</li>
+	<li>###DOCKERIMAGEALMA</li>
 </ul>
 
 You can pull one by running the following command (note, you only need to pull once):<br/><br/>
@@ -21,7 +21,7 @@ You can pull one by running the following command (note, you only need to pull o
 	$ docker pull ###DOCKERIMAGEFEDORA
 </codeblock>
 
-<br/><br/>
+<br/>
 
 A good way to use this image is to create a directory on your local machine
 to share with the container (we'll use <code>~/mywork</code> as an example). This way you can edit your work
@@ -41,7 +41,7 @@ Here is how:
 
 <h4>Run in Batch Mode:</h4>
 
-Notice in batch mode you will not be able to run Geant4 examples/applications with GUIs.
+Notice in batch mode you will not be able to run Geant4 examples/applications with GUIs.<br/>
 
 <codeblock>
 	$ docker run --platform linux/amd64 -it --rm -v ~/mywork:/usr/local/mywork ###DOCKERIMAGEFEDORA bash
@@ -59,7 +59,7 @@ Notice in batch mode you will not be able to run Geant4 examples/applications wi
 
 <h4>Run Interactively:</h4>
 
-Running the container interactively and accessing it throug a web browser is a good way to run Geant4 examples/applications with GUIs.
+Running the container interactively and accessing it throug a web browser is a good way to run Geant4 examples/applications with GUIs.<br/>
 
 <codeblock>
 	$ docker run --platform linux/amd64 -it --rm -p 8080:8080 -v ~/mywork:/usr/local/mywork ###DOCKERIMAGEFEDORA
