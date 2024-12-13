@@ -54,10 +54,11 @@ strings to be replaced in the HTML files.
 For example one entry in `versions.dat` is:
 
 `
-###G4VERSION: "11.2.0"
+###G4VERSION: "11.3.0"
 `
 
-so all instances of `###G4VERSION` in the HTML files will be replaced by `11.2.0`.
+so all instances of `###G4VERSION` in the HTML files will 
+be replaced by that version.
 
 > [!Important]
 > **The HTML files should only contain the strings listed in `versions.dat` and no
@@ -114,40 +115,13 @@ git push
 
 ---
 
-## Creating a new release of the tutorials
+## Creating a "past" release of the tutorials
 
-The tutorials are released as a zipped tarball that
-can be downloaded from the [Github Releases page](https://github.com/JeffersonLab/geant4-tutorials/releases).
+Create a new subdir in the `past_events` directory with the name of the event.
+Copy the `tutorial` content to the new subdir. 
+Add links in src/index.html and JeffersonLab/g4home/a_tutorials.md src/index.html
 
-To create a new release, follow these steps:
-
-1. Clone the tutorial distribution repository to
-   your local machine (do this only once) at the same dir level
-   as the `geant4-tutorials-dev` repository. In your geant4-tutorials-dev
-   directory:
-
-   ```
-   git clone https://github.com/JeffersonLab/geant4-tutorials.git ../geant4-tutorials
-   ```
-2. Run copy_to_release.sh to copy the HandsOnX directories
-   to `../geant4-tutorials/`:
-
-    ```
-    ./copy_to_release.sh
-    ```
-
-3. Once the files are copied, go to the `geant4-tutorials` directory.
-   Once things are checked, commit and push the changes:
-
-    ```
-    cd ../geant4-tutorials
-    git commit -m "Updated HandsOnX directories"
-    git push
-    ```
-
-4. Create a new release on the [Github](https://github.com/JeffersonLab/geant4-tutorials)
-
-### Style and Navigation
+## Style and Navigation
 
 The following files are used to define the style and navigation of the pages.
 

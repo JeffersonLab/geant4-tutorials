@@ -1,4 +1,4 @@
-let g4version = "11.2.1";
+let g4version = "11.3.0";
 
 
 // When the user scrolls the page, execute myFunction
