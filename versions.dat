@@ -19,7 +19,7 @@
 ###G4STARTLOG9: "**************************************************************"
 ###DOCKERIMAGEFEDORA:"jeffersonlab/geant4:g4v11.3.1-fedora36"
 ###DOCKERIMAGEUBUNTU:"jeffersonlab/geant4:11.3.1-ubuntu24"
-###DOCKERIMAGEALMA:"jeffersonlab/geant4:v11.3.1-almalinux93"
+###DOCKERIMAGEALMA:"jeffersonlab/geant4:v11.3.1-almalinux94"
 ###IMAGES_WIDTH:"900"
 ###IMAGES_HWIDTH:"450"
 
