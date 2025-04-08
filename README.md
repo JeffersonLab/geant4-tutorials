@@ -8,7 +8,7 @@ To download, edit and update the repository, see the
 
 ---
 
-### Structure
+## Structure
 
 The sources are HTML files inside `HandsOnX` subdirs in the
 `src` directory, each corresponding to a section.
@@ -35,8 +35,13 @@ src/HandsOn1
 > 2. `navigation.html`: creates the table of contents that is shown as _topbar_
 	 > to the users.
 
-Once the files are edited, run the python script  `create_pages.py`  
-to create the HandsOnX directories containing `index.html`. 
+## Test the HTML files
+
+The python script  `create_pages.py` is run by GitHub Actions
+to create the website. It builds the HandsOnX directories 
+containing the various `index.html`. 
+
+To test it locally:
 
 ```
 ./create_pages.py
@@ -47,15 +52,14 @@ to create the HandsOnX directories containing `index.html`.
 
 ---
 
-### Versions numbers and filenames
+### Update Versions numbers and filenames
 
-`create_pages.py` uses the `versions.dat` file to define
-strings to be replaced in the HTML files.
-For example one entry in `versions.dat` is:
+Upon a new Geant4 relase, update the version numbers and filenames in `versions.dat`.
+An example one entry in `versions.dat` is:
 
-`
+```
 ###G4VERSION: "11.3.0"
-`
+```
 
 so all instances of `###G4VERSION` in the HTML files will 
 be replaced by that version.
