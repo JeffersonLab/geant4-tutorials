@@ -98,6 +98,8 @@ Let's configure Geant4:<br/><br/>
 <div class="info">
 	<strong>Notes:</strong>
 	<ul>
+		<li>If you have Qt6, use <code>-DGEANT4_USE_QT6=ON</code> instead of <code>-DGEANT4_USE_QT=ON</code>.
+		</li>
 		<li>If you do not have <i>wget</i> you may download the Geant4 tar ball from <a href="https://geant4.web.cern.ch/support/download">Geant4 download page</a>.
 			You may also download the source code from <a target="_new" href="https://gitlab.cern.ch/geant4/geant4/-/releases/v###G4VERSION">
 				CERN GitLab</a> or <a target="_new" href="https://github.com/Geant4/geant4/releases">GitHub</a>.
@@ -210,7 +212,7 @@ substantially speedup compilation. In the build directory:<br/><br/>
 
 After Geant4 has been compiled and installed the content of the
 &lt;tutorial&gt;/install directory should contain the directories:
-<codeblock>bin share include lib[64]</codeblock><br/>
+<codeblock>bin data include lib[64]</codeblock><br/>
 
 
 The <code>include</code> directory contains a sub-directory
@@ -220,3 +222,6 @@ libraries and a sub-directory: <code>Geant4-###G4VERSION</code>, this
 contains cmake files specific to Geant4 (they are used to compile an
 application via cmake that <i>uses</i> Geant4).<br/><br/>
 
+<h4>Step 3: Post installation environment</h4>
+The &lt;tutorial&gt;/install/bin directory contains the .csh or .sh scripts for the environment setup.
+Source the script in your terminal to set up the environment variables.
