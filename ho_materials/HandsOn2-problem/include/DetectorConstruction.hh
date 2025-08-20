@@ -71,7 +71,8 @@ private:
     
     G4LogicalVolume* fHodoscope1Logical;
     G4LogicalVolume* fWirePlane1Logical;
-    
+
+    // TODO: REMOVE THIS
     std::vector<G4VisAttributes*> fVisAttributes;
     
     G4double fArmAngle;
